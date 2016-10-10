@@ -8,8 +8,8 @@ public class MultipleInteraction {
 	private String target ;
 	
 	// List of regulators acting independently
-	private ArrayList activatingRegulators ;
-	private ArrayList inhibitoryRegulators ;
+	private ArrayList<String> activatingRegulators ;
+	private ArrayList<String> inhibitoryRegulators ;
 	
 	// List of regulators acting together (complexes)
 	private ArrayList<String[]> activatingRegulatorComplexes ;
@@ -19,10 +19,10 @@ public class MultipleInteraction {
 		// Define target upon creation
 		target = targetName ;
 		
-		activatingRegulators = new ArrayList ();
-		inhibitoryRegulators = new ArrayList ();
-		activatingRegulatorComplexes = (ArrayList<String[]>) new ArrayList () ;
-		inhibitoryRegulatorComplexes = (ArrayList<String[]>) new ArrayList ();
+		activatingRegulators = new ArrayList<String> ();
+		inhibitoryRegulators = new ArrayList<String> ();
+		activatingRegulatorComplexes = (ArrayList<String[]>) new ArrayList<String[]> () ;
+		inhibitoryRegulatorComplexes = (ArrayList<String[]>) new ArrayList<String[]> ();
 	}
 	
 //	ArrayList<MutatedBooleanModel>[] mutatedModels = (ArrayList<MutatedBooleanModel>[])new ArrayList[numGenerations];

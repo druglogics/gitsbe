@@ -33,19 +33,19 @@ import java.util.Random;
 
 public class Gitsbe implements Runnable {
 
-	private static String appName = "Gitsbe" ;
-	private static String version = "v0.2" ;
+	private String appName = "Gitsbe" ;
+	private String version = "v0.2" ;
 	
 	private String filenameNetwork ;
 	private String filenameSteadyState ;
 	private String filenameConfig ;
 	
 	// Declare one general model that is defined by input files
-	private static GeneralModel generalModel = new GeneralModel () ;
+	private GeneralModel generalModel = new GeneralModel () ;
 	
 	
 	//private static BooleanModel originalModel = new BooleanModel () ;
-	private static ArrayList <BooleanModel> models = new ArrayList <BooleanModel> ();
+//	private ArrayList <BooleanModel> models = new ArrayList <BooleanModel> ();
 	
 	// Global variable determining verbosity levels
 	public static int verbosity ;
@@ -61,7 +61,7 @@ public class Gitsbe implements Runnable {
 	@Override
 	public void run() {
 		
-		System.out.print("Welcome to " + Gitsbe.appName + " " + Gitsbe.version + "\n\n") ;
+		System.out.print("Welcome to " + appName + " " + version + "\n\n") ;
 				
 		Config.initialize(filenameConfig);
 		this.verbosity = Config.getVerbosity() ;
@@ -109,7 +109,7 @@ public class Gitsbe implements Runnable {
 		// Start logger
 		dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 						
-		Logger.outputHeader(1, Gitsbe.appName + " " + Gitsbe.version);
+		Logger.outputHeader(1, appName + " " + version);
 		Logger.output(1, "Start: " + dateFormat.format(cal.getTime()));
 		
 		long starttime = System.nanoTime() ;

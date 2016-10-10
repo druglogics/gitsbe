@@ -3,7 +3,6 @@ package gitsbe;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 
@@ -205,21 +204,22 @@ public class GeneralModel {
 		}
 	}
 	
-	public void saveSifFile ()
-	{
-		if (singleInteractions.size() > 0)
-		{		
-			PrintWriter writer = new PrintWriter(filename, "UTF-8");
-
-			writer.println("# SIF file from model: ");
-			
-			for (int i = 0; i < singleInteractions.size(); i++)
-				writer.println(singleInteractions.get(i).
-				
-			
-			writer.close() ;
-		}
-	}
+//	public void saveSifFile ()
+//	{
+//		if (singleInteractions.size() > 0)
+//		{		
+//			PrintWriter writer = new PrintWriter(filename, "UTF-8");
+//
+//			writer.println("# SIF file from model: ");
+//			
+//			for (int i = 0; i < singleInteractions.size(); i++)
+//				writer.println(singleInteractions.get(i).
+//				
+//			
+//			writer.close() ;
+//		}
+//	}
+	
 	private int getIndexOfTargetInListOfMultipleInteraction (String target)
 	{
 		for (int i = 0; i < multipleInteractions.size(); i++)

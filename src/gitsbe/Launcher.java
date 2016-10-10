@@ -1,7 +1,5 @@
 package gitsbe;
 
-import java.io.File;
-
 public class Launcher {
 
 	public Launcher() {

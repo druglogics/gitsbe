@@ -3,7 +3,6 @@ package gitsbe;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class MutatedBooleanModel extends BooleanModel {
 
@@ -144,71 +143,71 @@ public class MutatedBooleanModel extends BooleanModel {
 		
 	}
 	
-	public void introduceActivatorMutation(int numberOfMutations)
-	{
-		for (int i = 0; i < numberOfMutations; i++)
-		{
-			// Find random equation to mutate.
-			int randomEquationIndex = randInt(0,booleanEquations.size()-1) ;
-			
-			String oldEquation = booleanEquations.get(randomEquationIndex) ;
-			
-			// Search for replacement from 
-			int startLoc = 0;
-			int midLoc = oldEquation.indexOf(')') ;
-			int endLoc = oldEquation.indexOf("not") ;
-			
-			// Check if there are any activatory components
-			if (oldEquation.indexOf(')', 0) > endLoc)
-				return ;
-			
-			String newEquation = oldEquation ;
-			
-			
-			// 50 % probability of introducing and to or, or or to and
-			if (randInt(0,1) > 0.5)
-			{
-				newEquation = oldEquation.substring(startLoc, midLoc).replaceFirst(" and ", " or ") + oldEquation.substring(midLoc, endLoc) ;
-			}
-			else
-			{
-				newEquation = oldEquation.substring(startLoc, midLoc).replaceFirst(" or ", " and ") + oldEquation.substring(midLoc, endLoc) ;
-			}
-			
-			booleanEquations.set(randomEquationIndex, newEquation) ;
-		}
-	}
+//	public void introduceActivatorMutation(int numberOfMutations)
+//	{
+//		for (int i = 0; i < numberOfMutations; i++)
+//		{
+//			// Find random equation to mutate.
+//			int randomEquationIndex = randInt(0,booleanEquations.size()-1) ;
+//			
+//			String oldEquation = booleanEquations.get(randomEquationIndex) ;
+//			
+//			// Search for replacement from 
+//			int startLoc = 0;
+//			int midLoc = oldEquation.indexOf(')') ;
+//			int endLoc = oldEquation.indexOf("not") ;
+//			
+//			// Check if there are any activatory components
+//			if (oldEquation.indexOf(')', 0) > endLoc)
+//				return ;
+//			
+//			String newEquation = oldEquation ;
+//			
+//			
+//			// 50 % probability of introducing and to or, or or to and
+//			if (randInt(0,1) > 0.5)
+//			{
+//				newEquation = oldEquation.substring(startLoc, midLoc).replaceFirst(" and ", " or ") + oldEquation.substring(midLoc, endLoc) ;
+//			}
+//			else
+//			{
+//				newEquation = oldEquation.substring(startLoc, midLoc).replaceFirst(" or ", " and ") + oldEquation.substring(midLoc, endLoc) ;
+//			}
+//			
+//			booleanEquations.set(randomEquationIndex, newEquation) ;
+//		}
+//	}
 	
-	public void introduceInhibitorMutation(int numberOfMutations)
-	{
-		for (int i = 0; i < numberOfMutations; i++)
-		{
-			// Find random equation to mutate.
-			int randomEquationIndex = randInt(0,booleanEquations.size()-1) ;
-			
-			String oldEquation = booleanEquations.get(randomEquationIndex) ;
-			
-			// Search for replacement from 
-			int startLoc = 0;
-			int midLoc = oldEquation.indexOf(" not ") ;
-			int endLoc = oldEquation.length() ;
-
-			String newEquation = oldEquation ;
-			
-			
-			// 50 % probability of introducing and to or, or or to and
-			if (randInt(0,1) > 0.5)
-			{
-				newEquation = oldEquation.substring(startLoc, midLoc) + oldEquation.substring(midLoc, endLoc).replaceFirst(" and ", " or ") ;
-			}
-			else
-			{
-				newEquation = oldEquation.substring(startLoc, midLoc) + oldEquation.substring(midLoc, endLoc).replaceFirst(" or ", " and ") ;
-			}
-			
-			booleanEquations.set(randomEquationIndex, newEquation) ;
-		}
-	}
+//	public void introduceInhibitorMutation(int numberOfMutations)
+//	{
+//		for (int i = 0; i < numberOfMutations; i++)
+//		{
+//			// Find random equation to mutate.
+//			int randomEquationIndex = randInt(0,booleanEquations.size()-1) ;
+//			
+//			String oldEquation = booleanEquations.get(randomEquationIndex) ;
+//			
+//			// Search for replacement from 
+//			int startLoc = 0;
+//			int midLoc = oldEquation.indexOf(" not ") ;
+//			int endLoc = oldEquation.length() ;
+//
+//			String newEquation = oldEquation ;
+//			
+//			
+//			// 50 % probability of introducing and to or, or or to and
+//			if (randInt(0,1) > 0.5)
+//			{
+//				newEquation = oldEquation.substring(startLoc, midLoc) + oldEquation.substring(midLoc, endLoc).replaceFirst(" and ", " or ") ;
+//			}
+//			else
+//			{
+//				newEquation = oldEquation.substring(startLoc, midLoc) + oldEquation.substring(midLoc, endLoc).replaceFirst(" or ", " and ") ;
+//			}
+//			
+//			booleanEquations.set(randomEquationIndex, newEquation) ;
+//		}
+//	}
 	
 	public void introduceBalanceMutation(int numberOfMutations)
 	{
