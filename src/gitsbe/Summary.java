@@ -113,7 +113,7 @@ public class Summary {
 		{
 			for (int j = 0; j < bestModels.get(i).size(); j++)
 			{
-				writer.println(relativePath + bestModels.get(i).get(j).getFilename()) ;
+				writer.println(bestModels.get(i).get(j).getFilename()) ;
 			}
 		}
 		

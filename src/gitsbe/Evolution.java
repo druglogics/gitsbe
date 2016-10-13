@@ -18,7 +18,7 @@ public class Evolution {
 	String directoryName ;
 	Summary summary ;
 	float[][] fitnessEvolution ;
-	String directorytmp ;
+	String outputDirectory ;
 //	int targetFitnessThreshold ;
 	SteadyState steadyState ;
 //	Config config ;
@@ -27,11 +27,10 @@ public class Evolution {
 	
 	public Evolution (Summary summary,
 						BooleanModel generalBooleanModel, 
-
 						String baseModelName,
 						SteadyState steadyState,
 						String directoryName,
-						String directorytmp
+						String outputDirectory
 
 						) {
 		
@@ -43,9 +42,8 @@ public class Evolution {
 		this.steadyState = steadyState ;
 		this.stableStates = steadyState.getSteadyStates() ;
 		this.directoryName = directoryName ;
-		this.directorytmp = directorytmp ;
+		this.outputDirectory = outputDirectory ;
 
-				
 	}
 
 	public void evolve () {
@@ -143,8 +141,8 @@ public class Evolution {
 				Logger.output(2, "\nModel " + generationModels.get(i).getModelName()) ;
 				
 				try {
-//					System.out.println("DEBUG: " + directorytmp) ;
-					generationModels.get(i).calculateStableStatesVC("/home/asmund/Dokumenter/Cycret/Gitsbe/bnet/", directorytmp);
+//					System.out.println("DEBUG: " + outputDirectory) ;
+					generationModels.get(i).calculateStableStatesVC(outputDirectory);
 					generationModels.get(i).calculateFitness(stableStates);
 //					generationModels.get(i).calculateFitnessAgainstStableStatesAveraged(stableStates[0]);
 				} catch (FileNotFoundException e) {

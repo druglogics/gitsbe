@@ -19,7 +19,7 @@ import java.util.Random;
 
 /* Gitsbe - Generic Interactions To Specific Boolean Equations
  * 
- * Copyright Åsmund Flobak 2014-2015
+ * Copyright Asmund Flobak 2014-2015
  * 
  * email: asmund.flobak@ntnu.no
  * 
@@ -33,12 +33,13 @@ import java.util.Random;
 
 public class Gitsbe implements Runnable {
 
-	private String appName = "Gitsbe" ;
-	private String version = "v0.2" ;
+	private String appName = "Gitsbe";
+	private String version = "v0.2";
 	
-	private String filenameNetwork ;
-	private String filenameSteadyState ;
-	private String filenameConfig ;
+	private String filenameNetwork;
+	private String filenameSteadyState;
+	private String filenameConfig;
+	private String outputDirectory;
 	
 	// Declare one general model that is defined by input files
 	private GeneralModel generalModel = new GeneralModel () ;
@@ -52,14 +53,31 @@ public class Gitsbe implements Runnable {
 	
 	private static Random rand ;
 	
-	public Gitsbe(String filenameNetwork, String filenameSteadyState, String filenameConfig) {
+	public Gitsbe(String filenameNetwork, String filenameSteadyState, String filenameConfig, String outputDirectory) {
 		this.filenameNetwork = filenameNetwork ;
 		this.filenameSteadyState = filenameSteadyState ;
 		this.filenameConfig = filenameConfig ;
+		this.outputDirectory = outputDirectory ;
 	}
+	public Gitsbe(String filenameNetwork, String filenameSteadyState, String filenameConfig) {
+		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss") ;
+		Calendar cal = Calendar.getInstance();
+		
+		String projectName = "BNET";
+		String outputDirectory = dateFormat.format(cal.getTime()) + "_" + projectName + File.separator ;
+
+		this.filenameNetwork = filenameNetwork ;
+		this.filenameSteadyState = filenameSteadyState ;
+		this.filenameConfig = filenameConfig ;
+		this.outputDirectory = outputDirectory ;
+  }
 
 	@Override
 	public void run() {
+		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss") ;
+		Calendar cal = Calendar.getInstance();
+    String modelDirectory = new File(outputDirectory, "models").getPath();
+		
 		
 		System.out.print("Welcome to " + appName + " " + version + "\n\n") ;
 				
@@ -69,24 +87,18 @@ public class Gitsbe implements Runnable {
 		// Initialization
 		rand = new Random() ;
 		
-
-		
-		
-		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss") ;
-		
-		Calendar cal = Calendar.getInstance();
 		
 		// Create directory structure with timestamp
-		String projectName = Gitsbe.removeExtension(filenameNetwork) + "_" + Gitsbe.removeExtension(filenameSteadyState) ;
-		String directoryName = dateFormat.format(cal.getTime()) + "_" + projectName + File.separator ;
+		String projectName = "BNET";
+		String directoryName = this.outputDirectory;
 				
-		if (!new File (directoryName).mkdir())
+		if (!new File(directoryName).mkdir())
 		{
 			System.out.println("Error creating project folder, exiting.") ;
 			return ;
 		}
 		
-		if (!new File (directoryName + "models" + File.separator).mkdir())
+		if (!new File(modelDirectory).mkdir())
 		{
 			System.out.println("Error creating models folder, exiting.") ;
 			return ;
@@ -94,13 +106,11 @@ public class Gitsbe implements Runnable {
 		
 		// Initialize logger
 		
-		String directory = System.getProperty("user.dir") + File.separator + directoryName ;
-		System.out.println (directory) ;
-		
 		try {
+      System.out.println(projectName);
 			Logger.initialize(projectName + "_output.txt", 
 								projectName + "_summary.txt" , "gitsbe_debug.txt", 
-								directory, Config.getVerbosity(), false, true);
+								outputDirectory, Config.getVerbosity(), false, true);
 		} catch (IOException e3) {
 			// TODO Auto-generated catch block
 			e3.printStackTrace();
@@ -114,7 +124,7 @@ public class Gitsbe implements Runnable {
 		
 		long starttime = System.nanoTime() ;
 		
-		Summary summary = new Summary(directoryName + projectName + "_summary.txt") ;
+		Summary summary = new Summary(new File(this.outputDirectory, projectName).getPath() + "_summary.txt") ;
 
 		// Load config file
 		Logger.outputHeader(1, "Loading config file: " + filenameConfig);
@@ -124,11 +134,11 @@ public class Gitsbe implements Runnable {
 		// -------------------
 		// Clean tmp directory
 		// -------------------
-		cleanTmpDirectory(new File ("/home/asmund/Dokumenter/Cycret/Gitsbe/bnet/tmp")) ;
+		cleanTmpDirectory(new File ("./tmp")) ;
 		Logger.output(2, "Cleaning tmp directory...") ;
 		
 		// Model index output file
-		String filenameBooleanModelsIndex = directoryName + projectName + "_models.txt" ;
+		String filenameBooleanModelsIndex = new File(outputDirectory, projectName).getPath() + "_models.txt" ;
 		
 		// -----------------------------------------------------------------
 		// Create general Boolean model from general model or load from file
@@ -142,12 +152,17 @@ public class Gitsbe implements Runnable {
 			// Create generalModel from interactions file
 			// ------------------------------------------
 			try {
-				generalModel.loadInteractionFile (filenameNetwork) ;
+				generalModel.loadInteractionFile(filenameNetwork) ;
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			
+      String generationDirectory=new File(outputDirectory, "generations").getPath();
+      generalModel.setModelName(generationDirectory + File.separator + "model");
+      new File(generationDirectory).mkdir();
+		
+		
 			// Trim model according to command line arguments
 
 //			generalModel.removeSelfRegulation();
@@ -174,8 +189,7 @@ public class Gitsbe implements Runnable {
 			
 			
 		}
-		
-		
+
 		// ----------
 		// Export sif
 		// ----------
@@ -245,14 +259,14 @@ public class Gitsbe implements Runnable {
 		
 
 		// Where to store all temporary files
-		String directorytmp ;
+		String bnetOutputDirectory ;
+
 		if (Config.isPreserve_tmp_files())
 		{
 			
-			
-			directorytmp = directory + "tmp" + File.separator ;
-//			System.out.println("DEBUG: " + directorytmp) ;
-			if (!new File (directorytmp).mkdir())
+			bnetOutputDirectory = new File(outputDirectory,"tmp").getPath();
+//			System.out.println("DEBUG: " + bnetOutputDirectory) ;
+			if (!new File (bnetOutputDirectory).mkdir())
 			{
 				System.out.println("Error creating temporary folder, exiting.") ;
 				return ;
@@ -260,8 +274,8 @@ public class Gitsbe implements Runnable {
 		}
 		else
 		{
-			directorytmp = System.getProperty("user.dir") + File.separator + "bnet" + File.separator + "tmp" + File.separator ;
-//			System.out.println("DEBUG: " + directorytmp) ;
+			bnetOutputDirectory = System.getProperty("user.dir") + File.separator + "bnet" + File.separator + "tmp" + File.separator ;
+//			System.out.println("DEBUG: " + bnetOutputDirectory) ;
 			
 		}
 		
@@ -279,10 +293,10 @@ public class Gitsbe implements Runnable {
 //					Config.getCrossovers(), 
 //					Config.getBalancemutations(), 
 //					Config.getBootstrap_mutations_factor(), 
-					generalBooleanModel.getModelName() + "_run_" + run + "_", 
-					ss, 
-					directoryName + "models" + File.separator, 
-					directorytmp
+          generalBooleanModel.getModelName() + "_run_" + run + "_", 
+          ss, 
+          modelDirectory , 
+          bnetOutputDirectory
 //					Config.getTarget_fitness_percent()
 					) ;
 		
@@ -315,7 +329,7 @@ public class Gitsbe implements Runnable {
 
 		// Write summary
 		try {
-			summary.saveModelsIndexFile(filenameBooleanModelsIndex, directoryName + "models" + File.separator);
+			summary.saveModelsIndexFile(filenameBooleanModelsIndex, modelDirectory);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -343,7 +357,7 @@ public class Gitsbe implements Runnable {
 		{
 			
 			Logger.output(1, "\n Now invoking Drabme...");
-			this.invokeDrabme(directory, Config.getLocation_drabme() + directoryName, projectName, filenameBooleanModelsIndex);
+			this.invokeDrabme(this.outputDirectory, Config.getLocation_drabme() + directoryName, projectName, filenameBooleanModelsIndex);
 			
 			
 		}

@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.io.File;
 
 //import drabme.Drug;
 
@@ -32,6 +33,8 @@ public class BooleanModel {
 	protected int verbosity = 2 ;
 	
 	protected String filename ;
+
+  public static String directoryBNET = System.getenv("BNET_HOME");
 	
 	public BooleanModel()
 	{
@@ -43,7 +46,7 @@ public class BooleanModel {
 	
 		this.verbosity = Gitsbe.verbosity ;
 		
-		this.modelName = generalModel.getModelName () ;
+		this.modelName = generalModel.getModelName() ;
 		
 		booleanEquations = new ArrayList <BooleanEquation> () ;
 		
@@ -203,12 +206,12 @@ public class BooleanModel {
         
 	}
 	
-	public void saveFile (String directoryName) throws IOException
-	{
-		String filename = this.modelName + ".gitsbe" ;
-		
-		PrintWriter writer = new PrintWriter(directoryName + filename, "UTF-8");
-		
+  public void saveFile (String directoryName) throws IOException
+  {
+    String filename = this.modelName.substring(this.modelName.lastIndexOf('/') + 1) + ".gitsbe";
+
+		PrintWriter writer = new PrintWriter(new File(directoryName, filename).getPath(), "UTF-8");
+
 		
 		// Write header with '#'
 		writer.println("#Boolean model file in gitsbe format") ;
@@ -457,20 +460,21 @@ public class BooleanModel {
 		return result ;
 	}
 	
-	public void calculateStableStatesVC (String directorybnet) throws FileNotFoundException, UnsupportedEncodingException, IOException
+	public void calculateStableStatesVC (String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException, IOException
 	{
 		// Use default temporary folder, under the bnet folder
-//		System.out.println("DEBUG: " + directorybnet);
-		this.calculateStableStatesVC(directorybnet, directorybnet + "tmp" + File.separator);
+//		System.out.println("DEBUG: " + directoryBNET);
+		this.calculateStableStatesVC(this.directoryBNET, outputDirectory);
 	}
 	
-	public void calculateStableStatesVC (String directorybnet, String directorytmp) throws FileNotFoundException, UnsupportedEncodingException, IOException {
+	public void calculateStableStatesVC (String directoryBNET, String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException, IOException {
 	
 		// Defined model in Veliz-Cuba terminology
-		String [] modelVC = this.getModelVelizCuba() ;
+		String [] modelVC = this.getModelVelizCuba();
 				
 		// Write model to file for 'BNreduction.sh'
-		PrintWriter writer = new PrintWriter(directorytmp + modelName + ".dat", "UTF-8");
+    System.out.println(modelName);
+		PrintWriter writer = new PrintWriter(modelName + ".dat", "UTF-8");
 		
 		for (int i = 0; i < modelVC.length ; i++)
 		{
@@ -485,7 +489,7 @@ public class BooleanModel {
 			// complete within specified amount of time (in case BNReduction should hang).
 			
 			
-			ProcessBuilder pb = new ProcessBuilder("sh", "BNReduction_timeout.sh", directorytmp + modelName + ".dat");
+			ProcessBuilder pb = new ProcessBuilder("sh", "BNReduction_timeout.sh", modelName + ".dat");
 			
 			if (Logger.getVerbosity() >= 3)
 			{
@@ -495,7 +499,7 @@ public class BooleanModel {
 			
 			// TODO - AAF - get working directory and etc... this hack works for now
 			
-			pb.directory (new File (directorybnet)) ;
+			pb.directory (new File (directoryBNET)) ;
 			
 			Logger.output(3, "Running BNReduction_timeout.sh in directory " + pb.directory()) ;
 			
@@ -524,7 +528,7 @@ public class BooleanModel {
 		}
 		
 		// Read stable states from BNReduction.sh output file
-		String filename = directorytmp + modelName + ".dat.fp" ;
+		String filename = modelName + ".dat.fp";
 		
 		BufferedReader reader = new BufferedReader(new FileReader (filename)) ;
 		

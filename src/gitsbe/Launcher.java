@@ -16,20 +16,21 @@ public class Launcher {
 //		}
 	
 		
-		String filenameNetwork = "toy_ags_network.sif" ;
-		String filenameConfig = "toy_ags_config.tab" ;
-		String[] filenameSteadyStates = {"toy_ags_steadystate.tab"} ;
+		String filenameNetwork = args[0];
+		String filenameConfig = args[1];
+		String[] filenameSteadyStates = {args[2]} ;
+		String outputDir = args[3];
 		
 		Thread t ;
 		
 		
 		// Repeat process 100 times to obtain confidence intervals for each evolutionary run - to be used for publication
-//		for (int j = 0; j < 100; j++)
-//		{
+  //		for (int j = 0; j < 100; j++)
+  //		{
 			for (int i = 0; i < filenameSteadyStates.length; i++)
 			{
 				String filenameSteadyState = filenameSteadyStates[i] ;
-				t = new Thread (new Gitsbe (filenameNetwork, filenameSteadyState, filenameConfig)) ;
+				t = new Thread (new Gitsbe (filenameNetwork, filenameSteadyState, filenameConfig, outputDir)) ;
 				
 				t.start();
 				try {

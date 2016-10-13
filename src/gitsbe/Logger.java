@@ -57,19 +57,17 @@ public class Logger {
 	public static void initialize (String filenameOutput, String filenameSummary, String filenameDebug, String directory, int verbosity, boolean debugMode, boolean consoleOutput) throws IOException
 	{
 		
-		System.out.println(directory) ;
-				
 		// Initialize variables
 		Logger.directory = directory ;
-		Logger.filenameOutput = new File (directory, filenameOutput).getPath() ;
-		Logger.filenameSummary = new File (directory, filenameSummary).getPath() ;
-		Logger.filenameDebug = new File (directory,  filenameDebug).getPath() ;
+		Logger.filenameOutput = new File(directory, filenameOutput).getPath() ;
+		Logger.filenameSummary = new File(directory, filenameSummary).getPath() ;
+		Logger.filenameDebug = new File(directory,  filenameDebug).getPath() ;
 //		Logger.filenameErrors = new File (directory, filenameErrors).getPath() ;
 		
 		// Initialize file writers
-		Logger.writerOutput = new PrintWriter (directory + filenameOutput) ;
-		Logger.writerSummary = new PrintWriter (directory + filenameSummary) ;
-		Logger.writerDebug = new PrintWriter (directory + filenameDebug) ;
+		Logger.writerOutput = new PrintWriter(Logger.filenameOutput) ;
+		Logger.writerSummary = new PrintWriter(Logger.filenameSummary) ;
+		Logger.writerDebug = new PrintWriter(Logger.filenameDebug) ;
 //		Logger.writerErrors = new PrintWriter (filenameErrors) ;
 		
 		setVerbosity (verbosity) ;

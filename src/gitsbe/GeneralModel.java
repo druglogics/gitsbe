@@ -48,9 +48,14 @@ public class GeneralModel {
 		
 	}
 	
-	public String getModelName () {
+	public String getModelName() {
 		return this.modelName ;
 	}
+
+	public void setModelName(String path) {
+		this.modelName = path;
+	}
+	
 	
 	public String toString () 
 	{

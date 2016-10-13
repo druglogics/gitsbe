@@ -3,6 +3,7 @@ package gitsbe;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.io.File;
 
 public class MutatedBooleanModel extends BooleanModel {
 
@@ -382,9 +383,9 @@ public class MutatedBooleanModel extends BooleanModel {
 	
 	public void saveFile (String directoryName) throws IOException
 	{
-		String filename = this.modelName + ".gitsbe" ;
+    String filename = this.modelName.substring(this.modelName.lastIndexOf('/') + 1) + ".gitsbe";
 		
-		PrintWriter writer = new PrintWriter(directoryName + filename, "UTF-8");
+		PrintWriter writer = new PrintWriter(new File(directoryName, filename).getPath(), "UTF-8");
 		
 		
 		// Write header with '#'
