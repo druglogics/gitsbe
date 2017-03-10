@@ -11,12 +11,13 @@ public class GeneralModel {
 	   
     private ArrayList <SingleInteraction> singleInteractions = new ArrayList <SingleInteraction> () ;
     private ArrayList <MultipleInteraction> multipleInteractions = new ArrayList <MultipleInteraction> () ;
-
+    private Logger logger ;
     //    ArrayList <Complex> complexes = new ArrayList <Copmplex> () ;
  
     private String modelName ;
     
-	public GeneralModel() {
+	public GeneralModel(Logger logger) {
+		this.logger = logger ;
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -116,7 +117,7 @@ public class GeneralModel {
 		
 		// Read given file
 		BufferedReader reader = new BufferedReader(new FileReader (filename)) ;
-        Logger.output(1, "Reading SIF file: " + filename + "\n");
+        logger.output(1, "Reading SIF file: " + filename + "\n");
         
         try {
 	        while (true) {
@@ -268,7 +269,7 @@ public class GeneralModel {
 						}
 						else
 						{
-							Logger.debug("\nError - interaction without regulator found...?\n");
+							logger.debug("\nError - interaction without regulator found...?\n");
 						}
 						
 						
@@ -292,7 +293,7 @@ public class GeneralModel {
 	{
 		int interactionsBeforeTrim = singleInteractions.size () ;
 		
-		Logger.output(1, "\nRemoving inputs. Interactions before trim: " + interactionsBeforeTrim + ". ") ;
+		logger.output(1, "\nRemoving inputs. Interactions before trim: " + interactionsBeforeTrim + ". ") ;
 		
 		int trimIteration = 0 ;
 		
@@ -310,14 +311,14 @@ public class GeneralModel {
 //				System.out.println (singleInteractions.get(i).getSource() + " " + singleInteractions.get(i).getArc() + " " + singleInteractions.get(i).getTarget()) ;
 				if (!this.isAlsoTarget (i))
 				{
-					Logger.output(3, "Removing interaction (i = " + i + ")  (not target): " + singleInteractions.get(i).getInteraction());
+					logger.output(3, "Removing interaction (i = " + i + ")  (not target): " + singleInteractions.get(i).getInteraction());
 					singleInteractions.remove(i) ;
 					
 				}
 			}
 		} while (interactionsBeforeTrim > singleInteractions.size()) ;
 		
-		Logger.output(1, "Interactions after trim (" + trimIteration + " iterations): " + singleInteractions.size () + "\n") ;
+		logger.output(1, "Interactions after trim (" + trimIteration + " iterations): " + singleInteractions.size () + "\n") ;
 		
 	}
 	
@@ -325,7 +326,7 @@ public class GeneralModel {
 	{
 		int interactionsBeforeTrim = singleInteractions.size () ;
 		
-		Logger.output(1, "\nRemoving outputs. Interactions before trim: " + interactionsBeforeTrim + ". ") ;
+		logger.output(1, "\nRemoving outputs. Interactions before trim: " + interactionsBeforeTrim + ". ") ;
 		
 		int trimIteration = 0 ;
 		
@@ -338,13 +339,13 @@ public class GeneralModel {
 			{
 				if (!this.isAlsoSource (i))
 				{
-				 	Logger.output(3, "Removing interaction (not source): " + singleInteractions.get(i).getInteraction());
+				 	logger.output(3, "Removing interaction (not source): " + singleInteractions.get(i).getInteraction());
 					singleInteractions.remove(i) ;
 				}
 			}
 		} while (interactionsBeforeTrim > singleInteractions.size()) ;
 		
-		Logger.output(1, "Interactions after trim (" + trimIteration + " iterations): " + singleInteractions.size () + "\n") ;
+		logger.output(1, "Interactions after trim (" + trimIteration + " iterations): " + singleInteractions.size () + "\n") ;
 		
 	}
 	
@@ -356,7 +357,7 @@ public class GeneralModel {
 		
 		int interactionsBeforeTrim = singleInteractions.size();
 		
-		Logger.output(1, "\nInteractions before trim: " + interactionsBeforeTrim + "\n") ;
+		logger.output(1, "\nInteractions before trim: " + interactionsBeforeTrim + "\n") ;
 		
 		int trimIteration = 0 ;
 		
@@ -370,7 +371,7 @@ public class GeneralModel {
 			{
 				if (!this.isAlsoTarget(i))
 				{
-					Logger.output(3, "Removing interaction (not target): " + singleInteractions.get(i).toString());
+					logger.output(3, "Removing interaction (not target): " + singleInteractions.get(i).toString());
 					singleInteractions.remove(i);
 					
 				}
@@ -381,17 +382,17 @@ public class GeneralModel {
 			{
 				if (!this.isAlsoSource(i))
 				{
-					Logger.output(3, "Removing interaction (not source): " + singleInteractions.get(i).toString());
+					logger.output(3, "Removing interaction (not source): " + singleInteractions.get(i).toString());
 					singleInteractions.remove(i);
 				}
 				
 			}
 			
-		Logger.output(3, "Trimming (iteration " + trimIteration + "): Interactions before iteration: " + interactionsBeforeTrim + " Interactions after iteration: " + singleInteractions.size () + "\n") ;
+		logger.output(3, "Trimming (iteration " + trimIteration + "): Interactions before iteration: " + interactionsBeforeTrim + " Interactions after iteration: " + singleInteractions.size () + "\n") ;
 		
 		} while (interactionsBeforeTrim > singleInteractions.size()) ;
 		
-		Logger.output(1, "Interactions after trim (" + trimIteration + " iterations): " + singleInteractions.size () + "\n");
+		logger.output(1, "Interactions after trim (" + trimIteration + " iterations): " + singleInteractions.size () + "\n");
 	}
 	
 	/**
@@ -405,7 +406,7 @@ public class GeneralModel {
 			if (!isAlsoTarget(i))
 			{
 				singleInteractions.add(new SingleInteraction("true", "->", singleInteractions.get(i).getSource())) ;
-				Logger.output(2, "Annotating " + singleInteractions.get(i).getSource() + " as input to model.");
+				logger.output(2, "Annotating " + singleInteractions.get(i).getSource() + " as input to model.");
 			}
 		}
 		
@@ -417,7 +418,7 @@ public class GeneralModel {
 		{
 			if (singleInteractions.get(i).getTarget().trim().equals(singleInteractions.get(i).getSource().trim()))
 			{
-				Logger.output(2, "Removing self regulation: " + singleInteractions.get(i).getInteraction());
+				logger.output(2, "Removing self regulation: " + singleInteractions.get(i).getInteraction());
 				singleInteractions.remove(i) ;
 			}
 			
@@ -426,7 +427,7 @@ public class GeneralModel {
 	
 	public void removeSmallFeedbackLoops ()
 	{
-		Logger.output (3, "\nRemoving small feedback loops (positive and negative)") ;
+		logger.output (3, "\nRemoving small feedback loops (positive and negative)") ;
 		for (int i = singleInteractions.size() - 1; i >= 0; i--)
 		{
 			String target = singleInteractions.get(i).getTarget() ;
@@ -438,7 +439,7 @@ public class GeneralModel {
 			{
 				if (singleInteractions.get(index).getTarget().equals(singleInteractions.get(i).getSource()))
 				{
-					Logger.output(3, "Small feedback detected: " + singleInteractions.get(i).getInteraction() + " AND " + singleInteractions.get(index).getInteraction()) ;
+					logger.output(3, "Small feedback detected: " + singleInteractions.get(i).getInteraction() + " AND " + singleInteractions.get(index).getInteraction()) ;
 					if (index > i)
 					{
 						singleInteractions.remove(index) ;
@@ -457,7 +458,7 @@ public class GeneralModel {
 	
 	public void removeSmallNegativeFeedbackLoops ()
 	{
-		Logger.output (3, "\nRemoving small negative feedback loops") ;
+		logger.output (3, "\nRemoving small negative feedback loops") ;
 		for (int i = singleInteractions.size() - 1; i >= 0; i--)
 		{
 			String target = singleInteractions.get(i).getTarget() ;
@@ -470,7 +471,7 @@ public class GeneralModel {
 					// Check if arcs have opposite signs
 					if (singleInteractions.get(index).getArc() != singleInteractions.get(i).getArc())
 					{
-						Logger.output(3, "Small negative feedback detected: " + singleInteractions.get(i).getInteraction() + " AND " + singleInteractions.get(index).getInteraction()) ;
+						logger.output(3, "Small negative feedback detected: " + singleInteractions.get(i).getInteraction() + " AND " + singleInteractions.get(index).getInteraction()) ;
 						if (index > i)
 						{
 							singleInteractions.remove(index) ;

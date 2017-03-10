@@ -6,43 +6,38 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 
 /**
- * A simple logger
+ * A (very) simple logger
  * 
  * @author Asmund Flobak
- *  
+ * 
  * email: asmund.flobak@ntnu.no
  *
  */
 public class Logger {
 
 	// Filenames of output files
-	private static String filenameDebug ;
-	private static String filenameSummary ;
-	private static String filenameOutput ;
-//	private static String filenameErrors ;
-	private static String directory ;
+	private String filenameDebug ;
+	private String filenameSummary ;
+	private String filenameOutput ;
+//	private String filenameErrors ;
+	private String directory ;
 	
 	
 	
 	// File writers
-	private static PrintWriter writerDebug ;
-	private static PrintWriter writerSummary ;
-	private static PrintWriter writerOutput ;
-//	private static PrintWriter writerErrors ;
+	private PrintWriter writerDebug ;
+	private PrintWriter writerSummary ;
+	private PrintWriter writerOutput ;
+//	private PrintWriter writerErrors ;
 	
 	
-	private static boolean consoleOutput = true ;
-	private static boolean debugMode = false ;
+	private boolean consoleOutput = true ;
+	private boolean debugMode = false ;
 	
-	private static int verbosity ;
+	private int verbosity ;
 	
-	private static boolean isInitialized = false ;
+	private boolean isInitialized = false ;
 	
-	
-//	public Logger() {
-//		// TODO Auto-generated constructor stub
-//	}
-
 	
 	/**
 	 * Initialize logger
@@ -54,35 +49,32 @@ public class Logger {
 	 * @param verbosity sets level of verbosity: 0 is nothing at all, 1 = most important info, 2 = less important, 3 = everything
 	 * @throws IOException
 	 */
-	public static void initialize (String filenameOutput, String filenameSummary, String filenameDebug, String directory, int verbosity, boolean debugMode, boolean consoleOutput) throws IOException
+	public Logger(String filenameOutput, String filenameSummary, String filenameDebug, String directory, int verbosity, boolean debugMode, boolean consoleOutput) throws IOException
 	{
 		
 		// Initialize variables
-		Logger.directory = directory ;
-		Logger.filenameOutput = new File(directory, filenameOutput).getPath() ;
-		Logger.filenameSummary = new File(directory, filenameSummary).getPath() ;
-		Logger.filenameDebug = new File(directory,  filenameDebug).getPath() ;
-//		Logger.filenameErrors = new File (directory, filenameErrors).getPath() ;
+		this.directory = directory ;
+		this.filenameOutput = new File(directory, filenameOutput).getPath() ;
+		this.filenameSummary = new File(directory, filenameSummary).getPath() ;
+		this.filenameDebug = new File(directory, filenameDebug).getPath() ;
 		
 		// Initialize file writers
-		Logger.writerOutput = new PrintWriter(Logger.filenameOutput) ;
-		Logger.writerSummary = new PrintWriter(Logger.filenameSummary) ;
-		Logger.writerDebug = new PrintWriter(Logger.filenameDebug) ;
-//		Logger.writerErrors = new PrintWriter (filenameErrors) ;
+		this.writerOutput = new PrintWriter(filenameOutput) ;
+		this.writerSummary = new PrintWriter(filenameSummary) ;
+		this.writerDebug = new PrintWriter(filenameDebug) ;
 		
 		setVerbosity (verbosity) ;
-		Logger.debugMode = debugMode ;
-		Logger.consoleOutput = consoleOutput ;
+		this.debugMode = debugMode ;
+		this.consoleOutput = consoleOutput ;
 		
-		Logger.isInitialized = true ;
+		this.isInitialized = true ;
 	}
 	
-	public static void finish ()
+	public void finish ()
 	{
 		writerOutput.close();
 		writerSummary.close();
 		writerDebug.close();
-//		writerErrors.close();
 	}
 	
 	
@@ -91,11 +83,11 @@ public class Logger {
 	 * 
 	 * @param verbosity
 	 */
-	public static void setVerbosity (int verbosity)
+	public void setVerbosity (int verbosity)
 	{
 		if (verbosity >= 0 && verbosity <= 3)
 		{
-			Logger.verbosity = verbosity ;
+			this.verbosity = verbosity ;
 		}
 		else 
 		{
@@ -107,9 +99,9 @@ public class Logger {
 	 * 
 	 * @return current verbosity level
 	 */
-	public static int getVerbosity ()
+	public int getVerbosity ()
 	{
-		return Logger.verbosity ;
+		return verbosity ;
 	}
 	
 	/**
@@ -118,17 +110,17 @@ public class Logger {
 	 * @param verbosity
 	 * @param msg
 	 */
-	public static void output(int verbosity, String[] msg)
+	public void output(int verbosity, String[] msg)
 	{
-		if (verbosity <= Logger.verbosity)
+		if (verbosity <= verbosity)
 		{
 			for (int i = 0; i < msg.length; i++)
 			{
-				Logger.writerOutput.println(msg[i]);;
+				writerOutput.println(msg[i]);;
 				
-				if (Logger.consoleOutput) System.out.println (msg[i]) ;
+				if (consoleOutput) System.out.println (msg[i]) ;
 			}
-			Logger.writerOutput.flush();
+			writerOutput.flush();
 			
 		}
 	}
@@ -140,14 +132,14 @@ public class Logger {
 	 * @param verbosity 
 	 * @param msg
 	 */
-	public static void output(int verbosity, String msg)
+	public void output(int verbosity, String msg)
 	{
-		if (verbosity <= Logger.verbosity)
+		if (verbosity <= this.verbosity)
 		{
-			Logger.writerOutput.println (msg);
-			Logger.writerOutput.flush();
+			writerOutput.println (msg);
+			writerOutput.flush();
 			
-			if (Logger.consoleOutput) System.out.println (msg) ;
+			if (consoleOutput) System.out.println (msg) ;
 		}
 	}
 	
@@ -157,14 +149,14 @@ public class Logger {
 	 * @param verbosity
 	 * @param msg
 	 */
-	public static void outputHeader(int verbosity, String msg)
+	public void outputHeader(int verbosity, String msg)
 	{
-		if (verbosity <= Logger.verbosity)
+		if (verbosity <= this.verbosity)
 		{
-			Logger.writerOutput.println("\n" + msg);
-			Logger.writerOutput.println(dashes(msg.length()));
+			writerOutput.println("\n" + msg);
+			writerOutput.println(dashes(msg.length()));
 			
-			if (Logger.consoleOutput) 
+			if (consoleOutput) 
 			{
 				System.out.println ("\n" + msg) ;
 				System.out.println (dashes(msg.length())) ;
@@ -179,7 +171,7 @@ public class Logger {
 	 * @param length
 	 * @return
 	 */
-	private static String dashes(int length)
+	private String dashes(int length)
 	{
 		char[] dashes = new char[length];
 		Arrays.fill(dashes, '-');
@@ -191,12 +183,12 @@ public class Logger {
 	 * 
 	 * @param msg
 	 */
-	public static void summary (String msg)
+	public void summary (String msg)
 	{
-		Logger.writerSummary.println(msg);	
-		Logger.writerSummary.flush();
+		writerSummary.println(msg);	
+		writerSummary.flush();
 		
-		if (Logger.consoleOutput) System.out.println (msg) ;
+		if (consoleOutput) System.out.println (msg) ;
 
 	}
 	
@@ -206,35 +198,23 @@ public class Logger {
 	 * 
 	 * @param msg
 	 */
-	public static void debug (String msg)
+	public void debug (String msg)
 	{
-		Logger.writerDebug.println(msg);
-		Logger.writerDebug.flush();	
+		writerDebug.println(msg);
+		writerDebug.flush();	
 		
-		if (Logger.consoleOutput) System.out.println (msg) ;
+		if (consoleOutput) System.out.println (msg) ;
 
 	}
-	
-	
-//	/**
-//	 * Report error, to log file and stderr
-//	 * 
-//	 * @param msg
-//	 */
-//	public static void error (String msg)
-//	{
-//		Logger.writerErrors.println(msg);
-//		Logger.writerErrors.flush();		
-//	}
 	
 	/**
 	 * Set debug mode
 	 * 
 	 * @param debugMode boolean, true = log debug info, false = don't log, default
 	 */
-	public static void setDebugMode (boolean debugMode)
+	public void setDebugMode (boolean debugMode)
 	{
-		Logger.debugMode = debugMode ;
+		debugMode = debugMode ;
 	}
 	
 	

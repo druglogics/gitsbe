@@ -17,13 +17,14 @@ import java.util.Random;
 //import drabme.Drabme;
 
 
-/* Gitsbe - Generic Interactions To Specific Boolean Equations
+/**
+ *  Gitsbe - Generic Interactions To Specific Boolean Equations
  * 
- * Copyright Asmund Flobak 2014-2015
+ * Copyright Asmund Flobak 2014-2015-2016-2017
  * 
  * email: asmund.flobak@ntnu.no
  * 
- * Based on Sif2BoolMod
+ * Based on Sif2BoolMod (asmund)
  * 
  * Uses bnet_reduction (BNReduction.sh) by Veliz-Cuba
  * 
@@ -34,7 +35,7 @@ import java.util.Random;
 public class Gitsbe implements Runnable {
 
 	private String appName = "Gitsbe";
-	private String version = "v0.2";
+	private String version = "v0.3";
 	
 	private String filenameNetwork;
 	private String filenameSteadyState;
@@ -42,14 +43,10 @@ public class Gitsbe implements Runnable {
 	private String outputDirectory;
 	
 	// Declare one general model that is defined by input files
-	private GeneralModel generalModel = new GeneralModel () ;
-	
-	
-	//private static BooleanModel originalModel = new BooleanModel () ;
-//	private ArrayList <BooleanModel> models = new ArrayList <BooleanModel> ();
+	private GeneralModel generalModel ;
 	
 	// Global variable determining verbosity levels
-	public static int verbosity ;
+	public int verbosity ;
 	
 	private static Random rand ;
 	
@@ -76,66 +73,92 @@ public class Gitsbe implements Runnable {
 	public void run() {
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss") ;
 		Calendar cal = Calendar.getInstance();
-    String modelDirectory = new File(outputDirectory, "models").getPath();
+		
 		
 		
 		System.out.print("Welcome to " + appName + " " + version + "\n\n") ;
-				
-		Config.initialize(filenameConfig);
-		this.verbosity = Config.getVerbosity() ;
+		
 		
 		// Initialization
 		rand = new Random() ;
 		
 		
+		
 		// Create directory structure with timestamp
-		String projectName = "BNET";
-		String directoryName = this.outputDirectory;
-				
-		if (!new File(directoryName).mkdir())
+//		String projectName = "BNET";
+//		String directoryName = this.outputDirectory;
+		String projectName = Gitsbe.removeExtension(filenameNetwork) + "__" + Gitsbe.removeExtension(filenameSteadyState) + "__" + Gitsbe.removeExtension(filenameConfig);
+		
+		// Create output directory name if not specified on launch
+		// When gitsbe is launched from rbbt then rbbt will itself specify output dir
+		// Default for creating folder is to use project name, which is a concatenation of 
+		// network, steadystate and config file names
+		if (outputDirectory.length() == 0)
 		{
-			System.out.println("Error creating project folder, exiting.") ;
+			outputDirectory = System.getProperty("user.dir") + File.separator + projectName + "_" + dateFormat.format(cal.getTime()) + File.separator ;
+		}
+		else
+		{		
+			// Create main project folder, append number if folder already exists 
+			// (probably obsolete code because this shouldn't happen with rbbt)
+			int counter = 0 ;
+			String directoryNameTmp = outputDirectory ;
+			
+			while (new File(directoryNameTmp).exists())
+				directoryNameTmp = outputDirectory + "_" + counter++ ;
+			
+			outputDirectory = directoryNameTmp ;
+		}
+		
+		if (!new File(outputDirectory).mkdir())
+		{
+			System.out.println("Error creating project folder (" + outputDirectory + "), exiting.") ;
 			return ;
 		}
+
+		// Create models folder (subfolder to outputDirectory)
+		String modelDirectory = new File(outputDirectory, "models").getPath();
 		
 		if (!new File(modelDirectory).mkdir())
 		{
-			System.out.println("Error creating models folder, exiting.") ;
+			System.out.println("Error creating models folder (" + outputDirectory + "/" + modelDirectory + "), exiting.") ;
 			return ;
 		}
 		
 		// Initialize logger
+		Logger logger  ;
 		
 		try {
-      System.out.println(projectName);
-			Logger.initialize(projectName + "_output.txt", 
+			logger = new Logger (projectName + "_output.txt", 
 								projectName + "_summary.txt" , "gitsbe_debug.txt", 
-								outputDirectory, Config.getVerbosity(), false, true);
+								outputDirectory, 3, false, true);
 		} catch (IOException e3) {
+			
 			// TODO Auto-generated catch block
 			e3.printStackTrace();
+			return ;
 		}
 
 		// Start logger
 		dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 						
-		Logger.outputHeader(1, appName + " " + version);
-		Logger.output(1, "Start: " + dateFormat.format(cal.getTime()));
+		
+		
+		logger.outputHeader(1, appName + " " + version);
+		logger.output(1, "Start: " + dateFormat.format(cal.getTime()));
 		
 		long starttime = System.nanoTime() ;
 		
-		Summary summary = new Summary(new File(this.outputDirectory, projectName).getPath() + "_summary.txt") ;
+		Summary summary = new Summary(new File(this.outputDirectory, projectName).getPath() + "_summary.txt", logger) ;
 
 		// Load config file
-		Logger.outputHeader(1, "Loading config file: " + filenameConfig);
-		Logger.output(1, Config.getConfig());
+		Config config = new Config(filenameConfig, logger) ;
+		this.verbosity = config.getVerbosity() ;
+
+		logger.outputHeader(1, "Loading config file: " + filenameConfig);
+		logger.output(1, config.getConfig());
 		
 		
-		// -------------------
-		// Clean tmp directory
-		// -------------------
-		cleanTmpDirectory(new File ("./tmp")) ;
-		Logger.output(2, "Cleaning tmp directory...") ;
 		
 		// Model index output file
 		String filenameBooleanModelsIndex = new File(outputDirectory, projectName).getPath() + "_models.txt" ;
@@ -144,9 +167,10 @@ public class Gitsbe implements Runnable {
 		// Create general Boolean model from general model or load from file
 		// -----------------------------------------------------------------
 
+		generalModel = new GeneralModel (logger) ;
 		BooleanModel generalBooleanModel ;
 		
-		if (filenameNetwork.substring(filenameNetwork.length() - ".sif".length()).equals(".sif"))
+		if (filenameNetwork.substring(filenameNetwork.length() - ".sif".length()).toLowerCase().equals(".sif"))
 		{
 			// ------------------------------------------
 			// Create generalModel from interactions file
@@ -158,10 +182,11 @@ public class Gitsbe implements Runnable {
 				e1.printStackTrace();
 			}
 			
-      String generationDirectory=new File(outputDirectory, "generations").getPath();
-      generalModel.setModelName(generationDirectory + File.separator + "model");
-      new File(generationDirectory).mkdir();
-		
+			// From rbbt compliance (?)
+//		      String generationDirectory=new File(outputDirectory, "generations").getPath();
+//		      generalModel.setModelName(generationDirectory + File.separator + "model");
+//		      new File(generationDirectory).mkdir();
+				
 		
 			// Trim model according to command line arguments
 
@@ -169,15 +194,15 @@ public class Gitsbe implements Runnable {
 //			generalModel.removeSmallNegativeFeedbackLoops();
 			
 //			generalModel.removeNone () ;
-			if (!Config.isPreserve_inputs()) generalModel.removeInputs();
-			if (!Config.isPreserve_outputs()) generalModel.removeOutputs();
+			if (!config.isPreserve_inputs()) generalModel.removeInputs();
+			if (!config.isPreserve_outputs()) generalModel.removeOutputs();
 //			generalModel.removeInputsOutputs();
 			
 			
 			// Assemble single interactions into equations with multiple regulators based on trimming and complexes
 			generalModel.buildMultipleInteractions();
 			
-			generalBooleanModel = new BooleanModel(generalModel) ;
+			generalBooleanModel = new BooleanModel(generalModel, logger) ;
 		}
 		else
 		{
@@ -185,7 +210,7 @@ public class Gitsbe implements Runnable {
 			// Load general boolean model from prepared file in supported format
 			// -----------------------------------------------------------------
 			
-			generalBooleanModel = new BooleanModel(filenameNetwork) ;
+			generalBooleanModel = new BooleanModel(filenameNetwork, logger) ;
 			
 			
 		}
@@ -194,7 +219,7 @@ public class Gitsbe implements Runnable {
 		// Export sif
 		// ----------
 		try {
-			Logger.output(2, "Exporting trimmed sif file: " + generalBooleanModel.getModelName() + "_export.sif"); 
+			logger.output(2, "Exporting trimmed sif file: " + generalBooleanModel.getModelName() + "_export.sif"); 
 			generalBooleanModel.exportSifFile(generalBooleanModel.getModelName() + "_export.sif") ;
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
@@ -204,8 +229,8 @@ public class Gitsbe implements Runnable {
 		// -------------
 		// Export Ginsim
 		//--------------
-		Logger.outputHeader(3, "General model raw expressions for CoLoMoTo");
-		Logger.output(3, generalBooleanModel.printBooleanModelGinmlExpressions());
+		logger.outputHeader(3, "General model raw expressions for CoLoMoTo");
+		logger.output(3, generalBooleanModel.printBooleanModelGinmlExpressions());
 //		try {
 //			generalBooleanModel.writeBooleanExpressionGinmlFile();
 //		} catch (IOException e3) {
@@ -213,26 +238,26 @@ public class Gitsbe implements Runnable {
 //			e3.printStackTrace();
 //		}
 					
-		Logger.outputHeader(3, "General model");
-		Logger.output(3, generalBooleanModel.getModelBooleannet());
+		logger.outputHeader(3, "General model");
+		logger.output(3, generalBooleanModel.getModelBooleannet());
 							
-		Logger.outputHeader(3,  "Model in Veliz-Cuba's format");
-		Logger.output(3,  generalBooleanModel.getModelVelizCuba());
+		logger.outputHeader(3,  "Model in Veliz-Cuba's format");
+		logger.output(3,  generalBooleanModel.getModelVelizCuba());
 		
 		// ------------------------------------------------------
 		// Load SteadyState, if non-existent create template file
 		// ------------------------------------------------------
 		SteadyState ss ;
 		try {
-			Logger.output(1, "\nReading steady state from file: " + filenameSteadyState);
+			logger.output(1, "\nReading steady state from file: " + filenameSteadyState);
 			
-			ss = new SteadyState (filenameSteadyState, generalBooleanModel) ;
+			ss = new SteadyState (filenameSteadyState, generalBooleanModel, logger) ;
 			
-			Logger.output(1, "Max fitness: " + ss.getMaxFitness());
+			logger.output(1, "Max fitness: " + ss.getMaxFitness());
 			
 		} catch (FileNotFoundException e)
 		{
-			Logger.output(1, "Cannot find steady state file, generating template file: " + filenameSteadyState);
+			logger.output(1, "Cannot find steady state file, generating template file: " + filenameSteadyState);
 			try {
 				generalBooleanModel.writeSteadyStateTemplateFile();
 			} catch (IOException e1) {
@@ -251,17 +276,17 @@ public class Gitsbe implements Runnable {
 		// --------------------------------------------------------
 
 		
-		Logger.outputHeader(2, "Steady states");
+		logger.outputHeader(2, "Steady states");
 		String[] stableStates = ss.getSteadyStates() ;
-//		Logger.output(2, stableStates);
-		Logger.output(2, ss.getSteadyStatesVerbose());
+//		logger.output(2, stableStates);
+		logger.output(2, ss.getSteadyStatesVerbose());
 
 		
 
 		// Where to store all temporary files
 		String bnetOutputDirectory ;
 
-		if (Config.isPreserve_tmp_files())
+		if (config.isPreserve_tmp_files())
 		{
 			
 			bnetOutputDirectory = new File(outputDirectory,"tmp").getPath();
@@ -281,9 +306,9 @@ public class Gitsbe implements Runnable {
 		
 
 		// Run evolution several times
-		for (int run = 0; run < Config.getSimulations(); run++)
+		for (int run = 0; run < config.getSimulations(); run++)
 		{
-			Logger.outputHeader(1, "Evolutionary algorithms, evolution " + (run) + " of " + Config.getSimulations());
+			logger.outputHeader(1, "Evolutionary algorithms, evolution " + (run) + " of " + config.getSimulations());
 			
 			Evolution ga = new Evolution (summary, 
 					generalBooleanModel, 
@@ -296,7 +321,9 @@ public class Gitsbe implements Runnable {
           generalBooleanModel.getModelName() + "_run_" + run + "_", 
           ss, 
           modelDirectory , 
-          bnetOutputDirectory
+          bnetOutputDirectory,
+          config,
+          logger
 //					Config.getTarget_fitness_percent()
 					) ;
 		
@@ -305,7 +332,7 @@ public class Gitsbe implements Runnable {
 			ga.outputBestModels();
 			
 			try {
-				ga.saveBestModels(Config.getModels_saved(), Config.getFitness_threshold()) ;
+				ga.saveBestModels(config.getModels_saved(), config.getFitness_threshold()) ;
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -313,9 +340,9 @@ public class Gitsbe implements Runnable {
 			
 			for (int i = 0; i < ga.bestModels.size(); i++)
 			{
-				if (ga.bestModels.get(i).getFitness() > Config.getFitness_threshold())
+				if (ga.bestModels.get(i).getFitness() > config.getFitness_threshold())
 				{
-					Logger.output(2, "Adding model " + ga.bestModels.get(i).getModelName() + " to output models list.");
+					logger.output(2, "Adding model " + ga.bestModels.get(i).getModelName() + " to output models list.");
 					summary.addModel(run, ga.bestModels.get(i));
 				}
 			}
@@ -345,19 +372,24 @@ public class Gitsbe implements Runnable {
 		
 		summary.generateFitnessesReport();
 		
+		// -------------------
+		// Clean tmp directory
+		// -------------------
+		logger.output(2, "Cleaning tmp directory...") ;
+		cleanTmpDirectory(new File (outputDirectory, "tmp")) ;
 			
-		Logger.outputHeader(1, "\nThe end");
-		Logger.output(1, "End: " + dateFormat.format(cal.getTime()));
-		Logger.output(1, "Analysis completed in " + hours + " hours, " + minutes + " minutes, and " + seconds + " seconds ");
+		logger.outputHeader(1, "\nThe end");
+		logger.output(1, "End: " + dateFormat.format(cal.getTime()));
+		logger.output(1, "Analysis completed in " + hours + " hours, " + minutes + " minutes, and " + seconds + " seconds ");
 		
 		
-		Logger.output(1, "\nWith that we say thank you and good bye!");
+		logger.output(1, "\nWith that we say thank you and good bye!");
 		
-		if (Config.isInvoke_drabme())
+		if (config.isInvoke_drabme())
 		{
 			
-			Logger.output(1, "\n Now invoking Drabme...");
-			this.invokeDrabme(this.outputDirectory, Config.getLocation_drabme() + directoryName, projectName, filenameBooleanModelsIndex);
+			logger.output(1, "\n Now invoking Drabme...");
+//			this.invokeDrabme(this.outputDirectory, config.getLocation_drabme() + directoryName, projectName, filenameBooleanModelsIndex);
 			
 			
 		}

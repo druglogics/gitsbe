@@ -33,18 +33,23 @@ public class BooleanModel {
 	protected int verbosity = 2 ;
 	
 	protected String filename ;
-
-  public static String directoryBNET = System.getenv("BNET_HOME");
 	
-	public BooleanModel()
+	protected Logger logger ;
+
+	public static String directoryBNET = System.getenv("BNET_HOME");
+	
+	public BooleanModel(Logger logger)
 	{
-		this.verbosity = Gitsbe.verbosity ;
+		this.logger = logger ;
+//		this.verbosity = Gitsbe.verbosity ;
 	}
 	
 	// Constructor for defining Boolean model from a "general model" with interactions
-	public BooleanModel(GeneralModel generalModel) {
+	public BooleanModel(GeneralModel generalModel, Logger logger) {
 	
-		this.verbosity = Gitsbe.verbosity ;
+		this.logger = logger ;
+		
+		this.verbosity = logger.getVerbosity() ;
 		
 		this.modelName = generalModel.getModelName() ;
 		
@@ -73,17 +78,19 @@ public class BooleanModel {
 	}
 	
 	
-	public int getNumberOfStableStates ()
+	/**
+	 * Constructor for defining Boolean model from a file with a set of Boolean equations
+	 * 
+	 * Currently two supported filetypes: .gitsbe and .booleannet files
+	 * 
+	 * @param filename
+	 */
+	public BooleanModel (String filename, Logger logger)
 	{
-		return stableStates.size() ;
-	}
-	
-	// Constructor for defining Boolean model from a file with a set of Boolean equations
-	public BooleanModel (String filename)
-	{
+		this.logger = logger ;
 		ArrayList<String> lines ;
 		
-		Logger.output(1, "Loading Boolean model from file: " + filename);
+		logger.output(1, "Loading Boolean model from file: " + filename);
 		
 		try {
 			lines = this.loadFile(filename);
@@ -94,7 +101,7 @@ public class BooleanModel {
 		}
 		
 		// load gitsbe file format
-		if (filename.substring(filename.length() - ".gitsbe".length()).equals(".gitsbe")) 
+		if (filename.substring(filename.length() - ".gitsbe".length()).toLowerCase().equals(".gitsbe")) 
 		{
 			// Boolean equations
 			this.booleanEquations = new ArrayList <BooleanEquation> () ;
@@ -142,43 +149,13 @@ public class BooleanModel {
 				String target = lines.get(i).substring(0, lines.get(i).indexOf(" *=")).trim() ;
 				mapAlternativeNames.add( new String[]{target, new String ("x" + (i + 1))}) ;
 			}
-			
-//			for (int i = 0; i < mapAlternativeNames.size(); i++)
-//			{
-//				System.out.println (mapAlternativeNames.get(i)[0] + " = " + mapAlternativeNames.get(i)[1]) ;
-//			}
-//			try {
-//				this.saveFile("ags_paradigm_debug.gitsbe") ;
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
 		}
-		
-	}
-	
-	public void exportSifFile (String filename) throws FileNotFoundException, UnsupportedEncodingException
-	{
-
-		PrintWriter writer = new PrintWriter(filename, "UTF-8");
-
-		for (int i = 0; i < booleanEquations.size(); i++) 
-			for (int j = 0; j < booleanEquations.get(i).convertToSifLines().length; j++)
-				writer.println(booleanEquations.get(i).convertToSifLines()[j]);
-		
-		
-		writer.close() ;
-
-		
-	}
-	public void setVerbosity (int verbosity)
-	{
-		this.verbosity = verbosity ;
 	}
 	
 	// Copy constructor for defining Boolean model from another Boolean model
-	protected BooleanModel (final BooleanModel booleanModel) {
-		
+	protected BooleanModel (final BooleanModel booleanModel, Logger logger) 
+	{
+		this.logger = logger ;
 		
 		// Copy Boolean equations
 		this.booleanEquations = new ArrayList <BooleanEquation> () ;
@@ -202,9 +179,36 @@ public class BooleanModel {
 		// Copy modelName
 		this.modelName = new String(booleanModel.modelName) ;
 		
-		this.verbosity = Gitsbe.verbosity ;
+		this.verbosity = logger.getVerbosity () ;
         
 	}
+	
+	public int getNumberOfStableStates ()
+	{
+		return stableStates.size() ;
+	}
+		
+		
+	public void exportSifFile (String filename) throws FileNotFoundException, UnsupportedEncodingException
+	{
+
+		PrintWriter writer = new PrintWriter(filename, "UTF-8");
+
+		for (int i = 0; i < booleanEquations.size(); i++) 
+			for (int j = 0; j < booleanEquations.get(i).convertToSifLines().length; j++)
+				writer.println(booleanEquations.get(i).convertToSifLines()[j]);
+		
+		
+		writer.close() ;
+
+		
+	}
+	public void setVerbosity (int verbosity)
+	{
+		this.verbosity = verbosity ;
+	}
+	
+	
 	
   public void saveFile (String directoryName) throws IOException
   {
@@ -463,8 +467,8 @@ public class BooleanModel {
 	public void calculateStableStatesVC (String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException, IOException
 	{
 		// Use default temporary folder, under the bnet folder
-//		System.out.println("DEBUG: " + directoryBNET);
-		this.calculateStableStatesVC(this.directoryBNET, outputDirectory);
+//		System.out.println("DEBUG: " + directoryBNET + ", " + System.getProperty("user.dir") + File.separator + outputDirectory);
+		this.calculateStableStatesVC(directoryBNET, outputDirectory);
 	}
 	
 	public void calculateStableStatesVC (String directoryBNET, String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException, IOException {
@@ -473,8 +477,12 @@ public class BooleanModel {
 		String [] modelVC = this.getModelVelizCuba();
 				
 		// Write model to file for 'BNreduction.sh'
-    System.out.println(modelName);
-		PrintWriter writer = new PrintWriter(modelName + ".dat", "UTF-8");
+		
+//		modelName = outputDirectory ;
+		
+//		System.out.println("Model name: " + modelName);
+		
+		PrintWriter writer = new PrintWriter(outputDirectory + File.separator + modelName + ".dat", "UTF-8");
 		
 		for (int i = 0; i < modelVC.length ; i++)
 		{
@@ -489,9 +497,9 @@ public class BooleanModel {
 			// complete within specified amount of time (in case BNReduction should hang).
 			
 			
-			ProcessBuilder pb = new ProcessBuilder("sh", "BNReduction_timeout.sh", modelName + ".dat");
+			ProcessBuilder pb = new ProcessBuilder("sh", "BNReduction_timeout.sh", outputDirectory + File.separator + modelName + ".dat");
 			
-			if (Logger.getVerbosity() >= 3)
+			if (logger.getVerbosity() >= 3)
 			{
 				pb.redirectErrorStream(true);
 				pb.redirectOutput() ;
@@ -501,7 +509,7 @@ public class BooleanModel {
 			
 			pb.directory (new File (directoryBNET)) ;
 			
-			Logger.output(3, "Running BNReduction_timeout.sh in directory " + pb.directory()) ;
+			logger.output(3, "Running BNReduction_timeout.sh in directory " + pb.directory()) ;
 			
 			
 			Process p ;
@@ -528,11 +536,11 @@ public class BooleanModel {
 		}
 		
 		// Read stable states from BNReduction.sh output file
-		String filename = modelName + ".dat.fp";
+		String filename = outputDirectory + File.separator + modelName + ".dat.fp";
 		
 		BufferedReader reader = new BufferedReader(new FileReader (filename)) ;
 		
-		Logger.output(2, "Reading steady states: " + filename);
+		logger.output(2, "Reading steady states: " + filename);
 		
 		
 		try {
@@ -557,20 +565,20 @@ public class BooleanModel {
 	       	reader.close ();
 	    }
 		
-		if (Logger.getVerbosity()>= 2)
+		if (logger.getVerbosity()>= 2)
 			{
 	        if (stableStates.size() > 0)
 	        {
 	        	if (stableStates.get(0).toString().length() > 0)
 	        	{
 	        		
-	        		Logger.output(2, "BNReduction found " + stableStates.size() + " stable states:") ;
+	        		logger.output(2, "BNReduction found " + stableStates.size() + " stable states:") ;
 	        		for (int i = 0; i < stableStates.size(); i++)
 	        		{
-	        			Logger.output(2, "Stable state " + (i + 1) + ": " + stableStates.get(i)) ;
+	        			logger.output(2, "Stable state " + (i + 1) + ": " + stableStates.get(i)) ;
 	        		}
 	        		
-	        		if (Logger.getVerbosity() >= 3)
+	        		if (logger.getVerbosity() >= 3)
         			{
 	        			
         				for (int i = 0; i < stableStates.get(0).length(); i++)
@@ -584,7 +592,7 @@ public class BooleanModel {
         					
         					
         					
-        					Logger.output(3, mapAlternativeNames.get(i)[0] + states) ;
+        					logger.output(3, mapAlternativeNames.get(i)[0] + states) ;
         				}
         			}
 	        		
@@ -593,7 +601,7 @@ public class BooleanModel {
 	        
 	        else
 	        {
-	        	Logger.output(2, "BNReduction found no stable states.\n");
+	        	logger.output(2, "BNReduction found no stable states.\n");
 	        }
 		}
         /*

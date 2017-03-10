@@ -44,7 +44,7 @@ public class SingleInteraction {
 
 		// String split by spaces
 
-		Logger.output(3, interaction);
+//		logger.output(3, interaction);
 
 		String[] temp = interaction.split(" ", 3) ;
 		
@@ -80,7 +80,7 @@ public class SingleInteraction {
 		case "<-|":
 		case "|-|":
 			// 
-			Logger.debug("\nERROR: double interaction encountered: " + firstNode + interaction + secondNode + "\n");
+//			Logger.debug("\nERROR: double interaction encountered: " + firstNode + interaction + secondNode + "\n");
 		}
 	}
 	public String toString (){

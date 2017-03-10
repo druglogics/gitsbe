@@ -16,7 +16,7 @@ public class MutatedBooleanModel extends BooleanModel {
 	
 	private int numTotalMutations ;
 	private float fitness ;
-	
+//	private Logger logger ;
 	
 /*	public MutatedBooleanModel(GeneralModel generalModel) {
 		super(generalModel);
@@ -24,16 +24,18 @@ public class MutatedBooleanModel extends BooleanModel {
 	}
 */
 	
-	public MutatedBooleanModel(BooleanModel booleanModel) {
-		super(booleanModel);
+	public MutatedBooleanModel(BooleanModel booleanModel, Logger logger) {
+		super(booleanModel, logger);
 		
 		
 		// TODO Auto-generated constructor stub
 	}
 	
-	// Constructor for created a mutated model offspring from two parents, using crossover
-	public MutatedBooleanModel(MutatedBooleanModel parent1, MutatedBooleanModel parent2, String modelName)
+	// Constructor for creating a mutated model offspring from two parents, using crossover
+	public MutatedBooleanModel(MutatedBooleanModel parent1, MutatedBooleanModel parent2, String modelName, Logger logger)
 	{
+		 
+		super(logger) ;
 		
 		// Copy Boolean equations
 		booleanEquations = new ArrayList <BooleanEquation> () ;
@@ -65,7 +67,7 @@ public class MutatedBooleanModel extends BooleanModel {
 		// Define stable states
 		stableStates = new ArrayList <String> () ;
 		
-		// Copy modelName
+		// Assign modelName
 		this.modelName = modelName ;
 
 		
@@ -273,7 +275,7 @@ public class MutatedBooleanModel extends BooleanModel {
 //		int numberOfStatesDifference = Math.abs(targetStableStates.length-stableStates.size()) ;
 		
 
-//		Logger.output(2, "Size: " + stableStates.size());
+//		logger.output(2, "Size: " + stableStates.size());
 		ArrayList <Float> averageStableState = new ArrayList <Float> () ;
 		
 //		float[] averageStableState = new float[stableStates.size()];
@@ -288,7 +290,7 @@ public class MutatedBooleanModel extends BooleanModel {
 				for (int j = 0; j < stableStates.size(); j++)
 				{
 					sum += Character.getNumericValue(stableStates.get(j).charAt(i)) ;
-//					Logger.output(2, "sum: " + sum);
+//					logger.output(2, "sum: " + sum);
 				}
 				
 				averageStableState.add((float) (sum/stableStates.size()));
@@ -311,7 +313,7 @@ public class MutatedBooleanModel extends BooleanModel {
 					break ;
 				
 				default:
-					Logger.output(1, "ERROR - unknown state in stable state file: " + state);
+					logger.output(1, "ERROR - unknown state in stable state file: " + state);
 						
 				}
 				
@@ -320,7 +322,7 @@ public class MutatedBooleanModel extends BooleanModel {
 		
 //		fitness /= (1+numberOfStatesDifference) ;
 		
-		Logger.output(1, this.modelName + " AVERAGE fitness: " + fitness);
+		logger.output(1, this.modelName + " AVERAGE fitness: " + fitness);
 
 	}
 	
@@ -375,7 +377,7 @@ public class MutatedBooleanModel extends BooleanModel {
 		
 		fitness /= (1+numberOfStatesDifference) ;
 		
-		Logger.output(2, this.modelName + " fitness: " + fitness);
+		logger.output(2, this.modelName + " fitness: " + fitness);
 
 	}
 

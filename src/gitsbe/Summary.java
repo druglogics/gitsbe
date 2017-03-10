@@ -27,12 +27,17 @@ public class Summary {
 	
 	private int currentSimulation = -1 ;
 	
-	public Summary(String name) {
+	private Logger logger ;
+	
+	public Summary(String name, Logger logger) {
 		 this.name = name ;
 		 
 		this.fitness = new ArrayList<ArrayList <float[]>> ();
 
 		 bestModels = new ArrayList<ArrayList<MutatedBooleanModel>> () ;
+		 
+		 this.logger = logger ;
+		 
 		}
 
 	/**
@@ -44,15 +49,15 @@ public class Summary {
 	public void getSummary()
 	{
 		// Write header with '#'
-		Logger.summary("Summary") ;
-		Logger.summary("-------") ;
+		logger.summary("Summary") ;
+		logger.summary("-------") ;
 		
 		// Write columns with model-defined node names and node names for Veliz-Cuba's algorithm
 		for (int i = 0; i < bestModels.size() ; i++)
 		{
 			for (int j = 0; j < bestModels.get(i).size(); j++)
 			{
-				Logger.summary(bestModels.get(i).get(j).getFilename()) ;
+				logger.summary(bestModels.get(i).get(j).getFilename()) ;
 			}
 		}
 		
@@ -61,12 +66,12 @@ public class Summary {
 	public void generateFitnessesReport()
 	{
 		
-		Logger.summary("\nFitness evolution");
+		logger.summary("\nFitness evolution");
 		
 		for (int i = 0; i < fitness.size(); i++)
 		{
 		
-			Logger.summary("\nSimulation " + (i + 1));
+			logger.summary("\nSimulation " + (i + 1));
 			ArrayList <float[]> simulationfit = fitness.get(i) ;
 			
 			
@@ -77,7 +82,7 @@ public class Summary {
 			        builder.append(prefix).append(simulationfit.get(row)[col]);
 			        prefix = "\t";
 			    }
-			    Logger.summary(builder.toString());
+			    logger.summary(builder.toString());
 			}
 			
 		}

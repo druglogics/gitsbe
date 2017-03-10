@@ -18,6 +18,8 @@ public class SteadyState {
 	
 	private BooleanModel booleanModel ; 
 	
+	private Logger logger ;
+	
 	/**
 	 * SteadyState can currently only hold one steady state
 	 * 
@@ -26,14 +28,15 @@ public class SteadyState {
 	 * @throws IOException
 	 * @throws FileNotFoundException
 	 */
-	public SteadyState(String filename, BooleanModel booleanModel) throws IOException, FileNotFoundException {
+	public SteadyState(String filename, BooleanModel booleanModel, Logger logger) throws IOException, FileNotFoundException {
 		
 		this.booleanModel = booleanModel ;
+		this.logger = logger ;
 		
 		ArrayList <String> lines = new ArrayList <String> () ;
 //		steadyState = new String () ;
 		
-		Logger.output(1, "Reading file " + new File(filename).getAbsolutePath());
+		logger.output(1, "Reading file " + new File(filename).getAbsolutePath());
 		
 		BufferedReader reader = new BufferedReader(new FileReader (filename)) ;
 		

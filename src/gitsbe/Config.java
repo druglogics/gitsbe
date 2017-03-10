@@ -12,61 +12,63 @@ import java.util.ArrayList;
 public class Config {
 
 	
-	private static int verbosity ;
+	private int verbosity ;
 	
 
-	private static String filename_experimental_systems ;
-	private static String filename_network ;
-	private static boolean preserve_outputs ;
-	private static boolean preserve_inputs ;
-	private static boolean preserve_tmp_files ;
-	private static int population ;
-	private static int generations ;
-	private static int selection ;
-	private static int crossovers ;
-	private static int mutations ;
-	private static int balancemutations ;
-	private static int randommutations ;
-	private static int complexmutations ;
-	private static int familymutations ;
-	private static int inhibitorymutations ;
-	private static int activatorymutations ;
-	private static int ormutations ;
-	private static int andmutations ;
-	private static int shufflemutations ;
-	private static int target_fitness ;
-	private static int target_fitness_percent ;
-	private static int bootstrap_mutations_factor ;
-	private static int mutations_factor ;
-	private static int bootstrap_shuffle_factor ;
-	private static int shuffle_factor ;
-	private static int simulations ;
-	private static int models_saved ;
-	private static float fitness_threshold ;
-	private static boolean invoke_drabme ;
+	private String filename_experimental_systems ;
+	private String filename_network ;
+	private boolean preserve_outputs ;
+	private boolean preserve_inputs ;
+	private boolean preserve_tmp_files ;
+	private int population ;
+	private int generations ;
+	private int selection ;
+	private int crossovers ;
+	private int mutations ;
+	private int balancemutations ;
+	private int randommutations ;
+	private int complexmutations ;
+	private int familymutations ;
+	private int inhibitorymutations ;
+	private int activatorymutations ;
+	private int ormutations ;
+	private int andmutations ;
+	private int shufflemutations ;
+	private int target_fitness ;
+	private int target_fitness_percent ;
+	private int bootstrap_mutations_factor ;
+	private int mutations_factor ;
+	private int bootstrap_shuffle_factor ;
+	private int shuffle_factor ;
+	private int simulations ;
+	private int models_saved ;
+	private float fitness_threshold ;
+	private boolean invoke_drabme ;
 	 
-	private static String location_drabme ;
+	private String location_drabme ;
 	
-	private static String filenameConfig ;
+	private String filenameConfig ;
 	
+	private Logger logger ;
 //	public Config(String configFile) {
 //
 //	}
 
-	public static void initialize (String filename)
+	public Config (String filename, Logger logger)
 	{
 		filenameConfig = filename ;
+		this.logger = logger ;
 		
 		// Load config file if present
 		try {
 			loadConfigFile (filename) ;
 		} catch (IOException e) {
 			
-			Logger.output(1, "Couldn't load config file " + filename + ". Writing template config file");
+			logger.output(1, "Couldn't load config file " + filename + ". Writing template config file");
 			try {
 				writeConfigFileTemplate (filename) ;
 			} catch (FileNotFoundException | UnsupportedEncodingException e1) {
-				Logger.output(1, "Couldn't write template config file");
+				logger.output(1, "Couldn't write template config file");
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
@@ -75,169 +77,169 @@ public class Config {
 		
 	}
 	
-	private static void loadConfigFile (String filename) throws IOException
+	private void loadConfigFile (String filename) throws IOException
 	{
-		Logger.output(3, "Reading config file " + new File(filename).getAbsolutePath());
+		logger.output(3, "Reading config file " + new File(filename).getAbsolutePath());
 		
 		
 		// Read lines
 		ArrayList <String> lines = new ArrayList <String> () ;
 		BufferedReader reader = new BufferedReader(new FileReader (filename)) ;
 		
-        try {
-	        while (true) {
-	            String line = reader.readLine();
-	            // no more lines to read
-	            if (line == null) {
-	                reader.close();
-	                break;
-	            }
+  try {
+	  while (true) {
+	   String line = reader.readLine();
+	   // no more lines to read
+	   if (line == null) {
+	    reader.close();
+	    break;
+	   }
 	
-	            if ((!line.startsWith("#")) & line.length() > 0) 
-	            {
-	            	lines.add(line);
-//	            	System.out.println(line);
-	            }
-	        
-	        }
-        }
-        finally {
-	       	reader.close ();
-	    }
-        
-        // Process lines
-        for (int i = 0; i < lines.size(); i++)
-        {
-        	System.out.println(lines.get(i));
-        	String parameterName = lines.get(i).split("\t")[0] ;
-        	String value = lines.get(i).split("\t")[1] ;
-        	
-        	if (lines.get(i).split("\t").length != 2)
-        	{
-        		Logger.output(1, "ERROR: Incorrect line found in config file");
-        		continue ;
-        	}
-        	
-        	switch (parameterName)
-        	{
-        		case "experimental_systems:":
-        			filename_experimental_systems = value ;
-        			break ;
-        		case "network:":
-        			filename_network = value ;
-        			break ;
-        		case "verbosity:":
-        			verbosity = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "preserve_tmp_files:":
-        			preserve_tmp_files = Boolean.parseBoolean(value) ;
-        			break ;
-        			
-        		case "preserve_outputs:":
-        			preserve_outputs = Boolean.parseBoolean(value) ;
-        			break ;
-        			
-        		case "preserve_intputs:":
-        			preserve_inputs = Boolean.parseBoolean(value) ;
-        			break ;
-        			
-        		case "invoke_drabme:":
-        			invoke_drabme = Boolean.parseBoolean(value) ;
-        			break ;
-        			
-        		case "simulations:":
-        			simulations = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "population:":
-        			population = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "generations:":
-        			generations = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "selection:":
-        			selection = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "crossovers:":
-        			crossovers = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "balancemutations:":
-        			balancemutations = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "randommutations:":
-        			randommutations = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "complexmutations:":
-        			complexmutations = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "familymutations:":
-        			familymutations = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "activatorymutations:":
-        			activatorymutations = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "ormutations:":
-        			ormutations = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "andmutations:":
-        			andmutations = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "shufflemutations:":
-        			shufflemutations = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "target_fitness:":
-        			target_fitness = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "target_fitness_percent:":
-        			target_fitness_percent = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "bootstrap_mutations_factor:":
-        			bootstrap_mutations_factor = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "mutations_factor:":
-        			mutations_factor = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "bootstrap_shuffle_factor:":
-        			bootstrap_shuffle_factor = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "shuffle_factor:":
-        			shuffle_factor = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "models_saved:":
-        			models_saved = Integer.parseInt(value) ;
-        			break ;
-        			
-        		case "fitness_threshold:":
-        			fitness_threshold = Float.parseFloat(value) ;
-        			break ;
-        			
-        		case "location_drabme:":
-        			location_drabme = value ;
-        			break ;
-        	}
-        }
+	   if ((!line.startsWith("#")) & line.length() > 0) 
+	   {
+	   	lines.add(line);
+//	   	System.out.println(line);
+	   }
+	  
+	  }
+  }
+  finally {
+	  	reader.close ();
+	 }
+  
+  // Process lines
+  for (int i = 0; i < lines.size(); i++)
+  {
+  	System.out.println(lines.get(i));
+  	String parameterName = lines.get(i).split("\t")[0] ;
+  	String value = lines.get(i).split("\t")[1] ;
+  	
+  	if (lines.get(i).split("\t").length != 2)
+  	{
+  		logger.output(1, "ERROR: Incorrect line found in config file");
+  		continue ;
+  	}
+  	
+  	switch (parameterName)
+  	{
+  		case "experimental_systems:":
+  			filename_experimental_systems = value ;
+  			break ;
+  		case "network:":
+  			filename_network = value ;
+  			break ;
+  		case "verbosity:":
+  			verbosity = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "preserve_tmp_files:":
+  			preserve_tmp_files = Boolean.parseBoolean(value) ;
+  			break ;
+  			
+  		case "preserve_outputs:":
+  			preserve_outputs = Boolean.parseBoolean(value) ;
+  			break ;
+  			
+  		case "preserve_intputs:":
+  			preserve_inputs = Boolean.parseBoolean(value) ;
+  			break ;
+  			
+  		case "invoke_drabme:":
+  			invoke_drabme = Boolean.parseBoolean(value) ;
+  			break ;
+  			
+  		case "simulations:":
+  			simulations = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "population:":
+  			population = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "generations:":
+  			generations = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "selection:":
+  			selection = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "crossovers:":
+  			crossovers = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "balancemutations:":
+  			balancemutations = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "randommutations:":
+  			randommutations = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "complexmutations:":
+  			complexmutations = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "familymutations:":
+  			familymutations = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "activatorymutations:":
+  			activatorymutations = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "ormutations:":
+  			ormutations = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "andmutations:":
+  			andmutations = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "shufflemutations:":
+  			shufflemutations = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "target_fitness:":
+  			target_fitness = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "target_fitness_percent:":
+  			target_fitness_percent = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "bootstrap_mutations_factor:":
+  			bootstrap_mutations_factor = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "mutations_factor:":
+  			mutations_factor = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "bootstrap_shuffle_factor:":
+  			bootstrap_shuffle_factor = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "shuffle_factor:":
+  			shuffle_factor = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "models_saved:":
+  			models_saved = Integer.parseInt(value) ;
+  			break ;
+  			
+  		case "fitness_threshold:":
+  			fitness_threshold = Float.parseFloat(value) ;
+  			break ;
+  			
+  		case "location_drabme:":
+  			location_drabme = value ;
+  			break ;
+  	}
+  }
 	}
 	
-	public static String[] getConfig ()
+	public String[] getConfig ()
 	{
 		
 		String parameters[] = {
@@ -319,7 +321,7 @@ public class Config {
 		
 	}
 	
-	private static void writeConfigFileTemplate (String filename) throws FileNotFoundException, UnsupportedEncodingException
+	private void writeConfigFileTemplate (String filename) throws FileNotFoundException, UnsupportedEncodingException
 	{
 		PrintWriter writer = new PrintWriter(filename, "UTF-8");
 		
@@ -412,143 +414,143 @@ public class Config {
 		writer.close() ;
 	}
 
-	public static String getFilenameExperimentalSystems () {
+	public String getFilenameExperimentalSystems () {
 		return filename_experimental_systems ;
 	}
 	
-	public static String getFilenameNetwork () {
+	public String getFilenameNetwork () {
 		return filename_network ;
 	}
 	
-	public static int getVerbosity() {
+	public int getVerbosity() {
 		return verbosity;
 	}
 
-	public static boolean isPreserve_outputs() {
+	public boolean isPreserve_outputs() {
 		return preserve_outputs;
 	}
 
-	public static boolean isPreserve_inputs() {
+	public boolean isPreserve_inputs() {
 		return preserve_inputs;
 	}
 
-	public static boolean isPreserve_tmp_files() {
+	public boolean isPreserve_tmp_files() {
 		return preserve_tmp_files;
 	}
 
-	public static int getPopulation() {
+	public int getPopulation() {
 		return population;
 	}
 
-	public static int getGenerations() {
+	public int getGenerations() {
 		return generations;
 	}
 
-	public static int getSelection() {
+	public int getSelection() {
 		return selection;
 	}
 
-	public static int getCrossovers() {
+	public int getCrossovers() {
 		return crossovers;
 	}
 
-	public static int getMutations() {
+	public int getMutations() {
 		return mutations;
 	}
 
-	public static int getBalancemutations() {
+	public int getBalancemutations() {
 		return balancemutations;
 	}
 
-	public static int getRandommutations() {
+	public int getRandommutations() {
 		return randommutations;
 	}
 
-	public static int getComplexmutations() {
+	public int getComplexmutations() {
 		return complexmutations;
 	}
 
-	public static int getFamilymutations() {
+	public int getFamilymutations() {
 		return familymutations;
 	}
 
-	public static int getInhibitorymutations() {
+	public int getInhibitorymutations() {
 		return inhibitorymutations;
 	}
 
-	public static int getActivatorymutations() {
+	public int getActivatorymutations() {
 		return activatorymutations;
 	}
 
-	public static int getOrmutations() {
+	public int getOrmutations() {
 		return ormutations;
 	}
 
-	public static int getAndmutations() {
+	public int getAndmutations() {
 		return andmutations;
 	}
 
-	public static int getTarget_fitness() {
+	public int getTarget_fitness() {
 		return target_fitness;
 	}
 
-	public static int getTarget_fitness_percent() {
+	public int getTarget_fitness_percent() {
 		return target_fitness_percent;
 	}
 
-	public static int getBootstrap_mutations_factor() {
+	public int getBootstrap_mutations_factor() {
 		return bootstrap_mutations_factor;
 	}
 
-	public static int getSimulations() {
+	public int getSimulations() {
 		return simulations;
 	}
 
-	public static int getModels_saved() {
+	public int getModels_saved() {
 		return models_saved;
 	}
 
-	public static float getFitness_threshold() {
+	public float getFitness_threshold() {
 		return fitness_threshold;
 	}
 
-	public static boolean isInvoke_drabme() {
+	public boolean isInvoke_drabme() {
 		return invoke_drabme;
 	}
 
-	public static String getFilenameConfig() {
+	public String getFilenameConfig() {
 		return filenameConfig;
 	}
 
-	public static String getLocation_drabme() {
+	public String getLocation_drabme() {
 		return location_drabme;
 	}
 
 	/**
 	 * @return the mutations_factor
 	 */
-	public static int getMutations_factor() {
+	public int getMutations_factor() {
 		return mutations_factor;
 	}
 
 	/**
 	 * @return the shuffle_factor
 	 */
-	public static int getShuffle_factor() {
+	public int getShuffle_factor() {
 		return shuffle_factor;
 	}
 
 	/**
 	 * @return the shufflemutations
 	 */
-	public static int getShufflemutations() {
+	public int getShufflemutations() {
 		return shufflemutations;
 	}
 
 	/**
 	 * @return the bootstrap_shuffle_factor
 	 */
-	public static int getBootstrap_shuffle_factor() {
+	public int getBootstrap_shuffle_factor() {
 		return bootstrap_shuffle_factor;
 	}
 

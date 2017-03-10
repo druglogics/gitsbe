@@ -1,5 +1,7 @@
 package gitsbe;
 
+import java.io.File;
+
 public class Launcher {
 
 	public Launcher() {
@@ -8,19 +10,45 @@ public class Launcher {
 
 	public static void main(String[] args) {
 
-//		if (args.length == 0)
-//		{
-//			System.out.print("The  correct  usage would be: Gitsbe [Options] <Interaction file> [Complex file] <Steady state file> [Generations] [Output file]\n") ;
-//			System.out.print("Try 'gitsbe --help' for more information\n") ;
-//			
-//		}
-	
+
+		// Check if location of BNReduction.sh is defined in environment variable BNET_HOME 
+		if (System.getenv("BNET_HOME") == null)
+		{
+			System.out.println("Set environment variable BNET_HOME to point to location of BNReduction.sh");
+			System.out.println("BNReduction can be obtained from https://github.com/alanavc/BNReduction") ;
+			return ;
+		}
+		
+		// Configure Gitsbe based on command line arguments, set up example run if no parameters are specified
+		/*
+		 * The command line could also specify:
+		 * -r (for generating a 'random' cell line parameterization) - but can be configured also by launcher..
+		 * -p n	(for repeating analysis n times)
+		 * -v n (for setting verbosity level) - but already in config file
+		 * 
+		 * Command-line arguments should have higher priority than arguments supplied by config file
+		 */
+		if (args.length == 0)
+		{
+			System.out.println("No user argumetns supplied") ;
+			System.out.println("Usage: gitsbe <filename network> <filename config file> <filename steady states file> [output directory]") ;
+			System.out.println("\nTestrun: setting up run with example files:");
+
+			args = new String[] {"toy_ags_network.sif", "toy_ags_config.tab", "toy_ags_steadystate.tab", "example_ags"} ;
+			System.out.println("gitsbe " + args[0] + " " + args[1] + " " + args[2] + "\n\n")  ;
+			
+		}
+		
 		
 		String filenameNetwork = args[0];
 		String filenameConfig = args[1];
 		String[] filenameSteadyStates = {args[2]} ;
-		String outputDir = args[3];
+		String directoryOutput = args[3];
 		
+		// make sure path to tmp directory is absolute, since BNreduction will be run from another working directory
+		if ((directoryOutput.length() > 0) && !(new File (directoryOutput).isAbsolute()))
+			directoryOutput = System.getProperty("user.dir") + File.separator + directoryOutput ;
+				
 		Thread t ;
 		
 		
@@ -30,7 +58,7 @@ public class Launcher {
 			for (int i = 0; i < filenameSteadyStates.length; i++)
 			{
 				String filenameSteadyState = filenameSteadyStates[i] ;
-				t = new Thread (new Gitsbe (filenameNetwork, filenameSteadyState, filenameConfig, outputDir)) ;
+				t = new Thread (new Gitsbe (filenameNetwork, filenameSteadyState, filenameConfig, directoryOutput)) ;
 				
 				t.start();
 				try {
