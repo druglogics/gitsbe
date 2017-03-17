@@ -1,6 +1,7 @@
 package gitsbe;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,9 +42,9 @@ public class GeneralModel {
 		case "sif":
 			this.loadSifFile(filenameInteractions) ;
 			break;
-		case "pid":
-			this.loadParadigmFile(filenameInteractions);
-			break;
+//		case "pid":
+//			this.loadParadigmFile(filenameInteractions);
+//			break;
 		}	
 		
 		
@@ -71,49 +72,52 @@ public class GeneralModel {
 		
 	}
 	
-	private void loadParadigmFile (String filename) throws IOException {
-
-		ArrayList <String> lines = new ArrayList <String>  ();
-		
-		// Read given file
-		BufferedReader reader = new BufferedReader(new FileReader (filename)) ;
-        System.out.println ("\nReading PARADIGM file: " + filename + "\n");
-        try {
-	        while (true) {
-	            String line = reader.readLine();
-	            // no more lines to read
-	            if (line == null) {
-	                reader.close();
-	                break;
-	            }
-	
-	            if (!line.startsWith("#")) 
-	            {
-	            	lines.add(line);
-	            	
-	            }
-	        
-	        }
-        }
-        finally {
-	       	reader.close ();
-	    }
-        
-        ArrayList <SingleInteraction> singleInteractions = new ArrayList <SingleInteraction> () ;
-        
-        for (int i = 0; i < lines.size(); i++)
-        {
-        
-        }
-	
-	}
+	// deprecated
+//	private void loadParadigmFile (String filename) throws IOException {
+//
+//		ArrayList <String> lines = new ArrayList <String>  ();
+//		
+//		// Read given file
+//		BufferedReader reader = new BufferedReader(new FileReader (filename)) ;
+//        System.out.println ("\nReading PARADIGM file: " + filename + "\n");
+//        try {
+//	        while (true) {
+//	            String line = reader.readLine();
+//	            // no more lines to read
+//	            if (line == null) {
+//	                reader.close();
+//	                break;
+//	            }
+//	
+//	            if (!line.startsWith("#")) 
+//	            {
+//	            	lines.add(line);
+//	            	
+//	            }
+//	        
+//	        }
+//        }
+//        finally {
+//	       	reader.close ();
+//	    }
+//        
+//        ArrayList <SingleInteraction> singleInteractions = new ArrayList <SingleInteraction> () ;
+//        
+//        for (int i = 0; i < lines.size(); i++)
+//        {
+//        
+//        }
+//	
+//	}
 
 	
 	private void loadSifFile (String filename) throws IOException {
 		
 		ArrayList <String> interactions = new ArrayList <String>  ();
-		
-		this.modelName =  filename.substring(0, filename.toLowerCase().indexOf(".sif", filename.length() - 5)) ;
+	
+		this.modelName = new File(filename).getName() ;
+//		this.modelName = new File(filename).getName().substring(0, filename.toLowerCase().indexOf(".sif", filename.length() - 5)) ;  
+//				filename.substring(0, filename.toLowerCase().indexOf(".sif", filename.length() - 5)) ;
 		
 		// Read given file
 		BufferedReader reader = new BufferedReader(new FileReader (filename)) ;

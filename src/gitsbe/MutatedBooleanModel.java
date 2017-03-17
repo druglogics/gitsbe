@@ -396,6 +396,15 @@ public class MutatedBooleanModel extends BooleanModel {
 		// Write model name
 		writer.println("modelname: " + this.modelName) ;
 		
+		// Write stable states
+		for (int i = 0; i < this.stableStates.size(); i++)
+		{
+			writer.println("stablestate: " + this.stableStates.get(i)) ;
+		}
+		
+		// Write fitness
+		writer.println("fitness: " + this.fitness) ;
+		
 		// Write Boolean equations
 		for (int i = 0; i < booleanEquations.size() ; i++)
 		{
@@ -408,8 +417,6 @@ public class MutatedBooleanModel extends BooleanModel {
 			writer.println("mapping: " + mapAlternativeNames.get(i)[0] + " = " + mapAlternativeNames.get(i)[1]) ;
 		}
 		
-		// Write fitness
-		writer.println("fitness: " + this.fitness) ;
 		
 	
 		writer.close() ;

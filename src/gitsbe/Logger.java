@@ -1,6 +1,9 @@
 package gitsbe;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -59,15 +62,17 @@ public class Logger {
 		this.filenameDebug = new File(directory, filenameDebug).getPath() ;
 		
 		// Initialize file writers
-		this.writerOutput = new PrintWriter(filenameOutput) ;
-		this.writerSummary = new PrintWriter(filenameSummary) ;
-		this.writerDebug = new PrintWriter(filenameDebug) ;
+		this.writerOutput = new PrintWriter(this.filenameOutput) ;
+		this.writerSummary = new PrintWriter(this.filenameSummary) ;
+		this.writerDebug = new PrintWriter(this.filenameDebug) ;
 		
 		setVerbosity (verbosity) ;
 		this.debugMode = debugMode ;
 		this.consoleOutput = consoleOutput ;
 		
 		this.isInitialized = true ;
+		
+		output(1, "Logger started, logging to directory: " + this.directory);
 	}
 	
 	public void finish ()
@@ -125,6 +130,66 @@ public class Logger {
 		}
 	}
 	
+	/**
+	 * Output lines to specified file. Ignores verbosity-level
+	 * 
+	 * @param filename
+	 * @param msg
+	 * @throws FileNotFoundException
+	 */
+	public void output(String filename, String[] msg)
+	{
+		try {
+			FileWriter fw = new FileWriter(filename, true);
+		    BufferedWriter bw = new BufferedWriter(fw);
+			PrintWriter writer = new PrintWriter(bw);
+			
+			for (int i = 0; i < msg.length; i++)
+			{
+				writer.println(msg[i]);;
+				writerOutput.println(msg[i]);
+				
+				if (consoleOutput) System.out.println (msg[i]) ;
+			}
+			writer.flush();
+			
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	/**
+	 * Output line to specified file. Ignores verbosity-level
+	 * 
+	 * @param filename
+	 * @param msg
+	 * @throws FileNotFoundException
+	 */
+	public void output (String filename, String msg) 
+	{
+		try {
+			FileWriter fw = new FileWriter(filename, true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			PrintWriter writer = new PrintWriter(bw);
+
+			
+			writer.println(msg);
+			writerOutput.println(msg);
+			
+			if (consoleOutput) System.out.println (msg) ;
+			
+			writer.flush();
+			
+			writer.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
 	/**
 	 * Output message

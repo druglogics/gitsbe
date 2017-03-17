@@ -223,6 +223,12 @@ public class BooleanModel {
 		// Write model name
 		writer.println("modelname: " + this.modelName) ;
 		
+		// Write stable states 
+		for (int i = 0; i < this.stableStates.size(); i++)
+		{
+			writer.println("stablestate: " + this.stableStates.get(i)) ;
+		}
+		
 		// Write Boolean equations
 		for (int i = 0; i < booleanEquations.size() ; i++)
 		{
