@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 
-//import drabme.Drabme;
-
-
 /**
  *  Gitsbe - Generic Interactions To Specific Boolean Equations
  * 
@@ -229,7 +226,7 @@ public class Gitsbe implements Runnable {
 		// ----------
 //		try {
 //			logger.output(2, "Exporting trimmed sif file: " + generalBooleanModel.getModelName() + "_export.sif"); 
-//			generalBooleanModel.exportSifFile(generalBooleanModel.getModelName() + "_export.sif") ;
+//			generalBooleanModel.exportSifFile(outputDirectory, generalBooleanModel.getModelName() + "_export.sif") ;
 //		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();

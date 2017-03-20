@@ -189,10 +189,10 @@ public class BooleanModel {
 	}
 		
 		
-	public void exportSifFile (String filename) throws FileNotFoundException, UnsupportedEncodingException
+	public void exportSifFile (String outputDirectory, String filename) throws FileNotFoundException, UnsupportedEncodingException
 	{
 
-		PrintWriter writer = new PrintWriter(filename, "UTF-8");
+		PrintWriter writer = new PrintWriter(new File(outputDirectory, filename).getAbsolutePath(), "UTF-8");
 
 		for (int i = 0; i < booleanEquations.size(); i++) 
 			for (int j = 0; j < booleanEquations.get(i).convertToSifLines().length; j++)
