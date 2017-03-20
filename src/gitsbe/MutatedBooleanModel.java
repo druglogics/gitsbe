@@ -8,22 +8,9 @@ import java.io.File;
 public class MutatedBooleanModel extends BooleanModel {
 
 	
-	
-//	private ArrayList <String[]> mapAlternativeNames ;
-//	private String modelName ;
-//	private ArrayList <String> booleanEquations ; 
-	
-	
 	private int numTotalMutations ;
 	private float fitness ;
-//	private Logger logger ;
-	
-/*	public MutatedBooleanModel(GeneralModel generalModel) {
-		super(generalModel);
-		// TODO Auto-generated constructor stub
-	}
-*/
-	
+
 	public MutatedBooleanModel(BooleanModel booleanModel, Logger logger) {
 		super(booleanModel, logger);
 		
@@ -336,21 +323,14 @@ public class MutatedBooleanModel extends BooleanModel {
 	{
 		fitness = 0 ;
 		
-//		System.out.println (targetStableStates[0]) ;
-//		System.out.println (stableStates.get(0)) ;
-//		
+		// A model with an existing stable state will be selected over models without
+		// stable states
+		if (stableStates.size() > 0)
+			fitness = 1 ;
+		
 		// Find difference between number of stablestates in model and intended number of stablestates
 		int numberOfStatesDifference = Math.abs(targetStableStates.length-stableStates.size()) ;
 		
-		// FOR RANDOM MODEL TEST 20151105
-		// next line was included for RANDOM simulation 20151105 to preserve files  even
-		// when maximum fitness was (by definition of random) 0
-		// should normally be commented out
-//		if (this.stableStates.size() > 0)
-//		{
-//			fitness++ ;
-//		}
-
 		
 		for (int i = 0; i < min(targetStableStates.length, stableStates.size()); i++)
 		{

@@ -146,7 +146,6 @@ public class Evolution {
 				logger.output(2, "\nModel " + generationModels.get(i).getModelName()) ;
 				
 				try {
-//					System.out.println("DEBUG: " + outputDirectory) ;
 					generationModels.get(i).calculateStableStatesVC(outputDirectory);
 					generationModels.get(i).calculateFitness(stableStates);
 //					generationModels.get(i).calculateFitnessAgainstStableStatesAveraged(stableStates[0]);
@@ -160,6 +159,7 @@ public class Evolution {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				
 				
 			}
 			
@@ -273,8 +273,8 @@ public class Evolution {
 		{
 			// next line were commented out for RANDOM simulation 20151105 to preserve files  even
 			// when maximum fitness was (by definition of random) 0
-			if (bestModels.get(i).getFitness() > fitnessThreshold)
-			{
+//			if (bestModels.get(i).getFitness() > fitnessThreshold)
+//			{
 				// Set filename of model
 				bestModels.get(i).setFilename(bestModels.get(i).getModelName() + ".gitsbe");
 				
@@ -285,7 +285,7 @@ public class Evolution {
 				numModelsSaved++ ;
 				
 				
-			}
+//			}
 		}
 		
 		logger.output(1, "Saved " + numModelsSaved + " models with sufficient fitness");

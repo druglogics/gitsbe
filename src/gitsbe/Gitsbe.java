@@ -118,8 +118,11 @@ public class Gitsbe implements Runnable {
 		
 		if (!new File(outputDirectory).mkdir())
 		{
-			System.out.println("Error creating project folder (" + outputDirectory + "), exiting.") ;
-			return ;
+			if (!new File(outputDirectory).exists())
+			{
+				System.out.println("Error creating project folder (" + outputDirectory + "), exiting.") ;
+				return ;
+			}
 		}
 
 		// Create models folder (subfolder to outputDirectory)
