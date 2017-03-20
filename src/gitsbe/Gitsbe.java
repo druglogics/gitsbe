@@ -227,13 +227,13 @@ public class Gitsbe implements Runnable {
 		// ----------
 		// Export sif
 		// ----------
-		try {
-			logger.output(2, "Exporting trimmed sif file: " + generalBooleanModel.getModelName() + "_export.sif"); 
-			generalBooleanModel.exportSifFile(generalBooleanModel.getModelName() + "_export.sif") ;
-		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			logger.output(2, "Exporting trimmed sif file: " + generalBooleanModel.getModelName() + "_export.sif"); 
+//			generalBooleanModel.exportSifFile(generalBooleanModel.getModelName() + "_export.sif") ;
+//		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		// -------------
 		// Export Ginsim
@@ -287,10 +287,7 @@ public class Gitsbe implements Runnable {
 		
 		logger.outputHeader(2, "Steady states");
 		String[] stableStates = ss.getSteadyStates() ;
-//		logger.output(2, stableStates);
 		logger.output(2, ss.getSteadyStatesVerbose());
-
-		
 
 		// Where to store all temporary files
 		String bnetOutputDirectory ;
@@ -299,7 +296,6 @@ public class Gitsbe implements Runnable {
 		{
 			
 			bnetOutputDirectory = new File(outputDirectory,"tmp").getPath();
-//			System.out.println("DEBUG: " + bnetOutputDirectory) ;
 			if (!new File (bnetOutputDirectory).mkdir())
 			{
 				System.out.println("Error creating temporary folder, exiting.") ;
@@ -309,8 +305,6 @@ public class Gitsbe implements Runnable {
 		else
 		{
 			bnetOutputDirectory = System.getProperty("user.dir") + File.separator + "bnet" + File.separator + "tmp" + File.separator ;
-//			System.out.println("DEBUG: " + bnetOutputDirectory) ;
-			
 		}
 		
 
@@ -320,21 +314,13 @@ public class Gitsbe implements Runnable {
 			logger.outputHeader(1, "Evolutionary algorithms, evolution " + (run) + " of " + config.getSimulations());
 			
 			Evolution ga = new Evolution (summary, 
-					generalBooleanModel, 
-//					Config.getPopulation(), 
-//					Config.getGenerations(), 
-//					Config.getSelection(), 
-//					Config.getCrossovers(), 
-//					Config.getBalancemutations(), 
-//					Config.getBootstrap_mutations_factor(), 
-          generalBooleanModel.getModelName() + "_run_" + run + "_", 
-          ss, 
-          modelDirectory , 
-          bnetOutputDirectory,
-          config,
-          logger
-//					Config.getTarget_fitness_percent()
-					) ;
+										  generalBooleanModel, 
+								          generalBooleanModel.getModelName() + "_run_" + run + "_", 
+								          ss, 
+								          modelDirectory , 
+								          bnetOutputDirectory,
+								          config,
+								          logger) ;
 		
 			ga.evolve();
 			
@@ -397,10 +383,7 @@ public class Gitsbe implements Runnable {
 		if (config.isInvoke_drabme())
 		{
 			
-			logger.output(1, "\n Now invoking Drabme...");
-//			this.invokeDrabme(this.outputDirectory, config.getLocation_drabme() + directoryName, projectName, filenameBooleanModelsIndex);
-			
-			
+//			logger.output(1, "\n Now invoking Drabme...");
 		}
 	}
 	
