@@ -33,14 +33,9 @@ public class Logger {
 	private PrintWriter writerOutput ;
 //	private PrintWriter writerErrors ;
 	
-	
 	private boolean consoleOutput = true ;
-	private boolean debugMode = false ;
 	
 	private int verbosity ;
-	
-	private boolean isInitialized = false ;
-	
 	
 	/**
 	 * Initialize logger
@@ -67,10 +62,7 @@ public class Logger {
 		this.writerDebug = new PrintWriter(this.filenameDebug) ;
 		
 		setVerbosity (verbosity) ;
-		this.debugMode = debugMode ;
 		this.consoleOutput = consoleOutput ;
-		
-		this.isInitialized = true ;
 		
 		output(1, "Logger started, logging to directory: " + this.directory);
 	}
@@ -279,7 +271,7 @@ public class Logger {
 	 */
 	public void setDebugMode (boolean debugMode)
 	{
-		debugMode = debugMode ;
+		this.debugMode = debugMode ;
 	}
 	
 	

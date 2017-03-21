@@ -7,10 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 
@@ -283,7 +281,6 @@ public class Gitsbe implements Runnable {
 
 		
 		logger.outputHeader(2, "Steady states");
-		String[] stableStates = ss.getSteadyStates() ;
 		logger.output(2, ss.getSteadyStatesVerbose());
 
 		// Where to store all temporary files
