@@ -11,9 +11,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.io.File;
 
-//import drabme.Drug;
-
-
 
 /**
  * 
@@ -41,7 +38,6 @@ public class BooleanModel {
 	public BooleanModel(Logger logger)
 	{
 		this.logger = logger ;
-//		this.verbosity = Gitsbe.verbosity ;
 	}
 	
 	// Constructor for defining Boolean model from a "general model" with interactions
@@ -370,8 +366,6 @@ public class BooleanModel {
 		}
 		
 		temp = temp.replace ("&", "&amp;");
-//		temp = temp.replace ("|", " or") ;
-//		temp = temp.replace ("!", "not") ;
 		
 		String lines[] = temp.split("\n") ;
 		
@@ -382,8 +376,6 @@ public class BooleanModel {
 	public void writeBooleanExpressionGinmlFile () throws IOException
 	{
 		
-		
-//		ArrayList <String> lines = new ArrayList <String> () ;
 		
 		String temp = "" ;
 		String line = "" ;
@@ -398,13 +390,6 @@ public class BooleanModel {
 		{
 			temp = temp.replace((mapAlternativeNames.get(i)[1]), mapAlternativeNames.get(i)[0] + " ") ;
 		}
-		
-		/*
-		temp = temp.replace ("&", "and");
-		temp = temp.replace ("|", " or") ;
-		temp = temp.replace ("!", "not") ;
-		*/
-		
 		
 		String lines[] = temp.split("\n") ;
 		
@@ -444,13 +429,6 @@ public class BooleanModel {
 			
 		}
 		
-		// Replace Boolean operators
-//		temp = temp.replace (" and ", " & ");
-//		temp = temp.replace (" or ", " | ") ;
-//		temp = temp.replace (" not ", " ! ") ;
-//		temp = temp.replace (" true ", " 1 ") ;
-//		temp = temp.replace (" false ", " 0 ") ;
-		
 		// Use alternate names (x1, x2, ..., xn)
 		for (int i = 0; i < booleanEquations.size(); i++)
 		{
@@ -472,8 +450,6 @@ public class BooleanModel {
 	
 	public void calculateStableStatesVC (String outputDirectory) throws FileNotFoundException, UnsupportedEncodingException, IOException
 	{
-		// Use default temporary folder, under the bnet folder
-//		System.out.println("DEBUG: " + directoryBNET + ", " + System.getProperty("user.dir") + File.separator + outputDirectory);
 		this.calculateStableStatesVC(directoryBNET, outputDirectory);
 	}
 	
@@ -483,11 +459,7 @@ public class BooleanModel {
 		String [] modelVC = this.getModelVelizCuba();
 				
 		// Write model to file for 'BNreduction.sh'
-		
-//		modelName = outputDirectory ;
-		
-//		System.out.println("Model name: " + modelName);
-		
+				
 		PrintWriter writer = new PrintWriter(outputDirectory + File.separator + modelName + ".dat", "UTF-8");
 		
 		for (int i = 0; i < modelVC.length ; i++)
@@ -521,7 +493,6 @@ public class BooleanModel {
 			Process p ;
 			p = pb.start ();
 			
-//			System.out.print("\nOutput from BNReduction.sh:\n") ;
 			try {
 				p.waitFor() ;
 				
@@ -534,7 +505,6 @@ public class BooleanModel {
             while(r.ready()) {
                 System.out.println(r.readLine());
             }
-//			System.out.print(p.getOutputStream().toString());
 		
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -654,20 +624,6 @@ public class BooleanModel {
 		
 	}
 	
-	/*
-	public String[] printBooleanModelVelizCuba ()
-	{
-		String[] model = new String[booleanEquations.size()] ;
-		
-		for (int i = 0; i < booleanEquations.size(); i++)
-		{
-			model[i] = booleanEquations.get(i) ;
-			
-		}
-		
-		return model ;
-	}*/
-	
 	public void writeSteadyStateTemplateFile () throws IOException
 	{
 		PrintWriter writer = new PrintWriter(modelName + "_SteadyState", "UTF-8");
@@ -711,7 +667,6 @@ public class BooleanModel {
 		
 		for (int i = 0; i < mapAlternativeNames.size(); i++)
 		{
-//			System.out.println(mapAlternativeNames.get(i)[0]) ;
 
 			if (target.trim().equals(mapAlternativeNames.get(i)[0].trim()))
 			{

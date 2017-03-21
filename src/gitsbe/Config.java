@@ -13,10 +13,6 @@ public class Config {
 
 	
 	private int verbosity ;
-	
-
-	private String filename_experimental_systems ;
-	private String filename_network ;
 	private boolean preserve_outputs ;
 	private boolean preserve_inputs ;
 	private boolean preserve_tmp_files ;
@@ -43,16 +39,10 @@ public class Config {
 	private int simulations ;
 	private int models_saved ;
 	private float fitness_threshold ;
-	private boolean invoke_drabme ;
-	 
-	private String location_drabme ;
 	
 	private String filenameConfig ;
 	
 	private Logger logger ;
-//	public Config(String configFile) {
-//
-//	}
 
 	public Config (String filename, Logger logger)
 	{
@@ -122,12 +112,6 @@ public class Config {
   	
   	switch (parameterName)
   	{
-  		case "experimental_systems:":
-  			filename_experimental_systems = value ;
-  			break ;
-  		case "network:":
-  			filename_network = value ;
-  			break ;
   		case "verbosity:":
   			verbosity = Integer.parseInt(value) ;
   			break ;
@@ -143,11 +127,7 @@ public class Config {
   		case "preserve_intputs:":
   			preserve_inputs = Boolean.parseBoolean(value) ;
   			break ;
-  			
-  		case "invoke_drabme:":
-  			invoke_drabme = Boolean.parseBoolean(value) ;
-  			break ;
-  			
+  			  			
   		case "simulations:":
   			simulations = Integer.parseInt(value) ;
   			break ;
@@ -231,20 +211,14 @@ public class Config {
   		case "fitness_threshold:":
   			fitness_threshold = Float.parseFloat(value) ;
   			break ;
-  			
-  		case "location_drabme:":
-  			location_drabme = value ;
-  			break ;
-  	}
-  }
+  			}
+  		}
 	}
 	
 	public String[] getConfig ()
 	{
 		
 		String parameters[] = {
-				"experimental_systems",
-				"network",
 				"preserve_outputs",
 				"preserve_inputs",
 				"preserve_tmp_files",
@@ -270,14 +244,10 @@ public class Config {
 				"shuffle_factor",
 				"simulations",
 				"models_saved",
-				"fitness_threshold",
-				"invoke_drabme",
-				"location_drabme"
+				"fitness_threshold"
 		} ;
 		
 		String values [] = {
-				filename_experimental_systems,
-				filename_network,
 				Boolean.toString(preserve_outputs),
 				Boolean.toString(preserve_inputs),
 				Boolean.toString(preserve_tmp_files),
@@ -304,8 +274,6 @@ public class Config {
 				Integer.toString(simulations),
 				Integer.toString(models_saved),
 				Float.toString(fitness_threshold),
-				Boolean.toString(invoke_drabme),
-				location_drabme
 		} ;
 
 		ArrayList<String> lines = new ArrayList<String> () ;
@@ -335,12 +303,6 @@ public class Config {
 		writer.println("#") ;
 
 		// Write parameters
-		writer.println("# Input file - experimental systems, index file pointing to set of stable states describing each system") ;
-		writer.println("experimental_systems:\t<filename>") ;
-		writer.println();
-		writer.println("# Input file - starting network (i.e. SIF file, Boolean model etc") ;
-		writer.println("network:\t<networkfile>") ;
-		writer.println() ;
 		writer.println("# Output verbosity level") ;
 		writer.println("verbosity:\t3") ;
 		writer.println() ;
@@ -414,14 +376,6 @@ public class Config {
 		writer.close() ;
 	}
 
-	public String getFilenameExperimentalSystems () {
-		return filename_experimental_systems ;
-	}
-	
-	public String getFilenameNetwork () {
-		return filename_network ;
-	}
-	
 	public int getVerbosity() {
 		return verbosity;
 	}
@@ -514,16 +468,8 @@ public class Config {
 		return fitness_threshold;
 	}
 
-	public boolean isInvoke_drabme() {
-		return invoke_drabme;
-	}
-
 	public String getFilenameConfig() {
 		return filenameConfig;
-	}
-
-	public String getLocation_drabme() {
-		return location_drabme;
 	}
 
 	/**
@@ -559,6 +505,5 @@ public class Config {
 
 	
 
-	// GETTERS
 	
 }

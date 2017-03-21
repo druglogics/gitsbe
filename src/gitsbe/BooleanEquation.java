@@ -37,13 +37,6 @@ public class BooleanEquation {
 	 * @param originalEquation
 	 */
 	public BooleanEquation(BooleanEquation originalEquation) {
-		// public static List<Dog> cloneList(List<Dog> dogList) {
-		// List<Dog> clonedList = new ArrayList<Dog>(dogList.size());
-		// for (Dog dog : dogList) {
-		// clonedList.add(new Dog(dog));
-		// }
-		// return clonedList;
-		// }
 
 		this();
 
@@ -212,11 +205,7 @@ public class BooleanEquation {
 				equation += inhibitoryRegulators.get(i) + " ) ";
 			}
 
-			// equation += ")" ;
 		}
-
-		// BclxL *= (((NFKB) or STAT3)) and not ((((BID) or GZMB) or DISC))
-		// BclxL *= ((NFKB) or STAT3) and not (((BID) or GZMB) or DISC)
 
 		return " " + equation.trim() + " ";
 	}

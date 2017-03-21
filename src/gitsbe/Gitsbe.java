@@ -377,11 +377,6 @@ public class Gitsbe implements Runnable {
 		
 		logger.output(1, "\nWith that we say thank you and good bye!");
 		
-		if (config.isInvoke_drabme())
-		{
-			
-//			logger.output(1, "\n Now invoking Drabme...");
-		}
 	}
 	
 	/**
