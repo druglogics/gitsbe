@@ -19,14 +19,11 @@ import java.util.Arrays;
 public class Logger {
 
 	// Filenames of output files
-	private String filenameDebug ;
 	private String filenameSummary ;
 	private String filenameOutput ;
 //	private String filenameErrors ;
 	private String directory ;
 	
-	
-	private boolean debugMode ;
 	
 	// File writers
 	private PrintWriter writerDebug ;
@@ -48,19 +45,17 @@ public class Logger {
 	 * @param verbosity sets level of verbosity: 0 is nothing at all, 1 = most important info, 2 = less important, 3 = everything
 	 * @throws IOException
 	 */
-	public Logger(String filenameOutput, String filenameSummary, String filenameDebug, String directory, int verbosity, boolean debugMode, boolean consoleOutput) throws IOException
+	public Logger(String filenameOutput, String filenameSummary, String directory, int verbosity, boolean consoleOutput) throws IOException
 	{
 		
 		// Initialize variables
 		this.directory = directory ;
 		this.filenameOutput = new File(directory, filenameOutput).getPath() ;
 		this.filenameSummary = new File(directory, filenameSummary).getPath() ;
-		this.filenameDebug = new File(directory, filenameDebug).getPath() ;
 		
 		// Initialize file writers
 		this.writerOutput = new PrintWriter(this.filenameOutput) ;
 		this.writerSummary = new PrintWriter(this.filenameSummary) ;
-		this.writerDebug = new PrintWriter(this.filenameDebug) ;
 		
 		setVerbosity (verbosity) ;
 		this.consoleOutput = consoleOutput ;
@@ -250,31 +245,4 @@ public class Logger {
 
 	}
 	
-	
-	/**
-	 * Write debug info
-	 * 
-	 * @param msg
-	 */
-	public void debug (String msg)
-	{
-		writerDebug.println(msg);
-		writerDebug.flush();	
-		
-		if (consoleOutput) System.out.println (msg) ;
-
 	}
-	
-	/**
-	 * Set debug mode
-	 * 
-	 * @param debugMode boolean, true = log debug info, false = don't log, default
-	 */
-	public void setDebugMode (boolean debugMode)
-	{
-		this.debugMode = debugMode ;
-	}
-	
-	
-
-}

@@ -134,8 +134,8 @@ public class Gitsbe implements Runnable {
 		
 		try {
 			logger = new Logger (nameProject + "_output.txt", 
-								nameProject + "_summary.txt" , "gitsbe_debug.txt", 
-								outputDirectory, 3, false, true);
+								nameProject + "_summary.txt" , 
+								outputDirectory, 3, true);
 		} catch (IOException e3) {
 			
 			// TODO Auto-generated catch block

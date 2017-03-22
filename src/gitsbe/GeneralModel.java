@@ -273,7 +273,7 @@ public class GeneralModel {
 						}
 						else
 						{
-							logger.debug("\nError - interaction without regulator found...?\n");
+							logger.output(1, "\nError: Interaction without regulator found: \n");
 						}
 						
 						
@@ -305,14 +305,9 @@ public class GeneralModel {
 			trimIteration ++ ;
 			
 			interactionsBeforeTrim = singleInteractions.size () ;
-			
-//			System.out.println ("DEBUG: Iteration " + trimIteration) ;
 
 			for (int i = singleInteractions.size () - 1; i >= 0; i--)
 			{
-				if (i == 851)
-					continue ;
-//				System.out.println (singleInteractions.get(i).getSource() + " " + singleInteractions.get(i).getArc() + " " + singleInteractions.get(i).getTarget()) ;
 				if (!this.isAlsoTarget (i))
 				{
 					logger.output(3, "Removing interaction (i = " + i + ")  (not target): " + singleInteractions.get(i).getInteraction());
