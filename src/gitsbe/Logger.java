@@ -26,6 +26,7 @@ public class Logger {
 	private String directory ;
 	
 	
+	private boolean debugMode ;
 	
 	// File writers
 	private PrintWriter writerDebug ;
