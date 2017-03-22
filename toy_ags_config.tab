@@ -14,7 +14,7 @@ network:	20150908_model.sif
 verbosity:	3
 
 # Preserve all temporary files in project tmp-folder (all model files generation by evolutionary algorithms
-preserve_tmp_files:	false
+preserve_tmp_files:	true
 
 # Model trimming
 # Preserve outputs
@@ -26,17 +26,17 @@ preserve_intputs:	false
 # Invoke drug response module after automated model definitions
 invoke_drabme:	false
 
-location_drabme:	/home/asmund/Dokumenter/Cycret/Drabme/
+location_drabme:	../drabme
 
 # Parameters for evolutionary algorithms
 # Number of simulations (evolutions) to run
-simulations:	10
+simulations:	3
 
 # Number of models per generation
-population:	20
+population:	10
 
 # Number of generations per simulation (or less if target_fitness is defined, below)
-generations:	20
+generations:	10
 
 # Number of crossovers
 crossovers:	1
@@ -59,7 +59,7 @@ shufflemutations:	0
 target_fitness:	0
 
 # Target fitness threshold to stop evolution in percent of max possible fitness given by steady state (0 means disabled)
-target_fitness_percent:	99
+target_fitness_percent:	80
 
 # Factor to multiply number of mutations until initial phase is over (>0 stable states obtained)
 bootstrap_mutations_factor:	100
