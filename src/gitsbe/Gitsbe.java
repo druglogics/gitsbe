@@ -133,7 +133,7 @@ public class Gitsbe implements Runnable {
 		Logger logger  ;
 		
 		try {
-			logger = new Logger (nameProject + "_output.txt", 
+			logger = new Logger (appName + "_" + nameProject + "_output.txt", 
 								nameProject + "_summary.txt" , "gitsbe_debug.txt", 
 								outputDirectory, 3, false, true);
 		} catch (IOException e3) {
