@@ -332,6 +332,11 @@ public class MutatedBooleanModel extends BooleanModel {
 		int numberOfStatesDifference = Math.abs(targetStableStates.length-stableStates.size()) ;
 		
 		
+    // FOR RANDOM MODEL TEST 20172501
+    // This makes sure we have a fitness of 1 where no target states are
+    // defined
+    boolean noStates = true;
+
 		for (int i = 0; i < min(targetStableStates.length, stableStates.size()); i++)
 		{
 			for (int j = 0; j < targetStableStates[i].length(); j++)
@@ -346,6 +351,7 @@ public class MutatedBooleanModel extends BooleanModel {
 				
 				case '0':
 				case '1':
+          noStates = false;
 					if (stableStates.get(i).charAt(j) == state) 
 					{
 						fitness++ ;
@@ -355,7 +361,14 @@ public class MutatedBooleanModel extends BooleanModel {
 			}
 		}
 		
-		fitness /= (1+numberOfStatesDifference) ;
+    // FOR RANDOM MODEL TEST 20172501
+    // This makes sure we have a fitness of 1 where no target states are
+    // defined
+    if (noStates){
+      fitness = 1;
+    }else{
+      fitness /= (1+numberOfStatesDifference) ;
+    }
 		
 		logger.output(2, this.modelName + " fitness: " + fitness);
 
