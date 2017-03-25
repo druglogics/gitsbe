@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -298,7 +299,10 @@ public class Gitsbe implements Runnable {
 		}
 		else
 		{
-			bnetOutputDirectory = System.getProperty("user.dir") + File.separator + "bnet" + File.separator + "tmp" + File.separator ;
+//			bnetOutputDirectory = System.getProperty("user.dir") + File.separator + "bnet" + File.separator + "tmp" + File.separator ;
+//			bnetOutputDirectory = Files.createTempDirectory(nameProject + "_tmp", null).getFileName(). ;
+			bnetOutputDirectory = new File(System.getProperty("java.io.tmpdir"), nameProject + "_tmp").getAbsolutePath();
+			
 		}
 		
 
@@ -364,8 +368,19 @@ public class Gitsbe implements Runnable {
 		// -------------------
 		// Clean tmp directory
 		// -------------------
-		logger.output(2, "Cleaning tmp directory...") ;
-		cleanTmpDirectory(new File (outputDirectory, "tmp")) ;
+		if (config.isPreserve_tmp_files())
+		{
+			String filenameArchive = new File(outputDirectory, nameProject + ".gitsbe.tmp.tar.gz").getAbsolutePath() ;
+			logger.output(2, "\nCreating archive with all temporary files: " + filenameArchive);
+			compressDirectory (filenameArchive, bnetOutputDirectory) ;
+			logger.output(2, "Cleaning tmp directory...") ;
+			cleanTmpDirectory(new File (outputDirectory, "tmp")) ;
+			
+		}
+		else
+		{ 
+		}
+	
 			
 		logger.outputHeader(1, "\nThe end");
 		logger.output(1, "End: " + dateFormat.format(cal.getTime()));
@@ -478,6 +493,19 @@ public class Gitsbe implements Runnable {
 	        if (file.isDirectory()) cleanTmpDirectory(file);
 	        file.delete();
 	    }
+	}
+	
+	private void compressDirectory (String filenameArchive, String directory)
+	{
+		//tar cvfz tmp.tar.gz tmp
+		
+		String s;
+        Process p;
+        try {
+            p = Runtime.getRuntime().exec("tar cvfz " + filenameArchive + " " + directory);
+            p.waitFor();
+            p.destroy();
+        } catch (Exception e) {}
 	}
 
 }
