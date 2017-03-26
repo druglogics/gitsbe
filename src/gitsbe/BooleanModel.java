@@ -502,7 +502,7 @@ public class BooleanModel {
 			
 			BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
             while(r.ready()) {
-                System.out.println(r.readLine());
+	        	logger.output(3, r.readLine());
             }
 		
 		} catch (IOException e) {

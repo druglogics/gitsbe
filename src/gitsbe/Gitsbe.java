@@ -1,11 +1,13 @@
 package gitsbe;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.text.DateFormat;
@@ -44,6 +46,7 @@ public class Gitsbe implements Runnable {
 	
 	// Global variable determining verbosity levels
 	public int verbosity ;
+	private Logger logger  ;
 	
 	private static Random rand ;
 	
@@ -131,10 +134,9 @@ public class Gitsbe implements Runnable {
 		}
 		
 		// Initialize logger
-		Logger logger  ;
 		
 		try {
-			logger = new Logger (appName + "_" + nameProject + "_output.txt", 
+			logger = new Logger (appName + "_" + nameProject + "_log.txt", 
 								nameProject + "_summary.txt", 
 								outputDirectory, 3, true);
 		} catch (IOException e3) {
@@ -493,19 +495,49 @@ public class Gitsbe implements Runnable {
 	        if (file.isDirectory()) cleanTmpDirectory(file);
 	        file.delete();
 	    }
+	    
 	}
 	
 	private void compressDirectory (String filenameArchive, String directory)
 	{
 		//tar cvfz tmp.tar.gz tmp
 		
-		String s;
-        Process p;
-        try {
-            p = Runtime.getRuntime().exec("tar cvfz " + filenameArchive + " " + directory);
-            p.waitFor();
-            p.destroy();
-        } catch (Exception e) {}
-	}
+		try {
+			
+			// "BNReduction_timeout.sh" calls BNReduction.sh, but with the 'timeout' commanding, ensuring that the process has to
+			// complete within specified amount of time (in case BNReduction should hang).
+			
+			
+			ProcessBuilder pb = new ProcessBuilder("tar", "cvfz", filenameArchive, directory);
+			
+			if (logger.getVerbosity() >= 3)
+			{
+				pb.redirectErrorStream(true);
+				pb.redirectOutput() ;
+			}
+			
+			logger.output(3, "Compressing temporary models: " + filenameArchive) ;
 
+			
+			Process p ;
+			p = pb.start ();
+			
+			try {
+				p.waitFor() ;
+				
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+	        while(r.ready()) {
+	        	logger.output(3, r.readLine());
+	        }
+		
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
