@@ -503,12 +503,7 @@ public class Gitsbe implements Runnable {
 		//tar cvfz tmp.tar.gz tmp
 		
 		try {
-			
-			// "BNReduction_timeout.sh" calls BNReduction.sh, but with the 'timeout' commanding, ensuring that the process has to
-			// complete within specified amount of time (in case BNReduction should hang).
-			
-			
-			ProcessBuilder pb = new ProcessBuilder("tar", "cvfz", filenameArchive, directory);
+			ProcessBuilder pb = new ProcessBuilder("tar", "cvfz", filenameArchive, new File(directory).getParent(), new File(directory).getName());
 			
 			if (logger.getVerbosity() >= 3)
 			{
