@@ -39,6 +39,7 @@ public class Gitsbe implements Runnable {
 	private String filenameSteadyState;
 	private String filenameConfig;
 	private String outputDirectory;
+	private String directoryTemp ;
 	private String nameProject ;
 	
 	// Declare one general model that is defined by input files
@@ -50,12 +51,13 @@ public class Gitsbe implements Runnable {
 	
 	private static Random rand ;
 	
-	public Gitsbe(String nameProject, String filenameNetwork, String filenameSteadyState, String filenameConfig, String outputDirectory) {
+	public Gitsbe(String nameProject, String filenameNetwork, String filenameSteadyState, String filenameConfig, String outputDirectory, String directoryTemp) {
 		this.nameProject = nameProject ;
 		this.filenameNetwork = filenameNetwork ;
 		this.filenameSteadyState = filenameSteadyState ;
 		this.filenameConfig = filenameConfig ;
 		this.outputDirectory = outputDirectory ;
+		this.directoryTemp = directoryTemp ;
 	}
 	public Gitsbe(String nameProject, String filenameNetwork, String filenameSteadyState, String filenameConfig) {
 		this.nameProject = nameProject ;
@@ -292,7 +294,8 @@ public class Gitsbe implements Runnable {
 		if (config.isPreserve_tmp_files())
 		{
 			
-			bnetOutputDirectory = new File(outputDirectory,"tmp").getPath();
+//			bnetOutputDirectory = new File(outputDirectory,"tmp").getPath();
+			bnetOutputDirectory = directoryTemp ;
 			if (!new File (bnetOutputDirectory).mkdir())
 			{
 				System.out.println("Error creating temporary folder, exiting.") ;
@@ -372,11 +375,11 @@ public class Gitsbe implements Runnable {
 		// -------------------
 		if (config.isPreserve_tmp_files())
 		{
-			String filenameArchive = new File(outputDirectory, nameProject + ".gitsbe.tmp.tar.gz").getAbsolutePath() ;
-			logger.output(2, "\nCreating archive with all temporary files: " + filenameArchive);
-			compressDirectory (filenameArchive, bnetOutputDirectory) ;
-			logger.output(2, "Cleaning tmp directory...") ;
-			cleanTmpDirectory(new File (outputDirectory, "tmp")) ;
+			//String filenameArchive = new File(outputDirectory, nameProject + ".gitsbe.tmp.tar.gz").getAbsolutePath() ;
+			//logger.output(2, "\nCreating archive with all temporary files: " + filenameArchive);
+			//compressDirectory (filenameArchive, bnetOutputDirectory) ;
+			//logger.output(2, "Cleaning tmp directory...") ;
+			//cleanTmpDirectory(new File (outputDirectory, "tmp")) ;
 			
 		}
 		else
