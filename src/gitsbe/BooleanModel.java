@@ -474,7 +474,10 @@ public class BooleanModel {
 			// complete within specified amount of time (in case BNReduction should hang).
 			
 			
-			ProcessBuilder pb = new ProcessBuilder("sh", "BNReduction_timeout.sh", outputDirectory + File.separator + modelName + ".dat");
+//			ProcessBuilder pb = new ProcessBuilder("sh", "BNReduction_timeout.sh", outputDirectory + File.separator + modelName + ".dat");
+			ProcessBuilder pb = new ProcessBuilder("timeout", "30", 
+													new File(directoryBNET, "BNReduction.sh").getAbsolutePath(), 
+													new File(outputDirectory, modelName + ".dat").getAbsolutePath());
 			
 			if (logger.getVerbosity() >= 3)
 			{
@@ -486,8 +489,8 @@ public class BooleanModel {
 			
 			pb.directory (new File (directoryBNET)) ;
 			
-			logger.output(3, "Running BNReduction_timeout.sh in directory " + pb.directory()) ;
-			
+//			logger.output(3, "Running BNReduction_timeout.sh in directory " + pb.directory()) ;
+			logger.output(3, "Running BNReduction.sh in directory " + pb.directory()) ;
 			
 			Process p ;
 			p = pb.start ();
