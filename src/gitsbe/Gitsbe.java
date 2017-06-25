@@ -51,7 +51,7 @@ public class Gitsbe implements Runnable {
 	
 	private static Random rand ;
 	
-	public Gitsbe(String nameProject, String filenameNetwork, String filenameSteadyState, String filenameConfig, String outputDirectory, String directoryTemp) {
+	public Gitsbe(String nameProject, String filenameNetwork, String filenameConfig, String filenameSteadyState, String outputDirectory, String directoryTemp) {
 		this.nameProject = nameProject ;
 		this.filenameNetwork = filenameNetwork ;
 		this.filenameSteadyState = filenameSteadyState ;
@@ -184,6 +184,7 @@ public class Gitsbe implements Runnable {
 			// ------------------------------------------
 			// Create generalModel from interactions file
 			// ------------------------------------------
+			logger.output(3, "Loading model from sif file: " + filenameNetwork) ;
 			try {
 				generalModel.loadInteractionFile(filenameNetwork) ;
 			} catch (IOException e1) {

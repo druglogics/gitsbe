@@ -31,23 +31,24 @@ public class Launcher {
 		if (args.length == 0)
 		{
 			System.out.println("No user argumetns supplied") ;
-			System.out.println("Usage: gitsbe <filename network> <filename config file> <filename steady states file> [output directory]") ;
+			System.out.println("Usage: gitsbe <name project> <filename network> <filename config file> <filename steady states file> [output directory]") ;
 			System.out.println("\nTestrun: setting up run with example files:");
 
-			args = new String[] {"toy_ags_network.sif", "toy_ags_config.tab", "toy_ags_steadystate.tab", "example_ags"} ;
-			System.out.println("gitsbe " + args[0] + " " + args[1] + " " + args[2] + "\n\n")  ;
+			args = new String[] {"toy_ags_example", "toy_ags_network.sif", "toy_ags_steadystate.tab", "toy_ags_config.tab"} ;
+			System.out.println("gitsbe " + args[0] + " " + args[1] + " " + args[2] + " " + args[3] + "\n\n")  ;
 			
 		}
 		
 		
-		String filenameNetwork = args[0];
-		String filenameConfig = args[1];
+		String nameProject = args[0] ;
+		String filenameNetwork = args[1];
+		String filenameConfig = args[3];
 		String[] filenameSteadyStates = {args[2]} ;
-		String directoryOutput = args[3];
+//		String directoryOutput = args[4];
 		
 		// make sure path to tmp directory is absolute, since BNreduction will be run from another working directory
-		if ((directoryOutput.length() > 0) && !(new File (directoryOutput).isAbsolute()))
-			directoryOutput = System.getProperty("user.dir") + File.separator + directoryOutput ;
+//		if ((directoryOutput.length() > 0) && !(new File (directoryOutput).isAbsolute()))
+//			directoryOutput = System.getProperty("user.dir") + File.separator + directoryOutput ;
 				
 		Thread t ;
 		
@@ -58,7 +59,7 @@ public class Launcher {
 			for (int i = 0; i < filenameSteadyStates.length; i++)
 			{
 				String filenameSteadyState = filenameSteadyStates[i] ;
-				t = new Thread (new Gitsbe (filenameNetwork, filenameSteadyState, filenameConfig, directoryOutput)) ;
+				t = new Thread (new Gitsbe (nameProject, filenameNetwork, filenameSteadyState, filenameConfig)) ;
 				
 				t.start();
 				try {

@@ -55,11 +55,15 @@ public class SingleInteraction {
 	public void setInteraction(String firstNode, String interaction, String secondNode) {
 		
 		switch (interaction) {
+		case "activate" :
+		case "activates" :
 		case "->":
 			arc = 1;
 			source = firstNode ;
 			target = secondNode ;
 			break;
+		case "inhibit":
+		case "inhibits":
 		case "-|":
 			arc = -1;
 			source = firstNode ;
