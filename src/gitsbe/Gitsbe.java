@@ -36,7 +36,7 @@ public class Gitsbe implements Runnable {
 	private String version = "v0.3";
 	
 	private String filenameNetwork;
-	private String filenameSteadyState;
+	private String filenameTrainingData;
 	private String filenameConfig;
 	private String outputDirectory;
 	private String directoryTemp ;
@@ -51,15 +51,15 @@ public class Gitsbe implements Runnable {
 	
 	private static Random rand ;
 	
-	public Gitsbe(String nameProject, String filenameNetwork, String filenameConfig, String filenameSteadyState, String outputDirectory, String directoryTemp) {
+	public Gitsbe(String nameProject, String filenameNetwork, String filnameTrainingData, String filenameConfig, String outputDirectory, String directoryTemp) {
 		this.nameProject = nameProject ;
 		this.filenameNetwork = filenameNetwork ;
-		this.filenameSteadyState = filenameSteadyState ;
+		this.filenameTrainingData = filenameTrainingData ;
 		this.filenameConfig = filenameConfig ;
 		this.outputDirectory = outputDirectory ;
 		this.directoryTemp = directoryTemp ;
 	}
-	public Gitsbe(String nameProject, String filenameNetwork, String filenameSteadyState, String filenameConfig) {
+	public Gitsbe(String nameProject, String filenameNetwork, String filenameTrainingData, String filenameConfig) {
 		this.nameProject = nameProject ;
 		
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss") ;
@@ -69,7 +69,7 @@ public class Gitsbe implements Runnable {
 		String outputDirectory = dateFormat.format(cal.getTime()) + "_" + nameProject + File.separator ;
 
 		this.filenameNetwork = filenameNetwork ;
-		this.filenameSteadyState = filenameSteadyState ;
+		this.filenameTrainingData = filenameTrainingData ;
 		this.filenameConfig = filenameConfig ;
 		this.outputDirectory = outputDirectory ;
   }
@@ -257,19 +257,49 @@ public class Gitsbe implements Runnable {
 		// ------------------------------------------------------
 		// Load SteadyState, if non-existent create template file
 		// ------------------------------------------------------
-		SteadyState ss ;
+//		SteadyState ss ;
+//		try {
+//			logger.output(1, "\nReading steady state from file: " + filenameSteadyState);
+//			
+//			ss = new SteadyState (filenameSteadyState, generalBooleanModel, logger) ;
+//			
+//			logger.output(1, "Max fitness: " + ss.getMaxFitness());
+//			
+//		} catch (FileNotFoundException e)
+//		{
+//			logger.output(1, "Cannot find steady state file, generating template file: " + filenameSteadyState);
+//			try {
+//				generalBooleanModel.writeSteadyStateTemplateFile();
+//			} catch (IOException e1) {
+//				// TODO Auto-generated catch block
+//				e1.printStackTrace();
+//			}
+//			return ;
+//		} catch (IOException e2) {
+//			// TODO Auto-generated catch block
+//			e2.printStackTrace();
+//			return ;
+//		}
+		
+		
+		// ------------------
+		// Load training data
+		// ------------------
+		
+		TrainingData data ;
+		
 		try {
-			logger.output(1, "\nReading steady state from file: " + filenameSteadyState);
+			logger.output(1, "\nReading training data from file: " + filenameTrainingData);
 			
-			ss = new SteadyState (filenameSteadyState, generalBooleanModel, logger) ;
+			data = new TrainingData (filenameTrainingData, logger) ;
 			
-			logger.output(1, "Max fitness: " + ss.getMaxFitness());
+//			logger.output(1, "Max steady state fitness: " + ss.getMaxFitness());
 			
 		} catch (FileNotFoundException e)
 		{
-			logger.output(1, "Cannot find steady state file, generating template file: " + filenameSteadyState);
+			logger.output(1, "Cannot find steady state file, generating template file: " + filenameTrainingData);
 			try {
-				generalBooleanModel.writeSteadyStateTemplateFile();
+				data.writeTrainingDataTemplateFile(filenameTrainingData);
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -286,9 +316,13 @@ public class Gitsbe implements Runnable {
 		// --------------------------------------------------------
 
 		
-		logger.outputHeader(2, "Steady states");
-		logger.output(2, ss.getSteadyStatesVerbose());
+//		logger.outputHeader(2, "Steady states");
+//		logger.output(2, ss.getSteadyStatesVerbose());
 
+		logger.outputHeader(2,  "Training Data");
+		logger.output(2, data.getTrainingDataVerbose());
+		
+		
 		// Where to store all temporary files
 		String bnetOutputDirectory ;
 
@@ -321,6 +355,7 @@ public class Gitsbe implements Runnable {
 										  generalBooleanModel, 
 								          generalBooleanModel.getModelName() + "_run_" + run + "_", 
 								          ss, 
+								          data,
 								          modelDirectory , 
 								          bnetOutputDirectory,
 								          config,

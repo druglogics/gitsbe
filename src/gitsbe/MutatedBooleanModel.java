@@ -314,53 +314,88 @@ public class MutatedBooleanModel extends BooleanModel {
 	}
 	
 	/**
+	 * calculate fitness from training data
+	 * 
+	 */
+	public void calcualteFitnessFromTrainingData (TrainingData data)
+	{
+		for ()
+	}
+	
+	/**
 	 * calculates fitness
 	 * 
 	 * @param 
 	 */
-	// BUG AAF - currently intended stable states and calculated states must match in order - that's a bug
-	public void calculateFitness (String[] targetStableStates)
+//	// BUG AAF - currently intended stable states and calculated states must match in order - that's a bug
+//	public void calculateFitness (String[] targetStableStates, TrainingData data)
+//	{
+//		fitness = 0 ;
+//		
+//		// A model with an existing stable state will be selected over models without
+//		// stable states
+//		if (stableStates.size() > 0)
+//			fitness = 1 ;
+//		
+//		// Find difference between number of stablestates in model and intended number of stablestates
+//		int numberOfStatesDifference = Math.abs(targetStableStates.length-stableStates.size()) ;
+//		
+//		
+//		for (int i = 0; i < min(targetStableStates.length, stableStates.size()); i++)
+//		{
+//			for (int j = 0; j < targetStableStates[i].length(); j++)
+//			{
+//				char state = targetStableStates[i].charAt(j) ;
+//				
+//				switch (state) {
+//				case '-':
+//					break;
+//				
+//				
+//				case '0':
+//				case '1':
+//					if (stableStates.get(i).charAt(j) == state) 
+//					{
+//						fitness++ ;
+//					}
+//				}
+//				
+//			}
+//		}
+//		
+//		fitness /= (1+numberOfStatesDifference) ;
+//		
+//		// Find difference between model behavior and training data
+//		for (int i = 0; i < data.getObservations().size(); i++)
+//		{
+//			
+//		}
+//		
+//		logger.output(2, this.modelName + " fitness: " + fitness);
+//
+//	}
+
+	/**
+	 * Calculate fitness of model by computing matches with training data
+	 * 
+	 * @param data
+	 */
+	public void calculateFitness (TrainingData data)
 	{
 		fitness = 0 ;
 		
-		// A model with an existing stable state will be selected over models without
+		// A model with an existing stable state will get higher fitness than models without
 		// stable states
 		if (stableStates.size() > 0)
 			fitness = 1 ;
 		
-		// Find difference between number of stablestates in model and intended number of stablestates
-		int numberOfStatesDifference = Math.abs(targetStableStates.length-stableStates.size()) ;
-		
-		
-		for (int i = 0; i < min(targetStableStates.length, stableStates.size()); i++)
+		// iterate through each data observation
+		for (int i = 0; i < data.size(); i++)
 		{
-			for (int j = 0; j < targetStableStates[i].length(); j++)
-			{
-				// BUG?? Should this be targetStableStates??
-				char state = targetStableStates[i].charAt(j) ;
-				
-				switch (state) {
-				case '-':
-					break;
-				
-				
-				case '0':
-				case '1':
-					if (stableStates.get(i).charAt(j) == state) 
-					{
-						fitness++ ;
-					}
-				}
-				
-			}
+			
 		}
 		
-		fitness /= (1+numberOfStatesDifference) ;
-		
-		logger.output(2, this.modelName + " fitness: " + fitness);
-
 	}
-
 	
 	
 	public void saveFile (String directoryName) throws IOException

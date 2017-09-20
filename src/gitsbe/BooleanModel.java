@@ -282,6 +282,8 @@ public class BooleanModel {
 		
 		return nodeNames ;
 	}
+	
+	
 	public void writeGinmlFile (ArrayList <SingleInteraction> singleInteractions) throws IOException
 	{
 		PrintWriter writer = new PrintWriter(modelName + ".ginml", "UTF-8") ;
@@ -309,10 +311,10 @@ public class BooleanModel {
 		for (int i = 0; i < mapAlternativeNames.size(); i++)
 		{
 			writer.println("<node id=\"" + mapAlternativeNames.get(i)[0] + "\" maxvalue=\"1\">") ;
-			writer.println("<value val=\"1\">") ;
-			writer.println("<exp str=\"" + expressions[i] + "\"/>") ;
-			writer.println("</value>") ;
-			writer.println("<nodevisualsetting x=\"10\" y=\"10\" style=\"\"/>") ;
+			writer.println("\t<value val=\"1\">") ;
+			writer.println("\t\t<exp str=\"" + expressions[i] + "\"/>") ;
+			writer.println("\t</value>") ;
+			writer.println("\t<nodevisualsetting x=\"10\" y=\"10\" style=\"\"/>") ;
 			writer.println("</node>") ;
 			
 		}
@@ -662,6 +664,12 @@ public class BooleanModel {
 		return filename ;
 	}
 	
+	/**
+	 * Get index of equation ascribed to specified target
+	 * 
+	 * @param target
+	 * @return
+	 */
 	protected int getIndexOfEquation (String target)
 	{
 
@@ -681,6 +689,84 @@ public class BooleanModel {
 		return index ;
 	}
 	
+	public String[][] getStableStates()
+	{
+		String[][] result = new String[stableStates.size() + 1][getNodeNames().size()];
+		
+		result[0] = getNodeNames().toArray(new String[0]);
+		
+		for (int i = 0; i < stableStates.size(); i++)
+		{
+			result[i+1] = stableStates.get(i).split("");
+		}
+		
+		return result;
+		
+	}
 	
+	/** Compute stable state for given condition (modification) to model
+	 * Each condition consists of two strings: One specifying node name, the second specifying fixed states for corresponding nodes (0 or 1)
+	 * Note that condition can optionally contain un-specified nodes, indicated by dashes ('-')
+	 * 
+	 * @param condition
+	 * @return
+	 */
+	public String[][] getStableStatesPerturbation(String[][] condition, String outputDirectory)
+	{
+
+		// modifyEquation
+		BooleanModel temp = new BooleanModel(this, logger);
+
+		for (int i = 0; i < condition.length; i++)
+		{
+			// Define target of equation
+			String equation = condition[i][0].trim() + " *= ";
+
+			// Modify equation, for now only fixes to true/false supported, but could also be 
+			// generic, i.e. any changes to equations.
+			switch (condition[i][1].trim())
+			{
+				case "1":
+				case "true":
+					equation += "true";
+					break;
+				case "0":
+				case "false":
+					equation += "false";
+					break;
+				default:
+					
+			}
+
+			temp.modifyEquation(equation);
+
+		}
+		
+		
+		
+		
+		try {
+			temp.calculateStableStatesVC(outputDirectory);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return temp.getStableStates() ;
+	}
+	
+	/**
+	 * Modify equation, the function will identify correct equation based on target name
+	 * 
+	 * @param equation
+	 */
+	protected void modifyEquation(String equation)
+	{
+		// Get index of equation for specified target
+		int index = getIndexOfEquation (equation.split(" ")[0].trim()) ;
+		
+		booleanEquations.set(index, new BooleanEquation(equation));
+		
+	}
 	
 }

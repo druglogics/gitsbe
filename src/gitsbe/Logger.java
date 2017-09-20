@@ -21,7 +21,8 @@ public class Logger {
 	// Filenames of output files
 	private String filenameSummary ;
 	private String filenameOutput ;
-//	private String filenameErrors ;
+	private String filenameErrors ;
+	private String filenameWarnings ;
 	private String directory ;
 	
 	
@@ -29,9 +30,11 @@ public class Logger {
 	private PrintWriter writerDebug ;
 	private PrintWriter writerSummary ;
 	private PrintWriter writerOutput ;
-//	private PrintWriter writerErrors ;
+	private PrintWriter writerError ;
+	private PrintWriter writerWarning ;
 	
 	private boolean consoleOutput = true ;
+	private boolean debugMode = false;
 	
 	private int verbosity ;
 	
@@ -56,7 +59,8 @@ public class Logger {
 		// Initialize file writers
 		this.writerOutput = new PrintWriter(this.filenameOutput) ;
 		this.writerSummary = new PrintWriter(this.filenameSummary) ;
-		
+		this.writerError = new PrintWriter(this.filenameOutput + "_error.log");
+		this.writerWarning = new PrintWriter(this.filenameOutput + "_warning.log");
 		setVerbosity (verbosity) ;
 		this.consoleOutput = consoleOutput ;
 		
@@ -68,6 +72,8 @@ public class Logger {
 		writerOutput.close();
 		writerSummary.close();
 		writerDebug.close();
+		writerWarning.close();
+		writerError.close();
 	}
 	
 	
@@ -245,4 +251,50 @@ public class Logger {
 
 	}
 	
+	/**
+	 * Write warning with prefix WARNING
+	 * @param msg
+	 */
+	public void warning (String msg)
+	{
+		writerWarning.write("WARNING: " + msg);
+		writerWarning.flush();
+		writerOutput.write("\tWARNING: " + msg);
+		writerOutput.flush();
 	}
+	
+	/**
+	 * Write error with prefix ERROR
+	 * 
+	 * @param msg
+	 */
+	public void error (String msg)
+	{
+		writerError.write("ERROR: " + msg);
+		writerError.flush();
+		writerOutput.write("\tERROR: " + msg);
+		writerOutput.flush();
+	}
+	
+	/**
+	 * Extra output to log if debug mode is active
+	 * 
+	 * @param msg
+	 */
+	public void debug (String msg)
+	{
+		if (debugMode)
+			output(1, "DEBUG: " + msg);
+	}
+	
+	/**
+	 * Set debug mode
+	 * 
+	 * @param mode
+	 */
+	public void setDebug (boolean mode)
+	{
+		debugMode = mode ;
+	}
+	
+}
