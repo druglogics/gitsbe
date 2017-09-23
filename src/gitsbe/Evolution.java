@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import drabme.ModelOutputs;
+
 public class Evolution {
 
 	ArrayList<MutatedBooleanModel> bestModels;
@@ -24,11 +26,13 @@ public class Evolution {
 	// Config config ;
 	private Config config;
 	private Logger logger;
+	private ModelOutputs modelOutputs ;
 
 	//
 
 	public Evolution(Summary summary, BooleanModel generalBooleanModel,
 			String baseModelName, TrainingData data,
+			ModelOutputs modelOutputs,
 			String directoryName, String outputDirectory, Config config,
 			Logger logger) {
 
@@ -43,6 +47,7 @@ public class Evolution {
 //		this.stableStates = steadyState.getSteadyStates();
 		this.directoryName = directoryName;
 		this.outputDirectory = outputDirectory;
+		this.modelOutputs = modelOutputs;
 		this.config = config;
 		this.logger = logger;
 
@@ -165,10 +170,10 @@ public class Evolution {
 						+ generationModels.get(i).getModelName());
 
 				try {
-					generationModels.get(i).calculateStableStatesVC(
-							outputDirectory);
+//					generationModels.get(i).calculateStableStatesVC(
+//							outputDirectory);
 					
-					generationModels.get(i).calculateFitness(data);
+					generationModels.get(i).calculateFitness(data, modelOutputs, outputDirectory);
 					// generationModels.get(i).calculateFitnessAgainstStableStatesAveraged(stableStates[0]);
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
@@ -233,7 +238,7 @@ public class Evolution {
 			logger.output(2, "\n");
 
 			// Break if highestFitness is over
-			if (highestFitness > (steadyState.getMaxFitness()
+			if (highestFitness > (data.getMaxFitness()
 					* config.getTarget_fitness_percent() / 100)) {
 				logger.output(2, "Breaking evolution after " + generation
 						+ " generations, since target fitness reached ("

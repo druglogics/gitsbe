@@ -1,5 +1,7 @@
 package gitsbe;
 
+import drabme.ModelOutputs;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,11 +11,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Random;
+
 
 /**
  *  Gitsbe - Generic Interactions To Specific Boolean Equations
@@ -41,6 +43,7 @@ public class Gitsbe implements Runnable {
 	private String outputDirectory;
 	private String directoryTemp ;
 	private String nameProject ;
+	private String filenameModelOutputs;
 	
 	// Declare one general model that is defined by input files
 	private GeneralModel generalModel ;
@@ -59,7 +62,9 @@ public class Gitsbe implements Runnable {
 		this.outputDirectory = outputDirectory ;
 		this.directoryTemp = directoryTemp ;
 	}
-	public Gitsbe(String nameProject, String filenameNetwork, String filenameTrainingData, String filenameConfig) {
+	
+	// constructor with model outputs
+	public Gitsbe(String nameProject, String filenameNetwork, String filenameTrainingData, String filenameConfig, String filenameModelOutputs) {
 		this.nameProject = nameProject ;
 		
 		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss") ;
@@ -72,6 +77,7 @@ public class Gitsbe implements Runnable {
 		this.filenameTrainingData = filenameTrainingData ;
 		this.filenameConfig = filenameConfig ;
 		this.outputDirectory = outputDirectory ;
+		this.filenameModelOutputs = filenameModelOutputs;
   }
 
 	@Override
@@ -299,7 +305,7 @@ public class Gitsbe implements Runnable {
 		{
 			logger.output(1, "Cannot find steady state file, generating template file: " + filenameTrainingData);
 			try {
-				data.writeTrainingDataTemplateFile(filenameTrainingData);
+				TrainingData.writeTrainingDataTemplateFile(filenameTrainingData);
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -311,6 +317,36 @@ public class Gitsbe implements Runnable {
 			return ;
 		}
 		
+		logger.output(2, "Max fitness: " + data.getMaxFitness() );
+		
+		// -------------------
+		// Load output weights
+		// -------------------
+		logger.outputHeader(2, "Loading model outputs");
+		ModelOutputs outputs;
+
+		try {
+			outputs = new ModelOutputs(filenameModelOutputs, logger);
+		} catch (IOException e) {
+
+			logger.output(1, "ERROR: Couldn't load model outputs file: "
+					+ filenameModelOutputs);
+			logger.output(1, "Writing template model outputs file: "
+					+ filenameModelOutputs);
+
+			try {
+				ModelOutputs.saveModelOutputsFileTemplate(filenameModelOutputs);
+			} catch (IOException e2) {
+				logger.output(1,
+						"ERROR: Couldn't write template model outputs file.");
+				e2.printStackTrace();
+			}
+
+			e.printStackTrace();
+			return;
+		}
+				
+				
 		// --------------------------------------------------------
 		// Obtain specific Boolean model from general Boolean model
 		// --------------------------------------------------------
@@ -329,6 +365,8 @@ public class Gitsbe implements Runnable {
 		if (config.isPreserve_tmp_files())
 		{
 			
+			if (directoryTemp == null)
+				directoryTemp = new File(outputDirectory,"tmp").getPath();
 //			bnetOutputDirectory = new File(outputDirectory,"tmp").getPath();
 			bnetOutputDirectory = directoryTemp ;
 			if (!new File (bnetOutputDirectory).mkdir())
@@ -354,8 +392,8 @@ public class Gitsbe implements Runnable {
 			Evolution ga = new Evolution (summary, 
 										  generalBooleanModel, 
 								          generalBooleanModel.getModelName() + "_run_" + run + "_", 
-								          ss, 
 								          data,
+								          outputs,
 								          modelDirectory , 
 								          bnetOutputDirectory,
 								          config,

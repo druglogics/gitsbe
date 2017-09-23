@@ -3,6 +3,7 @@ package gitsbe;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * 
@@ -15,19 +16,45 @@ public class TrainingDataObservation {
 	// Array of strings describing perturbed nodes in observation
 	private ArrayList<String> condition ;
 	
-	private ArrayList<String> observation;
+	private ArrayList<String> response;
 	
 	
-	public TrainingDataObservation (ArrayList<String> condition, ArrayList<String> observation)
+	public TrainingDataObservation (ArrayList<String> condition, ArrayList<String> response)
 	{
 		this.condition = condition;
-		this.observation = observation;
+		this.response = response;
 	}
 	
-	public String getObservation()
+	public String getData()
 	{
 		String result = "";
 		
-		result += String.
+		result += "Condition: " + Arrays.toString(this.condition.toArray(new String[0])) ;
+		result += "Response: " + Arrays.toString(this.response.toArray(new String[0])) ;
+		
+		return result;
+	}
+	
+	public ArrayList<String> getCondition ()
+	{
+		return condition;
+	}
+	
+	public ArrayList<String> getResponse ()
+	{
+		return response;
+	}
+	
+	public int getResponseSize()
+	{
+		int size = 0;
+		
+		for (int i = 0; i < response.size(); i++)
+		{
+			if (!response.get(i).split(":")[1].equals("-")) // skip specified unknown observations
+				size++ ;
+				
+		}
+		return size;
 	}
 }

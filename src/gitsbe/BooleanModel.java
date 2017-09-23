@@ -670,7 +670,7 @@ public class BooleanModel {
 	 * @param target
 	 * @return
 	 */
-	protected int getIndexOfEquation (String target)
+	public int getIndexOfEquation (String target)
 	{
 
 		int index = -1 ;
@@ -689,6 +689,16 @@ public class BooleanModel {
 		return index ;
 	}
 	
+	/**
+	 * Checks if there is one or several stable states for the model
+	 * 
+	 * @return
+	 */
+	public boolean hastStableStates()
+	{
+		return (stableStates.size() > 0) ;
+	}
+	
 	public String[][] getStableStates()
 	{
 		String[][] result = new String[stableStates.size() + 1][getNodeNames().size()];
@@ -697,7 +707,7 @@ public class BooleanModel {
 		
 		for (int i = 0; i < stableStates.size(); i++)
 		{
-			result[i+1] = stableStates.get(i).split("");
+			result[i+1] = stableStates.get(i).split("(?!^)"); // if using "" to split this will return the correct list but empty first element, fixed in jdk8
 		}
 		
 		return result;
@@ -765,6 +775,10 @@ public class BooleanModel {
 		// Get index of equation for specified target
 		int index = getIndexOfEquation (equation.split(" ")[0].trim()) ;
 		
+		if (index < 0)
+		{
+			logger.error("Target of equation [" + equation + "] not found, this will crash the program. Non-matching name in topology and query?");
+		}
 		booleanEquations.set(index, new BooleanEquation(equation));
 		
 	}

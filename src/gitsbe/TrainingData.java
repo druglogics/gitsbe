@@ -38,6 +38,21 @@ public class TrainingData {
 	 * 
 	 * If observation is global output (e.g. growth) then name should be 'globaloutput'
 	 * 
+	 * # Observations can be stated as floating point absolutes [0..1]
+	 * # or as floating point relatives [0..1], prepended by a + or - sign to 
+	 * # signify an observation relative to the unperturbed condition. 
+	 * # +0 and -0 means no change.
+	 * #
+	 * # (Currently two or more specified conditions not supported, only relative
+	 * # to unperturbed system, this could be implemented by e.g. +/- prepending of 
+	 * # also input conditions)
+	 * #
+	 * # Nomenclature: 
+	 * # TrainingData: All data in this file
+	 * # Observation: Collection of 'Condition' and 'Response'
+	 * # Condition: Collection of 'inputs' that are tested together in one DataPoint (context)
+	 * # Response: Collection of 'outputs' that are recorded together in one DataPoint
+	 * 
  	 * After this first observation column each column corresponds to each node and state in condition
 	 * Hypothetical example 
 
@@ -127,7 +142,7 @@ globaloutput:0.1
 		
 	}
 	
-	public void writeTrainingDataTemplateFile (String filename) throws IOException
+	public static void writeTrainingDataTemplateFile (String filename) throws IOException
 	{
 		PrintWriter writer = new PrintWriter(filename, "UTF-8");
 		
@@ -145,10 +160,10 @@ globaloutput:0.1
 	 * 
 	 * @return maxFitness
 	 */
-//	public int getMaxFitness ()
-//	{
-//		int maxFitness = 0;
-//		
+	public int getMaxFitness ()
+	{
+		int maxFitness = 0;
+		
 //		for (int i = 0; i < observations.size(); i++) 
 //		{
 //			for (int j = 0; j < observations.get(i).length(); i++)
@@ -159,6 +174,14 @@ globaloutput:0.1
 //				}
 //			}
 //		}
+		
+		for (int i = 0; i < observations.size(); i++)
+		{
+			maxFitness += observations.get(i).getResponseSize();
+		}
+		
+		maxFitness += observations.size() ; // a fitness of +1 is given for a model with a stable state 
+											// per condition, thus max fitness must be increased
 		
 		return maxFitness ;
 	}
@@ -173,15 +196,16 @@ globaloutput:0.1
 		return observations;
 	}
 	
-	public String[] getTrainingDataVerbose()
+	public String getTrainingDataVerbose()
 	{
 		String result = "";
 	
 		for (int i = 0; i < observations.size(); i++)
 		{
-			result += "\nCondition " + i+1 + ":\n");
-			result += observations.get(i).
-		
+			result += "\n\nCondition " + (i+1) + ":\n";
+			result += observations.get(i).getData();
+		}
+
+		return result;
 	}
-	
 }

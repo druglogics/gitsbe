@@ -261,6 +261,9 @@ public class Logger {
 		writerWarning.flush();
 		writerOutput.write("\tWARNING: " + msg);
 		writerOutput.flush();
+		
+		if (consoleOutput) System.out.println ("\n\tWARNING: " + msg + "\n") ;
+
 	}
 	
 	/**
@@ -272,8 +275,11 @@ public class Logger {
 	{
 		writerError.write("ERROR: " + msg);
 		writerError.flush();
-		writerOutput.write("\tERROR: " + msg);
+		writerOutput.println("\tERROR: " + msg);
 		writerOutput.flush();
+		
+		if (consoleOutput) System.out.println ("\n\tERROR: " + msg + "\n") ;
+
 	}
 	
 	/**
