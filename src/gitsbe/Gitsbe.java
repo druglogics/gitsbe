@@ -36,6 +36,7 @@ public class Gitsbe implements Runnable {
 	private String filenameSteadyState;
 	private String filenameConfig;
 	private String outputDirectory;
+	private String directoryTemp ;
 	private String nameProject ;
 	
 	// Declare one general model that is defined by input files
@@ -46,13 +47,15 @@ public class Gitsbe implements Runnable {
 	
 	private static Random rand ;
 	
-	public Gitsbe(String nameProject, String filenameNetwork, String filenameSteadyState, String filenameConfig, String outputDirectory) {
+	public Gitsbe(String nameProject, String filenameNetwork, String filenameSteadyState, String filenameConfig, String outputDirectory, String directoryTemp) {
 		this.nameProject = nameProject ;
 		this.filenameNetwork = filenameNetwork ;
 		this.filenameSteadyState = filenameSteadyState ;
 		this.filenameConfig = filenameConfig ;
 		this.outputDirectory = outputDirectory ;
+		this.directoryTemp = directoryTemp ;
 	}
+	
 	public Gitsbe(String nameProject, String filenameNetwork, String filenameSteadyState, String filenameConfig) {
 		this.nameProject = nameProject ;
 		
@@ -285,11 +288,11 @@ public class Gitsbe implements Runnable {
 
 		// Where to store all temporary files
 		String bnetOutputDirectory ;
-
+		
 		if (config.isPreserve_tmp_files())
 		{
+			bnetOutputDirectory = directoryTemp ;
 			
-			bnetOutputDirectory = new File(outputDirectory,"tmp").getPath();
 			if (!new File (bnetOutputDirectory).mkdir())
 			{
 				System.out.println("Error creating temporary folder, exiting.") ;
