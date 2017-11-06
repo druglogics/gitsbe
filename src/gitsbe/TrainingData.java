@@ -129,7 +129,7 @@ globaloutput:0.1
 				i++;
 			}
 			
-			if (lines.get(i).toLowerCase().equals("observation"))
+			if (lines.get(i).toLowerCase().equals("response"))
 			{
 				observation = new ArrayList<String>(Arrays.asList(lines.get(i+1).split("\t")));
 				i++;

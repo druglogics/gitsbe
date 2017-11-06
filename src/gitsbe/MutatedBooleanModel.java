@@ -430,7 +430,7 @@ public class MutatedBooleanModel extends BooleanModel {
 						equation += "false";
 					else
 					{
-						logger.error("Training data with incorrectly formatted observation: " + condition.get(j));
+						logger.error("Training data with incorrectly formatted response: " + condition.get(j));
 						continue;
 					}
 					
@@ -458,7 +458,7 @@ public class MutatedBooleanModel extends BooleanModel {
 				if (response.get(0).split(":")[0].equals("globaloutput"))
 				{
 					// compute a global output of the model by using specified model outputs
-					// scale output to value <0..1] (exclude 0 since ratios then are difficult)
+					// scaled output to value <0..1] (exclude 0 since ratios then are difficult)
 					conditionfitness = modelOutputs.calculateMatch(temp.stableStates, this);
 					
 					
@@ -491,7 +491,7 @@ public class MutatedBooleanModel extends BooleanModel {
 		}
 		
 
-		logger.output(3, "Fitness for model [" + modelName + "] including all conditions: " + fitness);
+		logger.output(3, "Fitness for model [" + modelName + "] across all conditions: " + fitness);
 
 	}
 	
