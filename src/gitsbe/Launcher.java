@@ -36,7 +36,8 @@ public class Launcher {
 
 			args = new String[] {"toy_ags_example", 
 								 "toy_ags_network.sif", 
-								 "toy_ags_trainingdata_original_names_short.tab", 
+//								 "toy_ags_trainingdata_original_names_short.tab",
+								 "whatever_training_data",
 								 "toy_ags_config.tab",
 								 "toy_ags_modeloutputs.tab"} ;
 //			args = new String[] {"toy_model_example", "toy_network.sif", "toy_model_trainingdata.tab", "toy_model_config.tab"} ;

@@ -54,10 +54,11 @@ public class Gitsbe implements Runnable {
 	
 	private static Random rand ;
 	
-	public Gitsbe(String nameProject, String filenameNetwork, String filnameTrainingData, String filenameConfig, String outputDirectory, String directoryTemp) {
+	public Gitsbe(String nameProject, String filenameNetwork, String filenameTrainingData, String filenameModelOutputs, String filenameConfig, String outputDirectory, String directoryTemp) {
 		this.nameProject = nameProject ;
 		this.filenameNetwork = filenameNetwork ;
 		this.filenameTrainingData = filenameTrainingData ;
+		this.filenameModelOutputs = filenameModelOutputs ;
 		this.filenameConfig = filenameConfig ;
 		this.outputDirectory = outputDirectory ;
 		this.directoryTemp = directoryTemp ;
@@ -90,7 +91,7 @@ public class Gitsbe implements Runnable {
 		System.out.print("Welcome to " + appName + " " + version + "\n\n") ;
 		
 		
-		// Initialization
+		// Initialization with seed :)
 		rand = new Random(0) ;
 		
 		
