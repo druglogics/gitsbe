@@ -459,7 +459,8 @@ public class MutatedBooleanModel extends BooleanModel {
 				{
 					// compute a global output of the model by using specified model outputs
 					// scaled output to value <0..1] (exclude 0 since ratios then are difficult)
-					conditionfitness = modelOutputs.calculateMatch(temp.stableStates, this);
+          float observedGlobalOutput = Float.parseFloat(response.get(0).split(":")[1]);
+					conditionfitness = 1 - Math.abs(modelOutputs.calculateGlobalOutput(temp.stableStates, this) - observedGlobalOutput);
 					
 					
 				}
