@@ -118,13 +118,16 @@ public class Evolution {
 			for (int i = 0; i < config.getPopulation(); i++) {
 				int mutations_factor;
 				int shuffle_factor;
+				int topology_mutations_factor;
 
 				if (initialphase) {
 					mutations_factor = config.getBootstrap_mutations_factor();
 					shuffle_factor = config.getBootstrap_shuffle_factor();
+					topology_mutations_factor = config.getBootstrap_topology_mutations_factor();
 				} else {
 					mutations_factor = config.getMutations_factor();
 					shuffle_factor = config.getShuffle_factor();
+					topology_mutations_factor = config.getTopology_mutations_factor();
 				}
 
 				if ((config.getBalancemutations() * mutations_factor) > 0) {
@@ -161,15 +164,15 @@ public class Evolution {
 				}
 				
 				
-				if ((config.getTopologyMutations() * shuffle_factor) > 0) {
+				if ((config.getTopologyMutations() * topology_mutations_factor) > 0) {
 					logger.output(
 							3,
 							"Introducing "
-									+ (config.getTopologyMutations() * shuffle_factor)
+									+ (config.getTopologyMutations() * topology_mutations_factor)
 									+ " topology mutations to model "
 									+  generationModels.get(i).getModelName());
 					generationModels.get(i).topologyMutations(
-							shuffle_factor * config.getTopologyMutations());			
+							topology_mutations_factor * config.getTopologyMutations());			
 				}
 
 			}

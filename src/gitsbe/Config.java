@@ -37,6 +37,8 @@ public class Config {
 	private int mutations_factor ;
 	private int bootstrap_shuffle_factor ;
 	private int shuffle_factor ;
+	private int bootstrap_topology_mutations_factor ;
+	private int topology_mutations_factor ;
 	private int simulations ;
 	private int models_saved ;
 	private float fitness_threshold ;
@@ -209,6 +211,14 @@ public class Config {
   			shuffle_factor = Integer.parseInt(value) ;
   			break ;
   			
+  		case "bootstrap_topology_mutations_factor:":
+  			bootstrap_topology_mutations_factor = Integer.parseInt(value);
+  			break ;
+  			
+  		case "topology_mutations_factor:":
+  			topology_mutations_factor = Integer.parseInt(value) ;
+  			break ;
+  			
   		case "models_saved:":
   			models_saved = Integer.parseInt(value) ;
   			break ;
@@ -248,6 +258,8 @@ public class Config {
 				"mutations_factor",
 				"bootstrap_shuffle_factor",
 				"shuffle_factor",
+				"bootstrap_topology_mutations_factor",
+				"topology_mutations_factor",
 				"simulations",
 				"models_saved",
 				"fitness_threshold"
@@ -278,6 +290,8 @@ public class Config {
 				Integer.toString(mutations_factor),
 				Integer.toString(bootstrap_shuffle_factor),
 				Integer.toString(shuffle_factor),
+				Integer.toString(bootstrap_topology_mutations_factor),
+				Integer.toString(topology_mutations_factor),
 				Integer.toString(simulations),
 				Integer.toString(models_saved),
 				Float.toString(fitness_threshold),
@@ -374,6 +388,12 @@ public class Config {
 		writer.println() ;
 		writer.println("# Factor to multiply number of regulator priority shuffles after initial phase is over") ;
 		writer.println("shuffle_factor:\t1") ;
+		writer.println() ;
+		writer.println("# Factor to multiply number of topology mutations until initial phase is over") ;
+		writer.println("bootstrap_topology_mutations_factor:\t5");
+		writer.println() ;
+		writer.println("# Factor to multiply number of topology mutations after initial phase is over") ;
+		writer.println("topology_mutations_factor:\t1");
 		writer.println() ;
 		writer.println("# Number of models to save") ;
 		writer.println("models_saved:\t5") ;
@@ -515,6 +535,17 @@ public class Config {
 	public int getTopologyMutations() {
 		return topology_mutations;
 	}
+
+	public int getBootstrap_topology_mutations_factor() {
+		return bootstrap_topology_mutations_factor ;
+		
+	}
+
+	public int getTopology_mutations_factor() {
+		return topology_mutations_factor;
+	}
+	
+	
 
 	
 	
