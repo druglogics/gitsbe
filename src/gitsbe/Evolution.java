@@ -159,6 +159,18 @@ public class Evolution {
 					generationModels.get(i).shuffleRandomRegulatorPriorities(
 							shuffle_factor * config.getShufflemutations());
 				}
+				
+				
+				if ((config.getTopologyMutations() * shuffle_factor) > 0) {
+					logger.output(
+							3,
+							"Introducing "
+									+ (config.getTopologyMutations() * shuffle_factor)
+									+ " topology mutations to model "
+									+  generationModels.get(i).getModelName());
+					generationModels.get(i).topologyMutations(
+							shuffle_factor * config.getTopologyMutations());			
+				}
 
 			}
 

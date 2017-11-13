@@ -231,6 +231,50 @@ public class BooleanEquation {
 		}
 	}
 
+	public void mutateActivatingRegulator()
+	{
+		if (this.activatingRegulators.size() > 1)
+		{
+			int index = Gitsbe.randInt(0, activatingRegulators.size() - 1);
+			
+			// check if end of equation
+			if (index == activatingRegulators.size() - 2)
+				operatorsActivatingRegulators.remove(index);
+			
+			activatingRegulators.remove(index);
+			
+		}
+	}
+	
+	public void mutateInhibitoryRegulator()
+	{
+		if (this.inhibitoryRegulators.size() > 1)
+		{
+			int index = Gitsbe.randInt(0, inhibitoryRegulators.size() - 1);
+			
+			// check if end of equation
+			if (index == inhibitoryRegulators.size() - 2)
+				operatorsInhibitoryRegulators.remove(index);
+			
+			inhibitoryRegulators.remove(index);
+			
+		}
+	}
+	public void mutateRegulator() {
+		// randomly select activating or inhibiting regulator
+		if (Gitsbe.randInt(0, 1) > 0.5)
+		{
+			mutateActivatingRegulator();
+			
+		}
+		else
+		{
+			mutateInhibitoryRegulator();
+		}
+		
+	
+	}
+	
 	public void mutateRandomOperator(int mutations) {
 		for (int i = 0; i < mutations; i++) {
 			mutateRandomOperator();

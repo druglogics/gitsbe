@@ -30,6 +30,7 @@ public class Config {
 	private int ormutations ;
 	private int andmutations ;
 	private int shufflemutations ;
+	private int topology_mutations ;
 	private int target_fitness ;
 	private int target_fitness_percent ;
 	private int bootstrap_mutations_factor ;
@@ -180,6 +181,10 @@ public class Config {
   			shufflemutations = Integer.parseInt(value) ;
   			break ;
   			
+  		case "topology_mutations:":
+  			topology_mutations = Integer.parseInt(value) ;
+  			break ;
+  			
   		case "target_fitness:":
   			target_fitness = Integer.parseInt(value) ;
   			break ;
@@ -236,6 +241,7 @@ public class Config {
 				"ormutations",
 				"andmutations",
 				"shufflemutations",
+				"topology_mutations",
 				"target_fitness",
 				"target_fitness_percent",
 				"bootstrap_mutations_factor",
@@ -265,6 +271,7 @@ public class Config {
 				Integer.toString(ormutations),
 				Integer.toString(andmutations),
 				Integer.toString(shufflemutations),
+				Integer.toString(topology_mutations),
 				Integer.toString(target_fitness),
 				Integer.toString(target_fitness_percent),
 				Integer.toString(bootstrap_mutations_factor),
@@ -348,6 +355,7 @@ public class Config {
 		writer.println("ormutations:\t0") ;
 		writer.println("andmutations:\t0") ;
 		writer.println("shufflemutations:\t5") ;
+		writer.println("topology_mutations:\1") ;
 		writer.println() ;
 		writer.println("# Target fitness threshold to stop evolution (0 means disabled)") ;
 		writer.println("target_fitness:\t0") ;
@@ -498,6 +506,14 @@ public class Config {
 	 */
 	public int getBootstrap_shuffle_factor() {
 		return bootstrap_shuffle_factor;
+	}
+
+	/**
+	 * 
+	 * @return nuber of topology mutations
+	 */
+	public int getTopologyMutations() {
+		return topology_mutations;
 	}
 
 	

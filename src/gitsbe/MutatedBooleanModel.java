@@ -75,45 +75,6 @@ public class MutatedBooleanModel extends BooleanModel {
 		}
 	}
 
-//	public void introduceRandomMutation(int numberOfMutations)
-//	{
-//		
-//		
-//		for (int i = 0; i < numberOfMutations; i++)
-//		{
-//			// Find random equation to mutate.
-//			int randomEquation = Gitsbe.randInt(0,booleanEquations.size()-1) ;
-//			
-//			String oldEquation = booleanEquations.get(randomEquation).getBooleanEquation() ;
-//			
-////						int randomLoc = randInt(0,oldEquation.length()) ;
-//			
-//			// Search for replacement from beginning of equation - Must be changed if the operator regulating all inhibitory regulators is not the only one to be mutated (NOW: and not to or not)
-//			int startLoc = 0;
-//			int endLoc = oldEquation.length() ;
-//			int midLoc = Gitsbe.randInt(startLoc, endLoc) ;
-//			
-//
-//
-//			String newEquation = oldEquation ;
-//			
-//			
-//			// 50 % probability of introducing and to or, or or to and
-//			if (Gitsbe.randInt(0,1) > 0.5)
-//			{
-//				newEquation = oldEquation.substring(startLoc, midLoc) + oldEquation.substring(midLoc, endLoc).replaceFirst(" and ", " or ") ;
-//			}
-//			else
-//			{
-//				newEquation = oldEquation.substring(startLoc, midLoc) + oldEquation.substring(midLoc, endLoc).replace(" or ", " and ") ;
-//			}
-//			
-//			if (!newEquation.equals(oldEquation))
-//				numTotalMutations += numberOfMutations ;
-//			
-//			booleanEquations.set(randomEquation, new BooleanEquation(newEquation)) ;
-//		}
-//	}
 	
 	public void shuffleRandomRegulatorPriority ()
 	{
@@ -132,77 +93,26 @@ public class MutatedBooleanModel extends BooleanModel {
 		}		
 	}
 	
+	/**
+	 * Introduce mutations to topology, removing regulators of nodes (but not all regulators for any node)
+	 * @param i
+	 */
+	public void topologyMutations(int numberOfMutations) {
+		for (int i = 0; i < numberOfMutations; i++)
+		{
+			// Find random equation to mutate.
+			int randomEquationIndex = Gitsbe.randInt(0,booleanEquations.size()-1) ;
+			
+			booleanEquations.get(randomEquationIndex).mutateRegulator();
+		}
+	}
+	
 	public void introduceOrMutation (int numberOfMutations)
 	{
 		
 	}
 	
-//	public void introduceActivatorMutation(int numberOfMutations)
-//	{
-//		for (int i = 0; i < numberOfMutations; i++)
-//		{
-//			// Find random equation to mutate.
-//			int randomEquationIndex = randInt(0,booleanEquations.size()-1) ;
-//			
-//			String oldEquation = booleanEquations.get(randomEquationIndex) ;
-//			
-//			// Search for replacement from 
-//			int startLoc = 0;
-//			int midLoc = oldEquation.indexOf(')') ;
-//			int endLoc = oldEquation.indexOf("not") ;
-//			
-//			// Check if there are any activatory components
-//			if (oldEquation.indexOf(')', 0) > endLoc)
-//				return ;
-//			
-//			String newEquation = oldEquation ;
-//			
-//			
-//			// 50 % probability of introducing and to or, or or to and
-//			if (randInt(0,1) > 0.5)
-//			{
-//				newEquation = oldEquation.substring(startLoc, midLoc).replaceFirst(" and ", " or ") + oldEquation.substring(midLoc, endLoc) ;
-//			}
-//			else
-//			{
-//				newEquation = oldEquation.substring(startLoc, midLoc).replaceFirst(" or ", " and ") + oldEquation.substring(midLoc, endLoc) ;
-//			}
-//			
-//			booleanEquations.set(randomEquationIndex, newEquation) ;
-//		}
-//	}
-	
-//	public void introduceInhibitorMutation(int numberOfMutations)
-//	{
-//		for (int i = 0; i < numberOfMutations; i++)
-//		{
-//			// Find random equation to mutate.
-//			int randomEquationIndex = randInt(0,booleanEquations.size()-1) ;
-//			
-//			String oldEquation = booleanEquations.get(randomEquationIndex) ;
-//			
-//			// Search for replacement from 
-//			int startLoc = 0;
-//			int midLoc = oldEquation.indexOf(" not ") ;
-//			int endLoc = oldEquation.length() ;
-//
-//			String newEquation = oldEquation ;
-//			
-//			
-//			// 50 % probability of introducing and to or, or or to and
-//			if (randInt(0,1) > 0.5)
-//			{
-//				newEquation = oldEquation.substring(startLoc, midLoc) + oldEquation.substring(midLoc, endLoc).replaceFirst(" and ", " or ") ;
-//			}
-//			else
-//			{
-//				newEquation = oldEquation.substring(startLoc, midLoc) + oldEquation.substring(midLoc, endLoc).replaceFirst(" or ", " and ") ;
-//			}
-//			
-//			booleanEquations.set(randomEquationIndex, newEquation) ;
-//		}
-//	}
-	
+
 	public void introduceBalanceMutation(int numberOfMutations)
 	{
 		for (int i = 0; i < numberOfMutations; i++)
@@ -215,41 +125,6 @@ public class MutatedBooleanModel extends BooleanModel {
 		}
 	}
 	
-//	public void introduceBalanceMutation(int numberOfMutations)
-//	{
-//		
-//		for (int i = 0; i < numberOfMutations; i++)
-//		{
-//			
-//			
-//			
-//			// Find random equation to mutate.
-//			int randomEquationIndex = Gitsbe.randInt(0,booleanEquations.size()-1) ;
-//			
-//			String oldEquation = booleanEquations.get(randomEquationIndex) ;
-//			
-////			int randomLoc = randInt(0,oldEquation.length()) ;
-//			
-//			// Search for replacement from beginning of equation - Must be changed if the operator regulating all inhibitory regulators is not the only one to be mutated (NOW: and not to or not)
-//			int randomLoc = 0 ;
-//
-//			String newEquation = oldEquation ;
-//			
-//			if (Gitsbe.randInt(0,1) > 0.5)
-//			{
-//				newEquation = oldEquation.substring(0, randomLoc) + oldEquation.substring(randomLoc, oldEquation.length()).replaceFirst("and  not", "or  not") ;
-//			}
-//			else
-//			{
-//				newEquation = oldEquation.substring(0, randomLoc) + oldEquation.substring(randomLoc, oldEquation.length()).replace("or  not", "and  not") ;
-//			}
-//			
-//			if (!newEquation.equals(oldEquation))
-//				numTotalMutations += numberOfMutations ;
-//			
-//			booleanEquations.set(randomEquationIndex, newEquation) ;
-//			}
-//	}
 	
 	/**
 	 * calculate fitness, uses average of stable states found by bnet
@@ -554,5 +429,4 @@ public class MutatedBooleanModel extends BooleanModel {
 		
 	}
 
-    
 }
