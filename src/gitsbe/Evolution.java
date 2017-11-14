@@ -171,6 +171,7 @@ public class Evolution {
 									+ (config.getTopologyMutations() * topology_mutations_factor)
 									+ " topology mutations to model "
 									+  generationModels.get(i).getModelName());
+					
 					generationModels.get(i).topologyMutations(
 							topology_mutations_factor * config.getTopologyMutations());			
 				}

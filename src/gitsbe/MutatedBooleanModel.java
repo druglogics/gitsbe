@@ -102,8 +102,13 @@ public class MutatedBooleanModel extends BooleanModel {
 		{
 			// Find random equation to mutate.
 			int randomEquationIndex = Gitsbe.randInt(0,booleanEquations.size()-1) ;
+			String orig = booleanEquations.get(randomEquationIndex).getBooleanEquation() ;
 			
 			booleanEquations.get(randomEquationIndex).mutateRegulator();
+			
+			logger.output(3, "Exchanging equation \n\t" + orig + "\n\t"
+					+ "" + booleanEquations.get(randomEquationIndex).getBooleanEquation() + "\n");
+			
 		}
 	}
 	
