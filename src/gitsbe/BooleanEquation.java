@@ -217,7 +217,7 @@ public class BooleanEquation {
 		if (Collections.frequency(whitelistInhibitoryRegulators, true) > 0) {
 			equation += " not ";
 
-			equation += getString(" ( ", inhibitoryRegulators.size());
+			equation += getString(" ( ", Collections.frequency(whitelistInhibitoryRegulators, true));
 			// equation += " " ;
 
 			for (int i = 0; i < inhibitoryRegulators.size(); i++) 
@@ -225,7 +225,7 @@ public class BooleanEquation {
 			{
 				if (whitelistInhibitoryRegulators.get(i) == true)
 				{	
-					if (i > 0)
+					if (Collections.frequency(whitelistInhibitoryRegulators.subList(0, i), true) > 0)
 						equation += " " + operatorsInhibitoryRegulators.get(i - 1)
 								+ " ";
 	
@@ -262,7 +262,7 @@ public class BooleanEquation {
 
 	public void mutateActivatingRegulator()
 	{
-		if (this.activatingRegulators.size() > 1)
+		if (this.activatingRegulators.size() > 0)
 		{
 			int index = Gitsbe.randInt(0, activatingRegulators.size() - 1);
 			
@@ -279,16 +279,24 @@ public class BooleanEquation {
 	
 	public void mutateInhibitoryRegulator()
 	{
-		if (this.inhibitoryRegulators.size() > 1)
+//		if (this.inhibitoryRegulators.size() > 1)
+//		{
+//			int index = Gitsbe.randInt(0, inhibitoryRegulators.size() - 1);
+//			
+//			// check if end of equation
+//			if (index == inhibitoryRegulators.size() - 2)
+//				operatorsInhibitoryRegulators.remove(index);
+//			
+//			inhibitoryRegulators.remove(index);
+//			
+//		
+//		}
+		
+		if (this.inhibitoryRegulators.size() > 0)
 		{
 			int index = Gitsbe.randInt(0, inhibitoryRegulators.size() - 1);
-			
-			// check if end of equation
-			if (index == inhibitoryRegulators.size() - 2)
-				operatorsInhibitoryRegulators.remove(index);
-			
-			inhibitoryRegulators.remove(index);
-			
+		
+			this.whitelistInhibitoryRegulators.set(index, !whitelistInhibitoryRegulators.get(index)) ;
 		}
 	}
 	public void mutateRegulator() {
@@ -423,6 +431,22 @@ public class BooleanEquation {
 		return result;
 	}
 
+	public int getNumWhitelistedRegulators ()
+	{
+		return (Collections.frequency(whitelistActivatingRegulators, true) + Collections.frequency(whitelistInhibitoryRegulators, true));
+	}
+	
+	public int getNumBlacklistedRegulators ()
+	{
+		return (Collections.frequency(whitelistActivatingRegulators, false) + Collections.frequency(whitelistInhibitoryRegulators, false));
+	}
+	
+	public int getNumRegulators ()
+	{
+		return (activatingRegulators.size() + inhibitoryRegulators.size()) ;
+	}
+	
+	
 	private String getChars(char character, int length) {
 		char[] chars = new char[length];
 		Arrays.fill(chars, character);

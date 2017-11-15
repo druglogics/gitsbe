@@ -184,10 +184,10 @@ Weight:0.1
 		
 		for (int i = 0; i < observations.size(); i++)
 		{
-			maxFitness += observations.get(i).getResponseSize();
+			maxFitness += observations.get(i).getWeight();
 		}
 		
-		maxFitness += observations.size() ; // a fitness of +1 is given for a model with a stable state 
+		maxFitness += 1 ; // a fitness of +1 is given for a model with a stable state 
 											// per condition, thus max fitness must be increased
 		
 		return maxFitness ;

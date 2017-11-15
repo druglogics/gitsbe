@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.io.File;
 
 import drabme.ModelOutputs;
@@ -106,8 +107,10 @@ public class MutatedBooleanModel extends BooleanModel {
 			
 			booleanEquations.get(randomEquationIndex).mutateRegulator();
 			
-			logger.debug("Exchanging equation \n\t" + orig + "\n\t"
-					+ "" + booleanEquations.get(randomEquationIndex).getBooleanEquation() + "\n");
+			
+			if (!booleanEquations.get(randomEquationIndex).getBooleanEquation().equals(orig))
+				logger.output(3, "Exchanging equation " + randomEquationIndex + "\n\t" + orig + "\n\t"
+						+ "" + booleanEquations.get(randomEquationIndex).getBooleanEquation() + "\n");
 			
 		}
 	}
@@ -271,7 +274,7 @@ public class MutatedBooleanModel extends BooleanModel {
 		for (int i = 0; i < data.size(); i++)
 		{
 			float conditionfitness = 0;
-			
+			float fitnessTopologyReduction = 0;
 			float weight = data.getObservations().get(i).getWeight();
 
 			logger.outputHeader(3, "Defining model for training data: " + this.modelName);
@@ -367,15 +370,31 @@ public class MutatedBooleanModel extends BooleanModel {
 					
 				}
 				fitness += conditionfitness * weight/data.getWeightSum();
-				logger.output(3, "Fitness for model [" + temp.modelName + "] condition " + i + ": " + conditionfitness + ", weight: " + weight);
+				logger.output(3, "Fitness for model [" + temp.modelName + "] condition " + i + " " + "(weight: " + weight + "): " + conditionfitness);
 				
+				// Increase fitness based on number of edges in model (few edges -> high fitness)
+//				int edges = 0;
+//				int removedEdges = 0;
+//				int nodes = booleanEquations.size();
+//				
+//				for (int j = 0; j < booleanEquations.size(); j++)
+//				{
+//					edges += booleanEquations.get(j).getNumRegulators() ;
+//					removedEdges += booleanEquations.get(j).getNumBlacklistedRegulators();
+//				}
+//
+//				
+//				fitnessTopologyReduction += (float) removedEdges/(edges-nodes);
+//				
+//				logger.output(3, "Fitness for topologyreduction: " + fitnessTopologyReduction);
+//
+//				fitness += fitnessTopologyReduction;
 			}
 		
 
 		}
 		
-
-		logger.output(3, "Fitness for model [" + modelName + "] across all conditions: " + fitness);
+		logger.output(3, "Scaled [0..1] fitness for model [" + modelName + "] across all conditions: " + fitness);
 
 	}
 	

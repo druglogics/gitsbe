@@ -253,6 +253,9 @@ public class Evolution {
 						+ config.getTarget_fitness_percent() + " %)");
 				break;
 			}
+			
+			// Break if highestFitness is not improving over generations
+			
 
 		}
 		// With updated bestModels we are ready for a new generation...
