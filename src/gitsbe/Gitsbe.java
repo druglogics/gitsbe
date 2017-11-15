@@ -199,18 +199,6 @@ public class Gitsbe implements Runnable {
 				e1.printStackTrace();
 			}
 			
-			// From rbbt compliance (?)
-//		      String generationDirectory=new File(outputDirectory, "generations").getPath();
-//		      generalModel.setModelName(generationDirectory + File.separator + "model");
-//		      new File(generationDirectory).mkdir();
-				
-		
-			// Trim model according to command line arguments
-
-//			generalModel.removeSelfRegulation();
-//			generalModel.removeSmallNegativeFeedbackLoops();
-			
-//			generalModel.removeNone () ;
 			if (!config.isPreserve_inputs()) generalModel.removeInputs();
 			if (!config.isPreserve_outputs()) generalModel.removeOutputs();
 //			generalModel.removeInputsOutputs();
@@ -260,33 +248,6 @@ public class Gitsbe implements Runnable {
 							
 		logger.outputHeader(3,  "Model in Veliz-Cuba's format");
 		logger.output(3,  generalBooleanModel.getModelVelizCuba());
-		
-		// ------------------------------------------------------
-		// Load SteadyState, if non-existent create template file
-		// ------------------------------------------------------
-//		SteadyState ss ;
-//		try {
-//			logger.output(1, "\nReading steady state from file: " + filenameSteadyState);
-//			
-//			ss = new SteadyState (filenameSteadyState, generalBooleanModel, logger) ;
-//			
-//			logger.output(1, "Max fitness: " + ss.getMaxFitness());
-//			
-//		} catch (FileNotFoundException e)
-//		{
-//			logger.output(1, "Cannot find steady state file, generating template file: " + filenameSteadyState);
-//			try {
-//				generalBooleanModel.writeSteadyStateTemplateFile();
-//			} catch (IOException e1) {
-//				// TODO Auto-generated catch block
-//				e1.printStackTrace();
-//			}
-//			return ;
-//		} catch (IOException e2) {
-//			// TODO Auto-generated catch block
-//			e2.printStackTrace();
-//			return ;
-//		}
 		
 		
 		// ------------------
@@ -363,12 +324,16 @@ public class Gitsbe implements Runnable {
 		// Where to store all temporary files
 		String bnetOutputDirectory ;
 
+		File tempDir ;
+		
 		if (config.isPreserve_tmp_files())
 		{
 			
 			if (directoryTemp == null)
 				directoryTemp = new File(outputDirectory,"tmp").getPath();
-//			bnetOutputDirectory = new File(outputDirectory,"tmp").getPath();
+			
+			tempDir = new File (directoryTemp);
+			
 			bnetOutputDirectory = directoryTemp ;
 			if (!new File (bnetOutputDirectory).mkdir())
 			{
@@ -380,7 +345,14 @@ public class Gitsbe implements Runnable {
 		{
 //			bnetOutputDirectory = System.getProperty("user.dir") + File.separator + "bnet" + File.separator + "tmp" + File.separator ;
 //			bnetOutputDirectory = Files.createTempDirectory(nameProject + "_tmp", null).getFileName(). ;
-			bnetOutputDirectory = new File(System.getProperty("java.io.tmpdir"), nameProject + "_tmp").getAbsolutePath();
+			
+			tempDir = new File(System.getProperty("java.io.tmpdir"), nameProject + "_" + appName + "_tmp") ;
+			if (!tempDir.mkdir())
+			{
+				logger.error("Exiting. Couldn't create temp folder: " + tempDir.getAbsolutePath());
+				return ;
+			}
+			bnetOutputDirectory = tempDir.getAbsolutePath();
 			
 		}
 		
@@ -445,6 +417,9 @@ public class Gitsbe implements Runnable {
 		
 		summary.generateFitnessesReport();
 		
+		
+		logger.outputHeader(1, "\nThe end");
+		
 		// -------------------
 		// Clean tmp directory
 		// -------------------
@@ -458,11 +433,12 @@ public class Gitsbe implements Runnable {
 			
 		}
 		else
-		{ 
+		{
+			logger.output(2, "Deleting temporary directory: " + tempDir.getAbsolutePath());
+			cleanTmpDirectory(tempDir);
+			tempDir.delete();
 		}
-	
-			
-		logger.outputHeader(1, "\nThe end");
+		
 		logger.output(1, "End: " + dateFormat.format(cal.getTime()));
 		logger.output(1, "Analysis completed in " + hours + " hours, " + minutes + " minutes, and " + seconds + " seconds ");
 		

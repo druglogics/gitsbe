@@ -106,7 +106,7 @@ public class MutatedBooleanModel extends BooleanModel {
 			
 			booleanEquations.get(randomEquationIndex).mutateRegulator();
 			
-			logger.output(3, "Exchanging equation \n\t" + orig + "\n\t"
+			logger.debug("Exchanging equation \n\t" + orig + "\n\t"
 					+ "" + booleanEquations.get(randomEquationIndex).getBooleanEquation() + "\n");
 			
 		}
