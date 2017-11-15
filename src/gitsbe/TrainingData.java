@@ -193,6 +193,17 @@ Weight:0.1
 		return maxFitness ;
 	}
 	
+	public float getWeightSum()
+	{
+		float weightsum = 0;
+		
+		for (int i = 0; i < observations.size(); i++)
+		{
+			weightsum += observations.get(i).getWeight();
+		}
+		return weightsum;
+	}
+	
 	public int size ()
 	{
 		return observations.size();

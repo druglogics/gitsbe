@@ -366,8 +366,8 @@ public class MutatedBooleanModel extends BooleanModel {
 						conditionfitness /= (foundObservations + 1); // +1 to account for the fact there is also a stable state, which gives a fitness of 1 itself 
 					
 				}
-				fitness += conditionfitness * weight;
-				logger.output(3, "Fitness for model [" + temp.modelName + "] condition " + i + ": " + conditionfitness * weight);
+				fitness += conditionfitness * weight/data.getWeightSum();
+				logger.output(3, "Fitness for model [" + temp.modelName + "] condition " + i + ": " + conditionfitness + ", weight: " + weight);
 				
 			}
 		
