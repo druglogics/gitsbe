@@ -18,11 +18,14 @@ public class TrainingDataObservation {
 	
 	private ArrayList<String> response;
 	
+	private float weight ;
 	
-	public TrainingDataObservation (ArrayList<String> condition, ArrayList<String> response)
+	
+	public TrainingDataObservation (ArrayList<String> condition, ArrayList<String> response, float weight)
 	{
 		this.condition = condition;
 		this.response = response;
+		this.weight = weight;
 	}
 	
 	public String getData()
@@ -31,6 +34,7 @@ public class TrainingDataObservation {
 		
 		result += "Condition: " + Arrays.toString(this.condition.toArray(new String[0])) ;
 		result += "Response: " + Arrays.toString(this.response.toArray(new String[0])) ;
+		result += "Weight: " + weight;
 		
 		return result;
 	}
@@ -43,6 +47,11 @@ public class TrainingDataObservation {
 	public ArrayList<String> getResponse ()
 	{
 		return response;
+	}
+	
+	public float getWeight()
+	{
+		return weight ;
 	}
 	
 	public int getResponseSize()

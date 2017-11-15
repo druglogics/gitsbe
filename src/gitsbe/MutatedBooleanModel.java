@@ -270,12 +270,10 @@ public class MutatedBooleanModel extends BooleanModel {
 		// iterate through each data observation
 		for (int i = 0; i < data.size(); i++)
 		{
-			
-			// here condition refers to each single specification in input of one collective condition
-			// (terminology is a bit confusing, in input file a condition is collection of single states)
-			
 			float conditionfitness = 0;
 			
+			float weight = data.getObservations().get(i).getWeight();
+
 			logger.outputHeader(3, "Defining model for training data: " + this.modelName);
 			ArrayList<String> condition = data.getObservations().get(i).getCondition();
 			ArrayList<String> response = data.getObservations().get(i).getResponse();
@@ -283,7 +281,7 @@ public class MutatedBooleanModel extends BooleanModel {
 			MutatedBooleanModel temp = new MutatedBooleanModel(this, logger);
 			
 			temp.modelName += "_condition_"
-					+ "" + i;
+					+ "" + i ;
 
 			// Set up model compliant with condition
 			// go through each element (input) of a condition 
@@ -292,7 +290,7 @@ public class MutatedBooleanModel extends BooleanModel {
 
 				if (condition.get(j).equals("-")) // steady state condition
 				{
-					logger.output(3, "Defining condition: Unperturbed");
+					logger.output(3, "Defining condition: Unperturbed (weight: " + weight + ")");
 
 					// do nothing, empty condition
 				}
@@ -300,8 +298,7 @@ public class MutatedBooleanModel extends BooleanModel {
 				{
 					String node = condition.get(j).split(":")[0] ;
 					String state = condition.get(j).split(":")[1] ;
-					
-					
+										
 					String equation = node + " *= " ;
 					
 					if (state.equals("1"))
@@ -339,13 +336,15 @@ public class MutatedBooleanModel extends BooleanModel {
 				{
 					// compute a global output of the model by using specified model outputs
 					// scaled output to value <0..1] (exclude 0 since ratios then are difficult)
-          float observedGlobalOutput = Float.parseFloat(response.get(0).split(":")[1]);
+					float observedGlobalOutput = Float.parseFloat(response.get(0).split(":")[1]);
 					conditionfitness = 1 - Math.abs(modelOutputs.calculateGlobalOutput(temp.stableStates, this) - observedGlobalOutput);
 					
 					
 				}
 				else // if not globaloutput then go through all specified states in observation and contrast with stable state(s)
 				{
+					int foundObservations = 0 ;
+
 					for (int k = 0; k < response.size(); k++)
 					{
 						String node = response.get(k).split(":")[0].trim() ;
@@ -353,19 +352,23 @@ public class MutatedBooleanModel extends BooleanModel {
 						
 						int indexNode = getIndexOfEquation (node);
 						
-						if (indexNode > 0)
+						if (indexNode >= 0)
 						{ 
 							float match = 1 - Math.abs(Integer.parseInt(stableStates[1][indexNode]) - Float.parseFloat(obs));
 							logger.debug("Match for observation on node " + node + ": " + match + " (1 - |" + stableStates[1][indexNode] + "-" + obs +"|)");
+							foundObservations++ ;
 	
-							conditionfitness += match/min(temp.stableStates.size(), 1);
+							conditionfitness += (match/Math.max(temp.stableStates.size(), 1));
 						}
-						
+							
 					}
+					if (foundObservations > 0)
+						conditionfitness /= (foundObservations + 1); // +1 to account for the fact there is also a stable state, which gives a fitness of 1 itself 
 					
 				}
-				logger.output(3, "Fitness for model [" + temp.modelName + "] condition " + i + ": " + conditionfitness);
-				fitness += conditionfitness;
+				fitness += conditionfitness * weight;
+				logger.output(3, "Fitness for model [" + temp.modelName + "] condition " + i + ": " + conditionfitness * weight);
+				
 			}
 		
 
@@ -425,13 +428,6 @@ public class MutatedBooleanModel extends BooleanModel {
 	public float getFitness ()
 	{
 		return this.fitness ;
-	}
-
-	private int min(int a, int b)
-	{
-		if (a > b) return b;
-		else return a ;
-		
 	}
 
 }

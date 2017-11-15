@@ -59,10 +59,6 @@ public class Evolution {
 				+ " generations with " + config.getPopulation()
 				+ " models per generations.");
 
-		// Define ArrayList of arrays, each cell referencing a mutated model
-		// ArrayList<MutatedBooleanModel>[] mutatedModels =
-		// (ArrayList<MutatedBooleanModel>[]) new ArrayList[numGenerations];
-
 		// Evolution is in an initial phase until a stable state exists
 		boolean initialphase = true;
 
@@ -186,11 +182,7 @@ public class Evolution {
 						+ generationModels.get(i).getModelName());
 
 				try {
-//					generationModels.get(i).calculateStableStatesVC(
-//							outputDirectory);
-					
 					generationModels.get(i).calculateFitness(data, modelOutputs, outputDirectory);
-					// generationModels.get(i).calculateFitnessAgainstStableStatesAveraged(stableStates[0]);
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

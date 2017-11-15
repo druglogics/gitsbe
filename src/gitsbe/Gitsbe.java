@@ -83,7 +83,7 @@ public class Gitsbe implements Runnable {
 
 	@Override
 	public void run() {
-		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss") ;
+		DateFormat dateFormatFilename = new SimpleDateFormat("yyyyMMdd_HHmmss") ;
 		Calendar cal = Calendar.getInstance();
 		
 		
@@ -107,7 +107,7 @@ public class Gitsbe implements Runnable {
 		// network, steadystate and config file names
 		if (outputDirectory.length() == 0)
 		{
-			outputDirectory = System.getProperty("user.dir") + File.separator + nameProject + "_" + dateFormat.format(cal.getTime()) + File.separator ;
+			outputDirectory = System.getProperty("user.dir") + File.separator + nameProject + "_" + dateFormatFilename.format(cal.getTime()) + File.separator ;
 		}
 		else
 		{		
@@ -156,7 +156,7 @@ public class Gitsbe implements Runnable {
 		}
 
 		// Start logger
-		dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 						
 		
 		
@@ -346,7 +346,7 @@ public class Gitsbe implements Runnable {
 //			bnetOutputDirectory = System.getProperty("user.dir") + File.separator + "bnet" + File.separator + "tmp" + File.separator ;
 //			bnetOutputDirectory = Files.createTempDirectory(nameProject + "_tmp", null).getFileName(). ;
 			
-			tempDir = new File(System.getProperty("java.io.tmpdir"), nameProject + "_" + appName + "_tmp") ;
+			tempDir = new File(System.getProperty("java.io.tmpdir"), nameProject + "_" + appName + "_" + dateFormatFilename.format(cal.getTime()) + "_tmp") ;
 			if (!tempDir.mkdir())
 			{
 				logger.error("Exiting. Couldn't create temp folder: " + tempDir.getAbsolutePath());

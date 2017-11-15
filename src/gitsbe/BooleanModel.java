@@ -558,24 +558,21 @@ public class BooleanModel {
 	        			logger.output(2, "Stable state " + (i + 1) + ": " + stableStates.get(i)) ;
 	        		}
 	        		
-	        		if (logger.getVerbosity() >= 3)
-        			{
 	        			
-        				for (int i = 0; i < stableStates.get(0).length(); i++)
-        				{
-    	        			String states = "" ;
+    				for (int i = 0; i < stableStates.get(0).length(); i++)
+    				{
+	        			String states = "" ;
 
-        					for (int j = 0; j < stableStates.size(); j++)
-        					{
-        						states += "\t" + stableStates.get(j).charAt(i) ;
-        					}
-        					
-        					
-        					
-        					logger.output(3, mapAlternativeNames.get(i)[0] + states) ;
-        				}
-        			}
-	        		
+    					for (int j = 0; j < stableStates.size(); j++)
+    					{
+    						states += "\t" + stableStates.get(j).charAt(i) ;
+    					}
+    					
+    					
+    					
+    					logger.debug(mapAlternativeNames.get(i)[0] + states) ;
+    				}
+    				
 	        	}
 	        }
 	        

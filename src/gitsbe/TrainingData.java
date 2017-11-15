@@ -60,26 +60,31 @@ Condition
 ERK_f:1	PIK3CA:0	GSK_f:0	
 Observation
 globaloutput:0.1
+Weight:1
 
 Condition
 ERK_f:-1
 Observation
 RSK_f:0	PIK3CA:0
+Weight:0.1
 
 Condition
 PD
 Observation
 output:0.4
+Weight:0.1
 
 Condition
 5Z
 Observation
 MAP3K7:-1
+Weight:0.1
 
 Condition
 5Z	PD	GSK3_f:1
 Observation
 globaloutput:0.1
+Weight:0.1
 
 	 * 
 	 * 
@@ -119,7 +124,8 @@ globaloutput:0.1
 
 		ArrayList<String> condition = new ArrayList<String>() ;
 		ArrayList<String> observation = new ArrayList<String>() ;
-
+		float weight = 0;
+		
 		// Process lines
 		for (int i = 0; i < lines.size(); i++)
 		{
@@ -133,11 +139,12 @@ globaloutput:0.1
 			{
 				observation = new ArrayList<String>(Arrays.asList(lines.get(i+1).split("\t")));
 				i++;
-				
-				
-				observations.add(new TrainingDataObservation(condition, observation)) ;
 			}
-				
+			if (lines.get(i).toLowerCase().startsWith("weight"))
+			{
+				weight = Float.parseFloat(lines.get(i).split(":")[1]) ;
+				observations.add(new TrainingDataObservation(condition, observation, weight)) ;
+			}
 		}
 		
 	}
