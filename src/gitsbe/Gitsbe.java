@@ -197,6 +197,17 @@ public class Gitsbe implements Runnable {
 			
 			
 		}
+		
+		// ------------------
+		// Export gitsbe file
+		// ------------------
+		
+		try {
+			generalBooleanModel.saveFile(outputDirectory);
+		} catch (IOException e4) {
+			// TODO Auto-generated catch block
+			e4.printStackTrace();
+		}
 
 		// ----------
 		// Export sif
