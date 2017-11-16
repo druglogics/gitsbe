@@ -42,9 +42,7 @@ public class Evolution {
 
 		this.baseModelName = baseModelName; // name base of model, used for
 											// generations/individuals
-//		this.steadyState = steadyState;
 		this.data = data;
-//		this.stableStates = steadyState.getSteadyStates();
 		this.directoryName = directoryName;
 		this.outputDirectory = outputDirectory;
 		this.modelOutputs = modelOutputs;
@@ -71,10 +69,9 @@ public class Evolution {
 					.add(new MutatedBooleanModel(generalBooleanModel, logger));
 		}
 
-		ArrayList<float[]> fitnesses = new ArrayList<float[]>(); // new
-																	// float[numGenerations][population]
-																	// ;
-
+		ArrayList<float[]> fitnesses = new ArrayList<float[]>(); 
+		
+		
 		// Evolve models through mutations, crossover and selection
 		for (int generation = 0; generation < config.getGenerations(); generation++) {
 			// Output i
@@ -92,9 +89,7 @@ public class Evolution {
 				int parent1 = Gitsbe.randInt(0, config.getSelection() - 1);
 				int parent2 = Gitsbe.randInt(0, config.getSelection() - 1);
 
-				// mutatedModels[generation].add(new MutatedBooleanModel
-				// (bestModels.get(parent1), bestModels.get(parent2), "test" +
-				// i)) ;
+
 				generationModels.add(new MutatedBooleanModel(bestModels
 						.get(parent1), bestModels.get(parent2), baseModelName
 						+ "_G" + generation + "_M" + i, logger));
@@ -314,6 +309,10 @@ public class Evolution {
 
 			logger.output(1, "\tFile: " + directoryName
 					+ bestModels.get(i).getFilename());
+			
+			// calculate stable states for saving as part of .gitsbe file
+			bestModels.get(i).calculateStableStatesVC(outputDirectory);
+
 			bestModels.get(i).saveFile(directoryName);
 
 			numModelsSaved++;

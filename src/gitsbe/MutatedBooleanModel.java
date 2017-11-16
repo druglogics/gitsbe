@@ -109,7 +109,7 @@ public class MutatedBooleanModel extends BooleanModel {
 			
 			
 			if (!booleanEquations.get(randomEquationIndex).getBooleanEquation().equals(orig))
-				logger.output(3, "Exchanging equation " + randomEquationIndex + "\n\t" + orig + "\n\t"
+				logger.debug("Exchanging equation " + randomEquationIndex + "\n\t" + orig + "\n\t"
 						+ "" + booleanEquations.get(randomEquationIndex).getBooleanEquation() + "\n");
 			
 		}
@@ -133,127 +133,6 @@ public class MutatedBooleanModel extends BooleanModel {
 		}
 	}
 	
-	
-	/**
-	 * calculate fitness, uses average of stable states found by bnet
-	 * since an average is used only a single stable state can be targeted (not a list of states)
-	 * 
-	 * @param targetStableStates
-	 */
-//	public void calculateFitnessAgainstStableStatesAveraged (String targetStableState)
-//	{
-//		
-//		fitness = 0 ;
-//		
-//		// Find difference between number of stablestates in model and intended number of stablestates
-////		int numberOfStatesDifference = Math.abs(targetStableStates.length-stableStates.size()) ;
-//		
-//
-////		logger.output(2, "Size: " + stableStates.size());
-//		ArrayList <Float> averageStableState = new ArrayList <Float> () ;
-//		
-////		float[] averageStableState = new float[stableStates.size()];
-//		
-//		if (stableStates.size() >= 1)
-//		{
-//				
-//			for (int i = 0; i < stableStates.get(0).length(); i++)
-//			{
-//				float sum = 0 ;
-//				
-//				for (int j = 0; j < stableStates.size(); j++)
-//				{
-//					sum += Character.getNumericValue(stableStates.get(j).charAt(i)) ;
-////					logger.output(2, "sum: " + sum);
-//				}
-//				
-//				averageStableState.add((float) (sum/stableStates.size()));
-//			}
-//			
-//			for (int j = 0; j < targetStableState.length(); j++)
-//			{
-//				char state = targetStableState.charAt(j) ;
-//				
-//				switch (state) {
-//				case '-':
-//					break;
-//			
-//				case '1':
-//					fitness += (float) (averageStableState.get(j)) ;
-//					break ;
-//					
-//				case '0':
-//					fitness += (float) (1-averageStableState.get(j)) ;
-//					break ;
-//				
-//				default:
-//					logger.output(1, "ERROR - unknown state in stable state file: " + state);
-//						
-//				}
-//				
-//			}
-//		}
-//		
-////		fitness /= (1+numberOfStatesDifference) ;
-//		
-//		logger.output(1, this.modelName + " AVERAGE fitness: " + fitness);
-//
-//	}
-
-
-	
-//	/**
-//	 * calculates fitness
-//	 * 
-//	 * @param 
-//	 */
-//	// BUG AAF - currently intended stable states and calculated states must match in order - that's a bug
-//	public void calculateFitness (String[] targetStableStates, TrainingData data)
-//	{
-//		fitness = 0 ;
-//		
-//		// A model with an existing stable state will be selected over models without
-//		// stable states
-//		if (stableStates.size() > 0)
-//			fitness = 1 ;
-//		
-//		// Find difference between number of stablestates in model and intended number of stablestates
-//		int numberOfStatesDifference = Math.abs(targetStableStates.length-stableStates.size()) ;
-//		
-//		
-//		for (int i = 0; i < min(targetStableStates.length, stableStates.size()); i++)
-//		{
-//			for (int j = 0; j < targetStableStates[i].length(); j++)
-//			{
-//				char state = targetStableStates[i].charAt(j) ;
-//				
-//				switch (state) {
-//				case '-':
-//					break;
-//				
-//				
-//				case '0':
-//				case '1':
-//					if (stableStates.get(i).charAt(j) == state) 
-//					{
-//						fitness++ ;
-//					}
-//				}
-//				
-//			}
-//		}
-//		
-//		fitness /= (1+numberOfStatesDifference) ;
-//		
-//		// Find difference between model behavior and training data
-//		for (int i = 0; i < data.getObservations().size(); i++)
-//		{
-//			
-//		}
-//		
-//		logger.output(2, this.modelName + " fitness: " + fitness);
-//
-//	}
 
 	/**
 	 * Calculate fitness of model by computing matches with training data
@@ -369,8 +248,14 @@ public class MutatedBooleanModel extends BooleanModel {
 						conditionfitness /= (foundObservations + 1); // +1 to account for the fact there is also a stable state, which gives a fitness of 1 itself 
 					
 				}
+				
+				// compute fitness and scale to ratio of weight to weights of all conditions
 				fitness += conditionfitness * weight/data.getWeightSum();
-				logger.output(3, "Fitness for model [" + temp.modelName + "] condition " + i + " " + "(weight: " + weight + "): " + conditionfitness);
+				
+				if (data.size() > 1)
+				{
+					logger.output(3, "Scaled fitness [0..1] for model [" + temp.modelName + "] condition " + i + " " + "(weight: " + weight + "): " + conditionfitness);
+				}
 				
 				// Increase fitness based on number of edges in model (few edges -> high fitness)
 //				int edges = 0;
@@ -394,7 +279,7 @@ public class MutatedBooleanModel extends BooleanModel {
 
 		}
 		
-		logger.output(3, "Scaled [0..1] fitness for model [" + modelName + "] across all conditions: " + fitness);
+		logger.output(3, "Scaled fitness [0..1] for model [" + modelName + "] across all (" + data.size() + ") conditions: " + fitness);
 
 	}
 	
@@ -411,14 +296,14 @@ public class MutatedBooleanModel extends BooleanModel {
 		// Write model name
 		writer.println("modelname: " + this.modelName) ;
 		
-		// Write stable states
-		for (int i = 0; i < this.stableStates.size(); i++)
-		{
-			writer.println("stablestate: " + this.stableStates.get(i)) ;
-		}
-		
 		// Write fitness
 		writer.println("fitness: " + this.fitness) ;
+		
+		// Write stable state(s):
+		for (int i = 0; i < this.stableStates.size();i++)
+		{
+			writer.println("stablestate: " + this.stableStates.get(i));
+		}
 		
 		// Write Boolean equations
 		for (int i = 0; i < booleanEquations.size() ; i++)

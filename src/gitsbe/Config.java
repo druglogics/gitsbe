@@ -12,10 +12,12 @@ import java.util.ArrayList;
 public class Config {
 
 	
-	private int verbosity ;
-	private boolean preserve_outputs ;
-	private boolean preserve_inputs ;
-	private boolean preserve_tmp_files ;
+	private int verbosity;
+	private boolean preserve_outputs;
+	private boolean preserve_inputs;
+	private boolean preserve_tmp_files;
+	private boolean export_trimmed_sif;
+	private boolean export_ginml;
 	private int population ;
 	private int generations ;
 	private int selection ;
@@ -130,7 +132,15 @@ public class Config {
   		case "preserve_intputs:":
   			preserve_inputs = Boolean.parseBoolean(value) ;
   			break ;
+  			
+  		case "export_trimmed_sif:":
+  			export_trimmed_sif = Boolean.parseBoolean(value);
+  			break;
   			  			
+  		case "export_ginml:":
+  			export_ginml = Boolean.parseBoolean(value);
+  			break;
+  			
   		case "simulations:":
   			simulations = Integer.parseInt(value) ;
   			break ;
@@ -237,6 +247,8 @@ public class Config {
 				"preserve_outputs",
 				"preserve_inputs",
 				"preserve_tmp_files",
+				"export_trimmed_sif",
+				"export_ginml",
 				"population",
 				"generations",
 				"selection",
@@ -269,6 +281,8 @@ public class Config {
 				Boolean.toString(preserve_outputs),
 				Boolean.toString(preserve_inputs),
 				Boolean.toString(preserve_tmp_files),
+				Boolean.toString(export_trimmed_sif),
+				Boolean.toString(export_ginml),
 				Integer.toString(population),
 				Integer.toString(generations),
 				Integer.toString(selection),
@@ -336,7 +350,13 @@ public class Config {
 		writer.println() ;
 		writer.println("# Preserve intputs") ;
 		writer.println("preserve_intputs:\tfalse") ;
+		writer.println();
+		writer.println("# Export trimmed sif after removing inputs and/or outputs as specified");
+		writer.println("export_trimmed_sif:\tfalse");
 		writer.println() ;
+		writer.println("#Export GINml file (that can be opened using the software GINsim");
+		writer.println("export_ginml:\false");
+		writer.println();
 		writer.println("# Invoke drug response module after automated model definitions") ;
 		writer.println("invoke_drabme:\tfalse") ;
 		writer.println() ;
@@ -419,7 +439,16 @@ public class Config {
 	public boolean isPreserve_tmp_files() {
 		return preserve_tmp_files;
 	}
-
+	
+	public boolean isExportTrimmedSif() {
+		return this.export_trimmed_sif;
+	}
+	
+	public boolean isExportGinml()
+	{
+		return this.export_ginml;
+	}
+	
 	public int getPopulation() {
 		return population;
 	}

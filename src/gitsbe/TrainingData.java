@@ -171,17 +171,6 @@ Weight:0.1
 	{
 		int maxFitness = 0;
 		
-//		for (int i = 0; i < observations.size(); i++) 
-//		{
-//			for (int j = 0; j < observations.get(i).length(); i++)
-//			{
-//				if ((steadyStates[k].charAt(i) == '1') || (steadyStates[k].charAt(i) == '0'))
-//				{
-//						maxFitness += 1;
-//				}
-//			}
-//		}
-		
 		for (int i = 0; i < observations.size(); i++)
 		{
 			maxFitness += observations.get(i).getWeight();
