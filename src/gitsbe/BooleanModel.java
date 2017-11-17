@@ -205,12 +205,12 @@ public class BooleanModel {
 	
 	
 	
-  public void saveFile (String directoryName) throws IOException
-  {
-    String filename = this.modelName.substring(this.modelName.lastIndexOf('/') + 1) + ".gitsbe";
-
+	public void saveFile (String directoryName) throws IOException
+	{
+	    String filename = this.modelName.substring(this.modelName.lastIndexOf('/') + 1) + ".gitsbe";
+	
 		PrintWriter writer = new PrintWriter(new File(directoryName, filename).getPath(), "UTF-8");
-
+	
 		
 		// Write header with '#'
 		writer.println("#Boolean model file in gitsbe format") ;
@@ -237,7 +237,7 @@ public class BooleanModel {
 		}
 	
 		writer.close() ;
-		
+			
 	}
 	
 	protected ArrayList<String> loadFile (String filename) throws IOException 
@@ -570,7 +570,7 @@ public class BooleanModel {
     					
     					
     					
-    					logger.debug(mapAlternativeNames.get(i)[0] + states) ;
+//    					logger.debug(mapAlternativeNames.get(i)[0] + states) ;
     				}
     				
 	        	}

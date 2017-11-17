@@ -219,8 +219,9 @@ public class MutatedBooleanModel extends BooleanModel {
 					// compute a global output of the model by using specified model outputs
 					// scaled output to value <0..1] (exclude 0 since ratios then are difficult)
 					float observedGlobalOutput = Float.parseFloat(response.get(0).split(":")[1]);
-					conditionfitness = 1 - Math.abs(modelOutputs.calculateGlobalOutput(temp.stableStates, this) - observedGlobalOutput);
-					
+					float predictedGlobalOutput = modelOutputs.calculateGlobalOutput(temp.stableStates, this);
+					conditionfitness = 1 - Math.abs(predictedGlobalOutput - observedGlobalOutput);
+					logger.output(3, "globaloutput: " + predictedGlobalOutput);
 					
 				}
 				else // if not globaloutput then go through all specified states in observation and contrast with stable state(s)
@@ -240,7 +241,7 @@ public class MutatedBooleanModel extends BooleanModel {
 							logger.debug("Match for observation on node " + node + ": " + match + " (1 - |" + stableStates[1][indexNode] + "-" + obs +"|)");
 							foundObservations++ ;
 	
-							conditionfitness += (match/Math.max(temp.stableStates.size(), 1));
+							conditionfitness += match;
 						}
 							
 					}
@@ -251,6 +252,7 @@ public class MutatedBooleanModel extends BooleanModel {
 				
 				// compute fitness and scale to ratio of weight to weights of all conditions
 				fitness += conditionfitness * weight/data.getWeightSum();
+				fitness /= Math.max(temp.stableStates.size(), 1);
 				
 				if (data.size() > 1)
 				{
