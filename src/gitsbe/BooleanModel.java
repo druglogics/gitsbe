@@ -198,6 +198,29 @@ public class BooleanModel {
 
 		
 	}
+	
+	public void exportBoolNetFile(String outputDirectory, String filename) throws FileNotFoundException, UnsupportedEncodingException
+	{
+		PrintWriter writer = new PrintWriter(new File(outputDirectory, filename), "UTF-8");
+
+		String[] expressions = this.printBooleanModelGinmlExpressions() ;
+
+		//Write header
+		writer.println("targets, factors \n # comment line: " + filename);
+		//Write expressions with correct symbols
+		for(int i = 0 ; i < expressions.length; i++)
+		{
+			expressions[i] = expressions[i].replaceAll("  ", " ");			
+			expressions[i] = expressions[i].replaceAll("and", "&");
+			expressions[i] = expressions[i].replaceAll("or", "|");
+			expressions[i] = expressions[i].replaceAll("not ", "!");
+			expressions[i] = expressions[i].replaceAll(" \\*=", ",");
+			
+			writer.println(expressions[i]);
+		}
+		writer.close();
+	}
+	
 	public void setVerbosity (int verbosity)
 	{
 		this.verbosity = verbosity ;
