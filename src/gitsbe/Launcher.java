@@ -30,7 +30,7 @@ public class Launcher {
 		 */
 		if (args.length == 0)
 		{
-			System.out.println("No user argumetns supplied") ;
+			System.out.println("No user arguments supplied") ;
 			System.out.println("Usage: gitsbe <name project> <filename network> <filename config file> <filename steady states file> [output directory]") ;
 			System.out.println("\nTestrun: setting up run with example files:");
 

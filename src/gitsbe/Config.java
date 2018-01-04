@@ -348,14 +348,14 @@ public class Config {
 		writer.println("# Preserve outputs") ;
 		writer.println("preserve_outputs:\ttrue") ;
 		writer.println() ;
-		writer.println("# Preserve intputs") ;
-		writer.println("preserve_intputs:\tfalse") ;
+		writer.println("# Preserve inputs") ;
+		writer.println("preserve_inputs:\tfalse") ;
 		writer.println();
 		writer.println("# Export trimmed sif after removing inputs and/or outputs as specified");
 		writer.println("export_trimmed_sif:\tfalse");
 		writer.println() ;
 		writer.println("#Export GINml file (that can be opened using the software GINsim");
-		writer.println("export_ginml:\false");
+		writer.println("export_ginml:\tfalse");
 		writer.println();
 		writer.println("# Invoke drug response module after automated model definitions") ;
 		writer.println("invoke_drabme:\tfalse") ;
@@ -573,13 +573,7 @@ public class Config {
 	public int getTopology_mutations_factor() {
 		return topology_mutations_factor;
 	}
-	
-	
 
-	
-	
-
-	
 
 	
 }
