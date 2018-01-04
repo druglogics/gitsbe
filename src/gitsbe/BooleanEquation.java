@@ -1,5 +1,6 @@
 package gitsbe;
 
+import static gitsbe.Util.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -17,10 +18,11 @@ public class BooleanEquation {
 	private ArrayList<String> operatorsActivatingRegulators;
 	private ArrayList<String> operatorsInhibitoryRegulators;
 
-	// whitelist of regulators to include in equation - string of true and false where true means included 
+	// whitelist of regulators to include in equation - string of true and false
+	// where true means included
 	private ArrayList<Boolean> whitelistActivatingRegulators;
 	private ArrayList<Boolean> whitelistInhibitoryRegulators;
-	
+
 	// String link activators and inhibitors ("and not"/"or not")
 	private String link;
 
@@ -47,28 +49,22 @@ public class BooleanEquation {
 
 		this();
 
-		for (int i = 0; i < originalEquation.operatorsActivatingRegulators
-				.size(); i++) {
-			this.operatorsActivatingRegulators.add(new String(
-					originalEquation.operatorsActivatingRegulators.get(i)));
+		for (int i = 0; i < originalEquation.operatorsActivatingRegulators.size(); i++) {
+			this.operatorsActivatingRegulators.add(new String(originalEquation.operatorsActivatingRegulators.get(i)));
 		}
 
 		for (int i = 0; i < originalEquation.inhibitoryRegulators.size(); i++) {
-			this.inhibitoryRegulators.add(new String(
-					originalEquation.inhibitoryRegulators.get(i)));
+			this.inhibitoryRegulators.add(new String(originalEquation.inhibitoryRegulators.get(i)));
 			whitelistInhibitoryRegulators.add(true);
 		}
 
 		for (int i = 0; i < originalEquation.activatingRegulators.size(); i++) {
-			this.activatingRegulators.add(new String(
-					originalEquation.activatingRegulators.get(i)));
+			this.activatingRegulators.add(new String(originalEquation.activatingRegulators.get(i)));
 			whitelistActivatingRegulators.add(true);
 		}
 
-		for (int i = 0; i < originalEquation.operatorsInhibitoryRegulators
-				.size(); i++) {
-			this.operatorsInhibitoryRegulators.add(new String(
-					originalEquation.operatorsInhibitoryRegulators.get(i)));
+		for (int i = 0; i < originalEquation.operatorsInhibitoryRegulators.size(); i++) {
+			this.operatorsInhibitoryRegulators.add(new String(originalEquation.operatorsInhibitoryRegulators.get(i)));
 		}
 
 		this.link = new String(originalEquation.link);
@@ -82,8 +78,7 @@ public class BooleanEquation {
 		// Build expression
 		target = multipleInteraction.getTarget();
 
-		ArrayList<String> tempActivatingRegulators = multipleInteraction
-				.getActivatingRegulators();
+		ArrayList<String> tempActivatingRegulators = multipleInteraction.getActivatingRegulators();
 
 		for (int i = 0; i < tempActivatingRegulators.size(); i++) {
 			activatingRegulators.add(tempActivatingRegulators.get(i));
@@ -94,8 +89,7 @@ public class BooleanEquation {
 			}
 		}
 
-		ArrayList<String> tempInhibitoryRegulators = multipleInteraction
-				.getInhibitoryRegulators();
+		ArrayList<String> tempInhibitoryRegulators = multipleInteraction.getInhibitoryRegulators();
 
 		for (int i = 0; i < tempInhibitoryRegulators.size(); i++) {
 			inhibitoryRegulators.add(tempInhibitoryRegulators.get(i));
@@ -109,8 +103,8 @@ public class BooleanEquation {
 	}
 
 	/**
-	 * Build equation from Boolean expression. Currently expressions must be of
-	 * the following type: A *= (((B) or C) or D) and not (((E) or F) or G)
+	 * Build equation from Boolean expression. Currently expressions must be of the
+	 * following type: A *= (((B) or C) or D) and not (((E) or F) or G)
 	 * 
 	 * @param equation
 	 */
@@ -131,8 +125,7 @@ public class BooleanEquation {
 		equation = equation.replaceAll("or not", "ornot");
 
 		// Split equation to array
-		ArrayList<String> splitequation = new ArrayList<String>(
-				Arrays.asList(equation.split(" ")));
+		ArrayList<String> splitequation = new ArrayList<String>(Arrays.asList(equation.split(" ")));
 
 		target = splitequation.get(0);
 		splitequation.remove(0);
@@ -169,13 +162,10 @@ public class BooleanEquation {
 					operatorsInhibitoryRegulators.add(element);
 				break;
 			default:
-				if (beforeNot)
-				{
+				if (beforeNot) {
 					activatingRegulators.add(element);
 					whitelistActivatingRegulators.add(true);
-				}
-				else
-				{
+				} else {
 					inhibitoryRegulators.add(element);
 					whitelistInhibitoryRegulators.add(true);
 				}
@@ -189,18 +179,15 @@ public class BooleanEquation {
 
 		// Add activating regulators
 		if (Collections.frequency(whitelistActivatingRegulators, true) > 0) {
-			equation += getString(" ( ", Collections.frequency(whitelistActivatingRegulators, true));
+			equation += getRepeatedString(" ( ", Collections.frequency(whitelistActivatingRegulators, true));
 			equation += " ";
 
 			for (int i = 0; i < activatingRegulators.size(); i++) {
-				
-				if (whitelistActivatingRegulators.get(i) == true)
-				{
+
+				if (whitelistActivatingRegulators.get(i) == true) {
 					// If not first element then add boolean operator before regulator
-					if (Collections.frequency(whitelistActivatingRegulators.subList(0, i), true) > 0)
-					{
-						equation += " " + operatorsActivatingRegulators.get(i - 1)
-								+ " ";
+					if (Collections.frequency(whitelistActivatingRegulators.subList(0, i), true) > 0) {
+						equation += " " + operatorsActivatingRegulators.get(i - 1) + " ";
 					}
 					equation += activatingRegulators.get(i) + " ) ";
 				}
@@ -217,18 +204,16 @@ public class BooleanEquation {
 		if (Collections.frequency(whitelistInhibitoryRegulators, true) > 0) {
 			equation += " not ";
 
-			equation += getString(" ( ", Collections.frequency(whitelistInhibitoryRegulators, true));
+			equation += getRepeatedString(" ( ", Collections.frequency(whitelistInhibitoryRegulators, true));
 			// equation += " " ;
 
-			for (int i = 0; i < inhibitoryRegulators.size(); i++) 
-			
+			for (int i = 0; i < inhibitoryRegulators.size(); i++)
+
 			{
-				if (whitelistInhibitoryRegulators.get(i) == true)
-				{	
+				if (whitelistInhibitoryRegulators.get(i) == true) {
 					if (Collections.frequency(whitelistInhibitoryRegulators.subList(0, i), true) > 0)
-						equation += " " + operatorsInhibitoryRegulators.get(i - 1)
-								+ " ";
-	
+						equation += " " + operatorsInhibitoryRegulators.get(i - 1) + " ";
+
 					equation += inhibitoryRegulators.get(i) + " ) ";
 				}
 			}
@@ -237,7 +222,6 @@ public class BooleanEquation {
 
 		return " " + equation.trim() + " ";
 	}
-	
 
 	public String getBooleanEquationVC() {
 		String equation = getBooleanEquation();
@@ -253,69 +237,41 @@ public class BooleanEquation {
 	}
 
 	public void mutateRandomOperator() {
-		if (Gitsbe.randInt(0, 1) > 0.5) {
+		if (randInt(0, 1) > 0.5) {
 			mutateRandomActivatoryOperator();
 		} else {
 			mutateRandomInhibitoryOperator();
 		}
 	}
 
-	public void mutateActivatingRegulator()
-	{
-		if (this.activatingRegulators.size() > 0)
-		{
-			int index = Gitsbe.randInt(0, activatingRegulators.size() - 1);
-			
-			// check if end of equation
-//			if (index == activatingRegulators.size() - 2)
-//				operatorsActivatingRegulators.remove(index);
-			
-//			activatingRegulators.remove(index);
-			
-			this.whitelistActivatingRegulators.set(index, !whitelistActivatingRegulators.get(index)) ;
-			
-		}
-	}
-	
-	public void mutateInhibitoryRegulator()
-	{
-//		if (this.inhibitoryRegulators.size() > 1)
-//		{
-//			int index = Gitsbe.randInt(0, inhibitoryRegulators.size() - 1);
-//			
-//			// check if end of equation
-//			if (index == inhibitoryRegulators.size() - 2)
-//				operatorsInhibitoryRegulators.remove(index);
-//			
-//			inhibitoryRegulators.remove(index);
-//			
-//		
-//		}
-		
-		if (this.inhibitoryRegulators.size() > 0)
-		{
-			int index = Gitsbe.randInt(0, inhibitoryRegulators.size() - 1);
-		
-			this.whitelistInhibitoryRegulators.set(index, !whitelistInhibitoryRegulators.get(index)) ;
-		}
-	}
 	public void mutateRegulator() {
-		// randomly select activating or inhibiting regulator, but make sure at least one regulator is kept
-		if ((Collections.frequency(whitelistActivatingRegulators, true) + Collections.frequency(whitelistInhibitoryRegulators, true)) > 1)
-		{
-			if (Gitsbe.randInt(0, 1) > 0.5)
-			{
+		// randomly select activating or inhibiting regulator, but make sure at least
+		// one regulator is kept
+		if ((Collections.frequency(whitelistActivatingRegulators, true)
+				+ Collections.frequency(whitelistInhibitoryRegulators, true)) > 1) {
+			if (randInt(0, 1) > 0.5) {
 				mutateActivatingRegulator();
-				
-			}
-			else
-			{
+			} else {
 				mutateInhibitoryRegulator();
 			}
 		}
-	
+
 	}
 	
+	public void mutateActivatingRegulator() {
+		if (this.activatingRegulators.size() > 0) {
+			int index = randInt(0, activatingRegulators.size() - 1);
+			this.whitelistActivatingRegulators.set(index, !whitelistActivatingRegulators.get(index));
+		}
+	}
+
+	public void mutateInhibitoryRegulator() {
+		if (this.inhibitoryRegulators.size() > 0) {
+			int index = randInt(0, inhibitoryRegulators.size() - 1);
+			this.whitelistInhibitoryRegulators.set(index, !whitelistInhibitoryRegulators.get(index));
+		}
+	}
+
 	public void mutateRandomOperator(int mutations) {
 		for (int i = 0; i < mutations; i++) {
 			mutateRandomOperator();
@@ -324,11 +280,9 @@ public class BooleanEquation {
 
 	public void mutateRandomActivatoryOperator() {
 		if (operatorsActivatingRegulators.size() > 0) {
-			int randomIndex = Gitsbe.randInt(0,
-					operatorsActivatingRegulators.size() - 1);
+			int randomIndex = randInt(0, operatorsActivatingRegulators.size() - 1);
 
-			if (operatorsActivatingRegulators.get(randomIndex).trim()
-					.equals("or")) {
+			if (operatorsActivatingRegulators.get(randomIndex).trim().equals("or")) {
 				operatorsActivatingRegulators.set(randomIndex, " and ");
 			} else {
 				operatorsActivatingRegulators.set(randomIndex, "or");
@@ -338,11 +292,9 @@ public class BooleanEquation {
 
 	public void mutateRandomInhibitoryOperator() {
 		if (operatorsInhibitoryRegulators.size() > 0) {
-			int randomIndex = Gitsbe.randInt(0,
-					operatorsInhibitoryRegulators.size() - 1);
+			int randomIndex = randInt(0, operatorsInhibitoryRegulators.size() - 1);
 
-			if (operatorsInhibitoryRegulators.get(randomIndex).trim()
-					.equals("or")) {
+			if (operatorsInhibitoryRegulators.get(randomIndex).trim().equals("or")) {
 				operatorsInhibitoryRegulators.set(randomIndex, "and");
 			} else {
 				operatorsInhibitoryRegulators.set(randomIndex, "or");
@@ -359,7 +311,7 @@ public class BooleanEquation {
 	}
 
 	public void shuffleRandomRegulatorPriority() {
-		if (Gitsbe.randInt(0, 1) == 1) {
+		if (randInt(0, 1) == 1) {
 			shuffleRandomActivatingRegulatorPriority();
 		} else {
 			shuffleRandomInhibitoryRegulatorPriority();
@@ -368,62 +320,54 @@ public class BooleanEquation {
 
 	public void shuffleRandomActivatingRegulatorPriority() {
 		if (activatingRegulators.size() > 1) {
-			int randomIndex = Gitsbe
-					.randInt(0, activatingRegulators.size() - 2);
+			int randomIndex = randInt(0, activatingRegulators.size() - 2);
 
 			String temp = activatingRegulators.get(randomIndex);
-			activatingRegulators.set(randomIndex,
-					activatingRegulators.get(randomIndex + 1));
+			activatingRegulators.set(randomIndex, activatingRegulators.get(randomIndex + 1));
 			activatingRegulators.set(randomIndex + 1, temp);
 		}
 	}
 
 	public void shuffleRandomInhibitoryRegulatorPriority() {
 		if (inhibitoryRegulators.size() > 1) {
-			int randomIndex = Gitsbe
-					.randInt(0, inhibitoryRegulators.size() - 2);
+			int randomIndex = randInt(0, inhibitoryRegulators.size() - 2);
 
 			String temp = inhibitoryRegulators.get(randomIndex);
-			inhibitoryRegulators.set(randomIndex,
-					inhibitoryRegulators.get(randomIndex + 1));
+			inhibitoryRegulators.set(randomIndex, inhibitoryRegulators.get(randomIndex + 1));
 			inhibitoryRegulators.set(randomIndex + 1, temp);
 		}
 	}
 
 	public String[] convertToSifLines() {
-		String[] lines = new String[activatingRegulators.size()
-				+ inhibitoryRegulators.size()];
+		String[] lines = new String[activatingRegulators.size() + inhibitoryRegulators.size()];
 
 		for (int i = 0; i < activatingRegulators.size(); i++)
 			lines[i] = activatingRegulators.get(i) + " -> " + target;
 
 		for (int i = 0; i < inhibitoryRegulators.size(); i++)
-			lines[i + activatingRegulators.size()] = inhibitoryRegulators
-					.get(i) + " -| " + target;
+			lines[i + activatingRegulators.size()] = inhibitoryRegulators.get(i) + " -| " + target;
 
 		return lines;
 	}
 
 	public SingleInteraction[] getSingleInteractions() {
-		int regulators = activatingRegulators.size()
-				+ inhibitoryRegulators.size();
+		int regulators = activatingRegulators.size() + inhibitoryRegulators.size();
 
 		SingleInteraction[] singleInteractions = new SingleInteraction[regulators];
 
 		for (int i = 0; i < activatingRegulators.size(); i++) {
-			singleInteractions[i] = new SingleInteraction(
-					activatingRegulators.get(i), "->", target);
+			singleInteractions[i] = new SingleInteraction(activatingRegulators.get(i), "->", target);
 		}
 
 		for (int i = 0; i < inhibitoryRegulators.size(); i++) {
-			singleInteractions[i + activatingRegulators.size()] = new SingleInteraction(
-					inhibitoryRegulators.get(i), "-|", target);
+			singleInteractions[i + activatingRegulators.size()] = new SingleInteraction(inhibitoryRegulators.get(i),
+					"-|", target);
 		}
 
 		return singleInteractions;
 	}
 
-	private String getString(String string, int repeats) {
+	private String getRepeatedString(String string, int repeats) {
 		String result = "";
 		for (int i = 0; i < repeats; i++)
 			result += string;
@@ -431,25 +375,18 @@ public class BooleanEquation {
 		return result;
 	}
 
-	public int getNumWhitelistedRegulators ()
-	{
-		return (Collections.frequency(whitelistActivatingRegulators, true) + Collections.frequency(whitelistInhibitoryRegulators, true));
+	public int getNumWhitelistedRegulators() {
+		return (Collections.frequency(whitelistActivatingRegulators, true)
+				+ Collections.frequency(whitelistInhibitoryRegulators, true));
+	}
+
+	public int getNumBlacklistedRegulators() {
+		return (Collections.frequency(whitelistActivatingRegulators, false)
+				+ Collections.frequency(whitelistInhibitoryRegulators, false));
+	}
+
+	public int getNumRegulators() {
+		return (activatingRegulators.size() + inhibitoryRegulators.size());
 	}
 	
-	public int getNumBlacklistedRegulators ()
-	{
-		return (Collections.frequency(whitelistActivatingRegulators, false) + Collections.frequency(whitelistInhibitoryRegulators, false));
-	}
-	
-	public int getNumRegulators ()
-	{
-		return (activatingRegulators.size() + inhibitoryRegulators.size()) ;
-	}
-	
-	
-	private String getChars(char character, int length) {
-		char[] chars = new char[length];
-		Arrays.fill(chars, character);
-		return new String(chars);
-	}
 }

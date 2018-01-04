@@ -1,25 +1,19 @@
 package gitsbe;
 
-import drabme.ModelOutputs;
+import static gitsbe.Util.*;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 
-
 /**
- *  Gitsbe - Generic Interactions To Specific Boolean Equations
+ * Gitsbe - Generic Interactions To Specific Boolean Equations
  * 
  * Copyright Asmund Flobak 2014-2015-2016-2017
  * 
@@ -29,559 +23,403 @@ import java.util.Random;
  * 
  * Uses bnet_reduction (BNReduction.sh) by Veliz-Cuba
  * 
- * 
  */
-
 
 public class Gitsbe implements Runnable {
 
 	private String appName = "Gitsbe";
-	private String version = "v0.3";
-	
+	private String version = "v0.4";
+
 	private String filenameNetwork;
 	private String filenameTrainingData;
 	private String filenameConfig;
-	private String outputDirectory;
-	private String directoryTemp ;
-	private String nameProject ;
+	private String directoryOutput;
+	private String directoryTemp;
+	private String nameProject;
 	private String filenameModelOutputs;
-	
-	// Declare one general model that is defined by input files
-	private GeneralModel generalModel ;
-	
-	// Global variable determining verbosity levels
-	public int verbosity ;
-	private Logger logger  ;
-	
-	private static Random rand ;
-	
-	public Gitsbe(String nameProject, String filenameNetwork, String filenameTrainingData, String filenameModelOutputs, String filenameConfig, String outputDirectory, String directoryTemp) {
-		this.nameProject = nameProject ;
-		this.filenameNetwork = filenameNetwork ;
-		this.filenameTrainingData = filenameTrainingData ;
-		this.filenameModelOutputs = filenameModelOutputs ;
-		this.filenameConfig = filenameConfig ;
-		this.outputDirectory = outputDirectory ;
-		this.directoryTemp = directoryTemp ;
-	}
-	
-	// constructor with model outputs
-	public Gitsbe(String nameProject, String filenameNetwork, String filenameTrainingData, String filenameConfig, String filenameModelOutputs) {
-		this.nameProject = nameProject ;
-		
-		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss") ;
-		Calendar cal = Calendar.getInstance();
-		
-		String outputDirectory = dateFormat.format(cal.getTime()) + "_" + nameProject + File.separator ;
 
-		this.filenameNetwork = filenameNetwork ;
-		this.filenameTrainingData = filenameTrainingData ;
-		this.filenameConfig = filenameConfig ;
-		this.outputDirectory = outputDirectory ;
+	// Declare one general model that is defined by input files
+	private GeneralModel generalModel;
+
+	// Global variable determining verbosity levels
+	public int verbosity;
+
+	private Logger logger;
+	
+	public static Random rand;
+
+	public Gitsbe(String nameProject, String filenameNetwork, String filenameTrainingData, String filenameModelOutputs,
+			String filenameConfig, String directoryOutput, String directoryTemp) {
+		this.nameProject = nameProject;
+		this.filenameNetwork = filenameNetwork;
+		this.filenameTrainingData = filenameTrainingData;
 		this.filenameModelOutputs = filenameModelOutputs;
-  }
+		this.filenameConfig = filenameConfig;
+		this.directoryOutput = directoryOutput;
+		this.directoryTemp = directoryTemp;
+	}
+
+	// constructor with model outputs
+	public Gitsbe(String nameProject, String filenameNetwork, String filenameTrainingData, String filenameModelOutputs,
+			String filenameConfig) {
+		this.nameProject = nameProject;
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
+		Calendar cal = Calendar.getInstance();
+
+		String directoryOutput = dateFormat.format(cal.getTime()) + "_" + nameProject + File.separator;
+
+		this.filenameNetwork = filenameNetwork;
+		this.filenameTrainingData = filenameTrainingData;
+		this.filenameModelOutputs = filenameModelOutputs;
+		this.filenameConfig = filenameConfig;
+		this.directoryOutput = directoryOutput;
+		this.directoryTemp = new File(directoryOutput, "gitsbe_tmp").getAbsolutePath();
+	}
 
 	@Override
 	public void run() {
-		DateFormat dateFormatFilename = new SimpleDateFormat("yyyyMMdd_HHmmss") ;
-		Calendar cal = Calendar.getInstance();
-		
-		
-		
-		System.out.print("Welcome to " + appName + " " + version + "\n\n") ;
-		
-		
-		// Initialization with seed :)
-		rand = new Random(0) ;
-		
-		// Create output directory name if not specified on launch
-		// When gitsbe is launched from rbbt then rbbt will itself specify output dir
-		if (outputDirectory.length() == 0)
-		{
-			outputDirectory = System.getProperty("user.dir") + File.separator + nameProject + "_" + dateFormatFilename.format(cal.getTime()) + File.separator ;
-		}
-		
-		if (!new File(outputDirectory).mkdir())
-		{
-			if (!new File(outputDirectory).exists())
-			{
-				System.out.println("Error creating project folder (" + outputDirectory + "), exiting.") ;
-				return ;
-			}
-		}
 
-		// Create models folder (subfolder to outputDirectory)
-		String modelDirectory = new File(outputDirectory, "models").getPath();
+		System.out.print("Welcome to " + appName + " " + version + "\n\n");
+
+		// Initialization with seed :)
+		int seed = 0;
+		rand = new Random(seed);
 		
-		if (!new File(modelDirectory).mkdir())
-		{
-			System.out.println("Error creating models folder (" + outputDirectory + File.separator + modelDirectory + "), exiting.") ;
-			return ;
-		}
-		
-		// Initialize logger
-		try {
-			logger = new Logger (appName + "_" + nameProject + "_log.txt", 
-								nameProject + "_summary.txt", 
-								outputDirectory, 3, true);
-		} catch (IOException e3) {
-			
-			// TODO Auto-generated catch block
-			e3.printStackTrace();
-			return ;
-		}
+		// Create output directory
+		if (!createDirectory(directoryOutput, logger)) return;
+
+		// Create models folder (subfolder to directoryOutput)
+		String modelDirectory = new File(directoryOutput, "models").getAbsolutePath();
+		if (!createDirectory(modelDirectory, logger)) return;
 
 		// Start logger
-		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		
-		logger.outputHeader(1, appName + " " + version);
-		logger.output(1, "Start: " + dateFormat.format(cal.getTime()));
-		
-		long starttime = System.nanoTime() ;
-		
-		Summary summary = new Summary(new File(this.outputDirectory, nameProject).getPath() + "_summary.txt", logger) ;
+		initializeLogger(directoryOutput);
+
+		// Start timer
+		Timer timer = new Timer();
 
 		// Load config file
-		Config config = new Config(filenameConfig, logger) ;
-		this.verbosity = config.getVerbosity() ;
+		Config config = loadConfigFile();
 
-		logger.outputHeader(1, "Loading config file: " + filenameConfig);
-		logger.output(1, config.getConfig());
-		
-		// Model index output file
-		String filenameBooleanModelsIndex = new File(outputDirectory, nameProject).getPath() + "_models.txt" ;
-		
-		
-		// -----------------------------------------------------------------
 		// Create general Boolean model from general model or load from file
-		// -----------------------------------------------------------------
-
-		generalModel = new GeneralModel (logger) ;
-		BooleanModel generalBooleanModel ;
+		generalModel = new GeneralModel(logger);
+		BooleanModel generalBooleanModel = loadGeneralBooleanModel(config);
 		
-		if (filenameNetwork.substring(filenameNetwork.length() - ".sif".length()).toLowerCase().equals(".sif"))
-		{
-			// ------------------------------------------
-			// Create generalModel from interactions file
-			// ------------------------------------------
-			logger.output(3, "Loading model from sif file: " + filenameNetwork) ;
+		// Exports
+		exportDifferentModelFormats(config, generalBooleanModel);
+		outputDifferentModelFormats(generalBooleanModel);
+
+		// Load training data
+		TrainingData data = loadTrainingData();
+		
+		// Load output weights
+		ModelOutputs outputs = loadModelOutputs();
+		
+		// Create temp directory
+		File tempDir = new File(directoryTemp);
+		if (!createDirectory(directoryTemp, logger)) return;
+		String bnetOutputDirectory = directoryTemp;
+
+		// Summary report for Gitsbe
+		Summary summary = initializeSummary(config);
+		
+		// Run simulations
+		ArrayList<Integer> simulations = new ArrayList<>();
+		for (int run = 0; run < config.getSimulations(); run++) {
+			simulations.add(run);
+		}
+		
+		if (config.runParallelSimulations()) {
+			// Run evolution simulations in parallel
+			simulations.parallelStream().forEach(run -> runSimulation(run, config, summary, generalBooleanModel, data,
+					outputs, modelDirectory, bnetOutputDirectory));
+		} else {
+			// Run evolution simulations in serial
+			simulations.stream().forEach(run -> runSimulation(run, config, summary, generalBooleanModel, data,
+					outputs, modelDirectory, bnetOutputDirectory));
+		}
+
+		summary.generateFitnessesReport();
+
+		// Save Models in appropriate file
+		saveBestModelsToFile(summary);
+
+		// Clean tmp directory
+		cleanTmpDirectory(config, tempDir);
+
+		// Stop timer
+		timer.stopTimer();
+		logger.outputHeader(1, "\nThe end");
+
+		closeLogger(timer);
+	}
+
+	private void runSimulation(Integer run, Config config, Summary summary, BooleanModel generalBooleanModel,
+			TrainingData data, ModelOutputs outputs, String modelDirectory, String bnetOutputDirectory) {
+		
+		int verbosity = 3;
+		int simulation = run + 1;
+		Logger simulation_logger = null;
+		
+		// create new logger for each parallel simulation
+		if (config.runParallelSimulations()) { 
+			String filenameOutput = appName + "_simulation_" + String.valueOf(simulation);
+			
 			try {
-				generalModel.loadInteractionFile(filenameNetwork) ;
+				simulation_logger = new Logger(filenameOutput, directoryOutput, verbosity, true);
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
-			if (!config.isPreserve_inputs() & !config.isPreserve_outputs())
-			{
-				generalModel.removeInputsOutputs();
-			}
-			else if (!config.isPreserve_inputs()) 
-				generalModel.removeInputs();
-			else if (!config.isPreserve_outputs()) 
-				generalModel.removeOutputs();
-			
-			
-			// Assemble single interactions into equations with multiple regulators based on trimming and complexes
-			generalModel.buildMultipleInteractions();
-			
-			generalBooleanModel = new BooleanModel(generalModel, logger) ;
-		}
-		else
-		{
-			// -----------------------------------------------------------------
-			// Load general boolean model from prepared file in supported format
-			// -----------------------------------------------------------------
-			
-			generalBooleanModel = new BooleanModel(filenameNetwork, logger) ;
-			
-			
+		} else {
+			simulation_logger = this.logger;
 		}
 		
-		// ------------------
-		// Export gitsbe file
-		// ------------------
+		simulation_logger.outputHeader(1, "Evolutionary algorithms, evolution " + (simulation) + " of " + config.getSimulations());
 		
-		try {
-			generalBooleanModel.saveFile(outputDirectory);
-		} catch (IOException e4) {
-			// TODO Auto-generated catch block
-			e4.printStackTrace();
-		}
+		Evolution ga = new Evolution(summary, generalBooleanModel,
+				generalBooleanModel.getModelName() + "_run_" + run + "_", data, outputs, modelDirectory,
+				bnetOutputDirectory, config, simulation_logger);
 
-		// ----------
-		// Export sif
-		// ----------
-		if (config.isExportTrimmedSif())
-		{
+		ga.evolve(run);
+		ga.outputBestModels();
+
+		try {
+			ga.saveBestModels(config.getModels_saved(), config.getFitness_threshold());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		addModelsToSummaryBestModelList(ga, run, config, summary, simulation_logger);
+	}
+
+	private void exportDifferentModelFormats(Config config, BooleanModel generalBooleanModel) {
+		// Export network file in gitsbe format
+		exportBooleanModelFileInGitsbeFormat(config, generalBooleanModel);
+		// Export trimmed network .sif file
+		exportTrimmedSifNetworkFile(config, generalBooleanModel);
+		// Export network file in ginml format
+		exportBooleanModelFileInGinmlFormat(config, generalBooleanModel);
+	}
+
+	private void exportBooleanModelFileInGitsbeFormat(Config config, BooleanModel generalBooleanModel) {
+		if (config.isExportBoolean_model()) {
 			try {
-				logger.output(2, "Exporting trimmed sif file: " + generalBooleanModel.getModelName() + "_export.sif"); 
-				generalBooleanModel.exportSifFile(outputDirectory, generalBooleanModel.getModelName() + "_export.sif") ;
-			} catch (FileNotFoundException | UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
+				logger.outputStringMessage(2,
+						"Exporting .sif file in gitsbe format: " + generalBooleanModel.getModelName() + ".gitsbe");
+				generalBooleanModel.saveFileInGitsbeFormat(directoryOutput);
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
-		// -------------
-		// Export Ginsim
-		//--------------
-		logger.outputHeader(3, "General model raw expressions for CoLoMoTo");
-		logger.output(3, generalBooleanModel.printBooleanModelGinmlExpressions());
-		
-		if (config.isExportGinml())
-		{
+	}
+	
+	private void exportTrimmedSifNetworkFile(Config config, BooleanModel generalBooleanModel) {
+		if (config.isExportTrimmedSif()) {
 			try {
-				generalBooleanModel.writeBooleanExpressionGinmlFile();
-			} catch (IOException e3) {
-				// TODO Auto-generated catch block
-				e3.printStackTrace();
+				String filename = generalBooleanModel.getModelName() + "_trimmed.sif";
+				logger.outputStringMessage(2, "Exporting trimmed .sif file: " + filename);
+				generalBooleanModel.exportSifFile(directoryOutput, filename);
+			} catch (FileNotFoundException | UnsupportedEncodingException e) {
+				e.printStackTrace();
 			}
-		}		
-		
-		logger.outputHeader(3, "General model Booleannet format");
-		logger.output(3, generalBooleanModel.getModelBooleannet());
-							
-		logger.outputHeader(3,  "Model in Veliz-Cuba's format");
-		logger.output(3,  generalBooleanModel.getModelVelizCuba());
-		
-		
-		// ------------------
-		// Load training data
-		// ------------------
-		
-		TrainingData data ;
-		
-		try {
-			logger.output(1, "\nReading training data from file: " + filenameTrainingData);
-			
-			data = new TrainingData (filenameTrainingData, logger) ;
-			
-			logger.output(2, "Max fitness: " + data.getMaxFitness() );
-
-		} catch (FileNotFoundException e)
-		{
-			logger.output(1, "Cannot find steady state file, generating template file: " + filenameTrainingData);
-			try {
-				TrainingData.writeTrainingDataTemplateFile(filenameTrainingData);
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			return ;
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-			return ;
 		}
+	}
+	
+	private void exportBooleanModelFileInGinmlFormat(Config config, BooleanModel generalBooleanModel) {
+		if (config.isExportGinml()) {
+			try {
+				String filename = generalBooleanModel.getModelName() + "_export.ginml";
+				logger.outputStringMessage(2, "Exporting .sif file in ginml format: " + filename);
+				generalBooleanModel.writeGinmlFile(directoryOutput, filename, generalModel.getSingleInteractions());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	/**
+	 * Write in the Gitsbe logger the network's model in different formats  
+	 * @param generalBooleanModel
+	 */
+	private void outputDifferentModelFormats(BooleanModel generalBooleanModel) {
 		
-		
-		// -------------------
-		// Load output weights
-		// -------------------
-		logger.outputHeader(2, "Loading model outputs");
-		ModelOutputs outputs;
+		logger.outputHeader(3, "General model in Booleannet format");
+		logger.outputLines(3, generalBooleanModel.getModelBooleannet());
 
+		logger.outputHeader(3, "Model in Veliz-Cuba's format");
+		logger.outputLines(3, generalBooleanModel.getModelVelizCuba());
+	}
+
+	private void saveBestModelsToFile(Summary summary) {
+		String filenameBooleanModelsIndex = new File(directoryOutput, nameProject).getAbsolutePath() + "_models.txt";
+
+		try {
+			summary.saveModelsIndexFile(filenameBooleanModelsIndex);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	synchronized private void addModelsToSummaryBestModelList(Evolution ga, int run, Config config, Summary summary, Logger simulation_logger) {
+		for (int i = 0; i < ga.bestModels.size(); i++) {
+			if (ga.bestModels.get(i).getFitness() > config.getFitness_threshold()) {
+				simulation_logger.outputStringMessage(2,
+						"Adding model " + ga.bestModels.get(i).getModelName() + " to summary output models list.");
+				summary.addModel(run, ga.bestModels.get(i));
+			}
+		}
+	}
+
+	private ModelOutputs loadModelOutputs() {
+		ModelOutputs outputs = null;
 		try {
 			outputs = new ModelOutputs(filenameModelOutputs, logger);
 		} catch (IOException e) {
-
-			logger.output(1, "ERROR: Couldn't load model outputs file: "
-					+ filenameModelOutputs);
-			logger.output(1, "Writing template model outputs file: "
-					+ filenameModelOutputs);
-
+			File file = new File(directoryOutput);
+			filenameModelOutputs = file.getParent() + "/" + "modeloutputs.tab";
+			logger.outputStringMessage(1,
+					"Cannot find model outputs file, generating template file: " + filenameModelOutputs);
 			try {
 				ModelOutputs.saveModelOutputsFileTemplate(filenameModelOutputs);
-			} catch (IOException e2) {
-				logger.output(1,
-						"ERROR: Couldn't write template model outputs file.");
-				e2.printStackTrace();
-			}
-
-			e.printStackTrace();
-			return;
-		}
-				
-				
-		// --------------------------------------------------------
-		// Obtain specific Boolean model from general Boolean model
-		// --------------------------------------------------------
-
-		
-//		logger.outputHeader(2, "Steady states");
-//		logger.output(2, ss.getSteadyStatesVerbose());
-
-		logger.outputHeader(2,  "Training Data");
-		logger.output(2, data.getTrainingDataVerbose());
-		
-		
-		// Where to store all temporary files
-		String bnetOutputDirectory ;
-
-		File tempDir ;
-		
-		if (config.isPreserve_tmp_files())
-		{
-			
-			if (directoryTemp == null)
-				directoryTemp = new File(outputDirectory,"tmp").getPath();
-			
-			tempDir = new File (directoryTemp);
-			
-			bnetOutputDirectory = directoryTemp ;
-			if (!new File (bnetOutputDirectory).mkdir())
-			{
-				System.out.println("Error creating temporary folder, exiting.") ;
-				return ;
-			}
-		}
-		else
-		{
-//			bnetOutputDirectory = System.getProperty("user.dir") + File.separator + "bnet" + File.separator + "tmp" + File.separator ;
-//			bnetOutputDirectory = Files.createTempDirectory(nameProject + "_tmp", null).getFileName(). ;
-			
-			tempDir = new File(System.getProperty("java.io.tmpdir"), nameProject + "_" + appName + "_" + dateFormatFilename.format(cal.getTime()) + "_tmp") ;
-			if (!tempDir.mkdir())
-			{
-				logger.error("Exiting. Couldn't create temp folder: " + tempDir.getAbsolutePath());
-				return ;
-			}
-			bnetOutputDirectory = tempDir.getAbsolutePath();
-			
-		}
-		
-
-		// Run evolution several times
-		for (int run = 0; run < config.getSimulations(); run++)
-		{
-			logger.outputHeader(1, "Evolutionary algorithms, evolution " + (run) + " of " + config.getSimulations());
-			
-			Evolution ga = new Evolution (summary, 
-										  generalBooleanModel, 
-								          generalBooleanModel.getModelName() + "_run_" + run + "_", 
-								          data,
-								          outputs,
-								          modelDirectory , 
-								          bnetOutputDirectory,
-								          config,
-								          logger) ;
-		
-			ga.evolve();
-			
-			ga.outputBestModels();
-			
-			try {
-				ga.saveBestModels(config.getModels_saved(), config.getFitness_threshold()) ;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			for (int i = 0; i < ga.bestModels.size(); i++)
-			{
-				if (ga.bestModels.get(i).getFitness() > config.getFitness_threshold())
-				{
-					logger.output(2, "Adding model " + ga.bestModels.get(i).getModelName() + " to output models list.");
-					summary.addModel(run, ga.bestModels.get(i));
-				}
+				outputs = new ModelOutputs(filenameModelOutputs, logger);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				System.exit(1);
 			}
 		}
 		
+		logger.outputHeader(1, "Model Outputs");
+		logger.outputLines(1, outputs.getModelOutputs());
 		
-		
-		// Output best specific Boolean model(s), associated fitness(es) and computed stable state(s)
-		 
-		// Save the best model(s) in desired output format 
+		return outputs;
+	}
 
-		// Write summary
+	private TrainingData loadTrainingData() {
+		TrainingData data = null;
 		try {
-			summary.saveModelsIndexFile(filenameBooleanModelsIndex, modelDirectory);
+			data = new TrainingData(filenameTrainingData, logger);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			File file = new File(directoryOutput);
+			filenameTrainingData = file.getParent() + "/" + "training_data.tab";
+			logger.outputStringMessage(1,
+					"Cannot find steady state file, generating template file: " + filenameTrainingData);
+			try {
+				TrainingData.writeTrainingDataTemplateFile(filenameTrainingData);
+				data = new TrainingData(filenameTrainingData, logger);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				System.exit(1);
+			}
 		}
 		
-		long endtime = System.nanoTime();
+		logger.outputHeader(2, "Training Data");
+		logger.outputLines(2, data.getTrainingDataVerbose());
+		logger.outputStringMessage(2, "Max fitness: " + data.getMaxFitness() + "\n");
 		
-		long duration = (endtime - starttime)/1000000000 ;
-		
-		int seconds = (int) (duration) % 60 ;
-		int minutes = (int) ((duration / 60) % 60);
-		int hours   = (int) ((duration / (60*60)));
-		
-		summary.generateFitnessesReport();
-		
-		
-		logger.outputHeader(1, "\nThe end");
-		
-		// -------------------
-		// Clean tmp directory
-		// -------------------
-		if (config.isPreserve_tmp_files())
-		{
-			//String filenameArchive = new File(outputDirectory, nameProject + ".gitsbe.tmp.tar.gz").getAbsolutePath() ;
-			//logger.output(2, "\nCreating archive with all temporary files: " + filenameArchive);
-			//compressDirectory (filenameArchive, bnetOutputDirectory) ;
-			//logger.output(2, "Cleaning tmp directory...") ;
-			//cleanTmpDirectory(new File (outputDirectory, "tmp")) ;
-			
+		return data;
+	}
+
+	private BooleanModel loadGeneralBooleanModel(Config config) {
+		BooleanModel generalBooleanModel;
+
+		if (filenameNetwork.substring(filenameNetwork.length() - ".sif".length()).toLowerCase().equals(".sif")) {
+
+			// Create generalModel from interactions file
+			logger.outputStringMessage(3, "Loading model from .sif file: " + filenameNetwork);
+			try {
+				generalModel.loadInteractionFile(filenameNetwork);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+
+			// if both config variables are true, no removal of nodes will be done
+			if (!config.isPreserve_inputs() & !config.isPreserve_outputs())
+				generalModel.removeInputsOutputs();
+			else if (!config.isPreserve_inputs())
+				generalModel.removeInputs();
+			else if (!config.isPreserve_outputs())
+				generalModel.removeOutputs();
+
+			// Assemble single interactions into equations with multiple regulators based on trimming and complexes
+			generalModel.buildMultipleInteractions();
+
+			generalBooleanModel = new BooleanModel(generalModel, logger);
+		} else {
+			// Load general boolean model from prepared file in supported format
+			generalBooleanModel = new BooleanModel(filenameNetwork, logger);
 		}
-		else
-		{
-			logger.output(2, "Deleting temporary directory: " + tempDir.getAbsolutePath());
-			cleanTmpDirectory(tempDir);
+		return generalBooleanModel;
+	}
+
+	private void cleanTmpDirectory(Config config, File tempDir) {
+		if (!config.isPreserve_tmp_files()) {
+			logger.outputStringMessage(2, "");
+			logger.outputStringMessage(2, "Deleting temporary directory: " + tempDir.getAbsolutePath());
+			deleteFilesFromDirectory(tempDir);
 			tempDir.delete();
 		}
-		
-		logger.output(1, "End: " + dateFormat.format(cal.getTime()));
-		logger.output(1, "Analysis completed in " + hours + " hours, " + minutes + " minutes, and " + seconds + " seconds ");
-		
-		
-		logger.output(1, "\nWith that we say thank you and good bye!");
-		
+	}
+
+	private void closeLogger(Timer timer) {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Calendar calendarData = Calendar.getInstance();
+		logger.outputStringMessage(1, "End: " + dateFormat.format(calendarData.getTime()));
+		logger.outputStringMessage(1, "Analysis completed in " + timer.getHoursOfDuration() + " hours, "
+				+ timer.getMinutesOfDuration() + " minutes, and " + timer.getSecondsOfDuration() + " seconds ");
+		logger.outputStringMessage(1, "\nWith that we say thank you and good bye!");
+		logger.finish();
 	}
 	
-	/**
-	 * get random integer between min and max (inclusive)
-	 * 
-	 * @param min
-	 * @param max
-	 * @return
-	 */
-	public static int randInt(int min, int max) 
-	{
-		return rand.nextInt((max - min) + 1) + min;
-		
-	}
-	
-	/**
-	 * removes extension of string, author: coobird (http://stackoverflow.com/users/17172/coobird)
-	 * 
-	 * @param str fillename
-	 * @return filename without extension
-	 */
-	public static String removeExtension(String str) {
-
-	    String separator = System.getProperty("file.separator");
-	    String filename;
-
-	    // Remove the path upto the filename.
-	    int lastSeparatorIndex = str.lastIndexOf(separator);
-	    if (lastSeparatorIndex == -1) {
-	        filename = str;
-	    } else {
-	        filename = str.substring(lastSeparatorIndex + 1);
-	    }
-
-	    // Remove the extension.
-	    int extensionIndex = filename.lastIndexOf(".");
-	    if (extensionIndex == -1)
-	        return filename;
-
-	    return filename.substring(0, extensionIndex);
-	}
-
-
-	public void invokeDrabme (String directory, String destination, String projectName, String filenameBooleanModelsIndex)  
-	{
+	private Summary initializeSummary(Config config) {
+		Summary summary = null;
 		try {
-			copy (new File (directory), new File (destination)) ;
+			summary = new Summary(new File(this.directoryOutput, nameProject).getPath() + "_summary.txt", logger, config);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.exit(1);
 		}
-//		String filenameOutput = directory + File.separator + projectName + "_drabme_output.txt";
-//		String filenameSummary = directory + File.separator + projectName + "_drabme_summary.txt" ;
-//		
-//		int combosize = 2 ;
-//		
-//		
-//		String filenameDrugs = "ags_drugpanel.txt" ;
-//		String filenameModelOutputs = "ags_modeloutputs.txt" ;
-//		
-//		System.out.println("help help");
-//		Drabme d = new Drabme(Config.getVerbosity(), filenameBooleanModelsIndex, filenameDrugs, filenameModelOutputs, filenameOutput, filenameSummary, combosize) ;
-//		d.run();
-
+		return summary;
 	}
 	
-	
-	public void copy(File sourceLocation, File targetLocation) throws IOException {
-	    if (sourceLocation.isDirectory()) {
-	        copyDirectory(sourceLocation, targetLocation);
-	    } else {
-	        copyFile(sourceLocation, targetLocation);
-	    }
-	}
-
-	private void copyDirectory(File source, File target) throws IOException {
-	    if (!target.exists()) {
-	        target.mkdir();
-	    }
-
-	    for (String f : source.list()) {
-	        copy(new File(source, f), new File(target, f));
-	    }
-	}
-
-	private void copyFile(File source, File target) throws IOException {        
-	    try (
-	            InputStream in = new FileInputStream(source);
-	            OutputStream out = new FileOutputStream(target)
-	    ) {
-	        byte[] buf = new byte[1024];
-	        int length;
-	        while ((length = in.read(buf)) > 0) {
-	            out.write(buf, 0, length);
-	        }
-	    }
-	}
-	
-	private void cleanTmpDirectory (File dir)
-	{
-	    for (File file: dir.listFiles()) {
-	        if (file.isDirectory()) cleanTmpDirectory(file);
-	        file.delete();
-	    }
-	    
-	}
-	
-	private void compressDirectory (String filenameArchive, String directory)
-	{
-		//tar cvfz tmp.tar.gz tmp
-		
+	private Config loadConfigFile() {
+		Config config = null;
 		try {
-			ProcessBuilder pb = new ProcessBuilder("tar", "cvfz", filenameArchive, "-C", new File(directory).getParent(), new File(directory).getName());
-			
-			if (logger.getVerbosity() >= 3)
-			{
-				pb.redirectErrorStream(true);
-				pb.redirectOutput() ;
-			}
-			
-			logger.output(3, "Compressing temporary models: " + filenameArchive) ;
-
-			
-			Process p ;
-			p = pb.start ();
+			config = new Config(filenameConfig, logger);
+		} catch (IOException e) {
+			File file = new File(directoryOutput);
+			filenameConfig = file.getParent() + "/" + "config.tab";
+			logger.outputStringMessage(1, "Cannot find config file, generating template file: " + filenameConfig);
 			
 			try {
-				p.waitFor() ;
-				
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Config.writeConfigFileTemplate(filenameConfig);
+				config = new Config(filenameConfig, logger);
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				System.exit(1);
 			}
-			
-			BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-	        while(r.ready()) {
-	        	logger.output(3, r.readLine());
-	        }
-		
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
+		
+		this.verbosity = config.getVerbosity();
+		logger.outputHeader(1, "Config options");
+		logger.outputLines(1, config.getConfig());
+		return config;
+	}
+
+	private void initializeLogger(String directoryOutput) {
+		try {
+			int verbosity = 3;
+			String filenameOutput = appName + "_" + nameProject;
+			logger = new Logger(filenameOutput, directoryOutput, verbosity, true);
+		} catch (IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Calendar calendarData = Calendar.getInstance();
+		logger.outputHeader(1, appName + " " + version);
+		logger.outputStringMessage(1, "Start: " + dateFormat.format(calendarData.getTime()));
+		logger.setDebug(false);
 	}
 }
