@@ -1,6 +1,6 @@
 package gitsbe;
 
-import static gitsbe.Util.*;
+import static gitsbe.RandomManager.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

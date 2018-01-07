@@ -78,6 +78,7 @@ public class SingleInteraction {
 		}
 	}
 
+	@Override
 	public String toString() {
 		return source + " " + arc + " " + target;
 	}

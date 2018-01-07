@@ -20,7 +20,6 @@ public class Summary {
 	// All fitnesses observed in all the simulations
 	private List<ArrayList<float[]>> fitness;
 	private String summaryFilename;
-	private int currentSimulation = -1;
 	private Logger logger;
 	
 	@SuppressWarnings("unchecked")
@@ -72,13 +71,6 @@ public class Summary {
 	}
 
 	public void addModel(int simulation, MutatedBooleanModel model) {
-		/*if (simulation >= currentSimulation) {
-			currentSimulation++;
-			bestModels.add(new ArrayList<MutatedBooleanModel>());
-		}*/
-
-		//bestModels.get(currentSimulation).add(model);
-		
 		bestModels.get(simulation).add(model);
 	}
 

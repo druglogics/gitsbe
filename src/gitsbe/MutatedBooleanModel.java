@@ -1,6 +1,6 @@
 package gitsbe;
 
-import static gitsbe.Util.*;
+import static gitsbe.RandomManager.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.io.File;
 
 public class MutatedBooleanModel extends BooleanModel {
-	
+
 	private float fitness;
 
 	public MutatedBooleanModel(BooleanModel booleanModel, Logger logger) {
@@ -97,10 +97,6 @@ public class MutatedBooleanModel extends BooleanModel {
 		}
 	}
 
-	public void introduceOrMutation(int numberOfMutations) {
-
-	}
-
 	public void introduceBalanceMutation(int numberOfMutations) {
 		for (int i = 0; i < numberOfMutations; i++) {
 
@@ -126,17 +122,17 @@ public class MutatedBooleanModel extends BooleanModel {
 		fitness = 0;
 
 		// iterate through each data observation
-		for (int i = 0; i < data.size(); i++) {
+		for (int conditionNumber = 0; conditionNumber < data.size(); conditionNumber++) {
 			float conditionfitness = 0;
-			float weight = data.getObservations().get(i).getWeight();
+			float weight = data.getObservations().get(conditionNumber).getWeight();
 
 			logger.outputHeader(3, "Defining model for training data: " + this.modelName);
-			ArrayList<String> condition = data.getObservations().get(i).getCondition();
-			ArrayList<String> response = data.getObservations().get(i).getResponse();
+			ArrayList<String> condition = data.getObservations().get(conditionNumber).getCondition();
+			ArrayList<String> response = data.getObservations().get(conditionNumber).getResponse();
 
 			MutatedBooleanModel temp = new MutatedBooleanModel(this, logger);
 
-			temp.modelName += "_condition_" + "" + i;
+			temp.modelName += "_condition_" + "" + conditionNumber;
 
 			// Set up model compliant with condition
 			// go through each element (input) of a condition
@@ -168,18 +164,13 @@ public class MutatedBooleanModel extends BooleanModel {
 					temp.modifyEquation(equation);
 				}
 			}
-			
+
 			// compute stable state(s) for condition
 			temp.calculateStableStatesVC(directoryOutput);
 
-			// A model with an existing stable state will get higher fitness than models
-			// without stable states
-			if (temp.stableStates.size() > 0)
-				conditionfitness += 1;
-			
 			// check computed stable state(s) with training data observation
 			String[][] stableStates = temp.getStableStates();
-			
+
 			// go through each element (output) of a response
 			if (temp.hasStableStates()) {
 				// check if globaloutput observation
@@ -188,75 +179,80 @@ public class MutatedBooleanModel extends BooleanModel {
 					// scaled output to value <0..1] (exclude 0 since ratios then are difficult)
 					float observedGlobalOutput = Float.parseFloat(response.get(0).split(":")[1]);
 					float predictedGlobalOutput = modelOutputs.calculateGlobalOutput(temp.stableStates, this);
+
+					logger.outputStringMessage(3, "Observed globalOutput: " + observedGlobalOutput);
+					logger.outputStringMessage(3, "Predicted globalOutput: " + predictedGlobalOutput);
+
 					conditionfitness = 1 - Math.abs(predictedGlobalOutput - observedGlobalOutput);
-					logger.outputStringMessage(3, "globaloutput: " + predictedGlobalOutput);
+				} else {
+					// if not globaloutput then go through all specified states in observation and
+					// contrast with stable state(s)
 
-				} else { 
-					// if not globaloutput then go through all specified states in observation and contrast with stable state(s)
-					
+					// A model with an existing stable state will get higher fitness than models
+					// without stable states
+					conditionfitness += 1;
+
+					float averageMatch = 0;
 					int foundObservations = 0;
+					ArrayList<Float> matches = new ArrayList<Float>();
 
-					for (int k = 0; k < response.size(); k++) {
-						String node = response.get(k).split(":")[0].trim();
-						String obs = response.get(k).split(":")[1].trim();
+					for (int indexState = 1; indexState < stableStates.length; indexState++) {
+						logger.outputStringMessage(1, "Checking stable state no. " + indexState + ":");
 
-						int indexNode = getIndexOfEquation(node);
+						float matchSum = 0;
+						foundObservations = 0;
 
-						if (indexNode >= 0) {
-							float match = 1
-									- Math.abs(Integer.parseInt(stableStates[1][indexNode]) - Float.parseFloat(obs));
-							logger.outputStringMessage(1, "Match for observation on node " + node + ": " + match
-									+ " (1 - |" + stableStates[1][indexNode] + "-" + obs + "|)");
-							foundObservations++;
-							conditionfitness += match;
+						for (int k = 0; k < response.size(); k++) {
+							String node = response.get(k).split(":")[0].trim();
+							String obs = response.get(k).split(":")[1].trim();
+
+							int indexNode = getIndexOfEquation(node);
+
+							if (indexNode >= 0) {
+								foundObservations++;
+								float match = 1 - Math.abs(
+										Integer.parseInt(stableStates[indexState][indexNode]) - Float.parseFloat(obs));
+								logger.outputStringMessage(1, "Match for observation on node " + node + ": " + match
+										+ " (1 - |" + stableStates[indexState][indexNode] + "-" + obs + "|)");
+								matchSum += match;
+							}
 						}
-
+						logger.outputStringMessage(1,
+								"From " + foundObservations + " observations, found " + matchSum + " matches");
+						matches.add(matchSum);
 					}
-					if (foundObservations > 0)
-						conditionfitness /= (foundObservations + 1); // +1 to account for the fact there is also a
-																		// stable state, which gives a fitness of 1
-																		// itself
 
+					for (int index = 0; index < matches.size(); index++) {
+						averageMatch += matches.get(index);
+					}
+					averageMatch /= matches.size();
+					logger.outputStringMessage(1, "Average match value through all stable states: " + averageMatch);
+					conditionfitness += averageMatch;
+
+					if (foundObservations > 0) {
+						// +1 to account for the fact there is also a stable state, which gives a
+						// fitness of 1 itself
+						conditionfitness /= (foundObservations + 1);
+					}
+
+					// further penalize models that have more than one stable states
+					// notice that matches.size() is equal to the number of stable states
+					conditionfitness /= matches.size();
 				}
-
-				// compute fitness and scale to ratio of weight to weights of all conditions
-				fitness += conditionfitness * weight / data.getWeightSum();
-				//fitness /= Math.max(temp.stableStates.size(), 1); // use only first stable state above: stableStates[1]
-
-				if (data.size() > 1) {
-					logger.outputStringMessage(3, "Scaled fitness [0..1] for model [" + temp.modelName + "] condition "
-							+ i + " " + "(weight: " + weight + "): " + conditionfitness);
-				}
-
-				// Increase fitness based on number of edges in model (few edges -> high
-				// fitness)
-				// float fitnessTopologyReduction = 0;
-				// int edges = 0;
-				// int removedEdges = 0;
-				// int nodes = booleanEquations.size();
-				//
-				// for (int j = 0; j < booleanEquations.size(); j++)
-				// {
-				// edges += booleanEquations.get(j).getNumRegulators() ;
-				// removedEdges += booleanEquations.get(j).getNumBlacklistedRegulators();
-				// }
-				//
-				//
-				// fitnessTopologyReduction += (float) removedEdges/(edges-nodes);
-				//
-				// logger.output(3, "Fitness for topologyreduction: " +
-				// fitnessTopologyReduction);
-				//
-				// fitness += fitnessTopologyReduction;
 			}
 
+			logger.outputStringMessage(3, "Scaled fitness [0..1] for model [" + temp.modelName + "] condition "
+					+ conditionNumber + " " + "(weight: " + weight + "): " + conditionfitness);
+
+			// compute fitness and scale to ratio of weight to weights of all conditions
+			fitness += conditionfitness * weight / data.getWeightSum();
 		}
 
 		logger.outputStringMessage(3, "Scaled fitness [0..1] for model [" + modelName + "] across all (" + data.size()
 				+ ") conditions: " + fitness);
-
 	}
 
+	@Override
 	public void saveFileInGitsbeFormat(String directoryName) throws IOException {
 
 		String filename = this.modelName.substring(this.modelName.lastIndexOf('/') + 1) + ".gitsbe";

@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 /**
  * Gitsbe - Generic Interactions To Specific Boolean Equations
@@ -27,7 +28,7 @@ import java.util.Random;
 
 public class Gitsbe implements Runnable {
 
-	private String appName = "Gitsbe";
+	private static String appName = "Gitsbe";
 	private String version = "v0.4";
 
 	private String filenameNetwork;
@@ -45,8 +46,7 @@ public class Gitsbe implements Runnable {
 	public int verbosity;
 
 	private Logger logger;
-	
-	public static Random rand;
+	private ArrayList<String> simulationFileList;
 
 	public Gitsbe(String nameProject, String filenameNetwork, String filenameTrainingData, String filenameModelOutputs,
 			String filenameConfig, String directoryOutput, String directoryTemp) {
@@ -82,19 +82,22 @@ public class Gitsbe implements Runnable {
 
 		System.out.print("Welcome to " + appName + " " + version + "\n\n");
 
-		// Initialization with seed :)
-		int seed = 0;
-		rand = new Random(seed);
-		
 		// Create output directory
-		if (!createDirectory(directoryOutput, logger)) return;
+		if (!createDirectory(directoryOutput, logger))
+			return;
 
 		// Create models folder (subfolder to directoryOutput)
 		String modelDirectory = new File(directoryOutput, "models").getAbsolutePath();
-		if (!createDirectory(modelDirectory, logger)) return;
+		if (!createDirectory(modelDirectory, logger))
+			return;
+
+		// Create log folder (subfolder to directoryOutput)
+		String logDirectory = new File(directoryOutput, "log").getAbsolutePath();
+		if (!createDirectory(logDirectory, logger))
+			return;
 
 		// Start logger
-		initializeLogger(directoryOutput);
+		initializeGitsbeLogger(logDirectory);
 
 		// Start timer
 		Timer timer = new Timer();
@@ -105,39 +108,46 @@ public class Gitsbe implements Runnable {
 		// Create general Boolean model from general model or load from file
 		generalModel = new GeneralModel(logger);
 		BooleanModel generalBooleanModel = loadGeneralBooleanModel(config);
-		
+
 		// Exports
 		exportDifferentModelFormats(config, generalBooleanModel);
 		outputDifferentModelFormats(generalBooleanModel);
 
 		// Load training data
-		TrainingData data = loadTrainingData();
-		
+		TrainingData data = loadTrainingData(generalBooleanModel);
+
 		// Load output weights
-		ModelOutputs outputs = loadModelOutputs();
-		
+		ModelOutputs outputs = loadModelOutputs(generalBooleanModel);
+
 		// Create temp directory
 		File tempDir = new File(directoryTemp);
-		if (!createDirectory(directoryTemp, logger)) return;
+		if (!createDirectory(directoryTemp, logger))
+			return;
 		String bnetOutputDirectory = directoryTemp;
 
 		// Summary report for Gitsbe
 		Summary summary = initializeSummary(config);
-		
+
 		// Run simulations
-		ArrayList<Integer> simulations = new ArrayList<>();
-		for (int run = 0; run < config.getSimulations(); run++) {
-			simulations.add(run);
+		ArrayList<Random> randomSeedsList = new ArrayList<>();
+		int numberOfSimulations = config.getSimulations();
+		for (int run = 0; run < numberOfSimulations; run++) {
+			// run is the seed for Random
+			randomSeedsList.add(new Random(run));
 		}
-		
+
 		if (config.runParallelSimulations()) {
 			// Run evolution simulations in parallel
-			simulations.parallelStream().forEach(run -> runSimulation(run, config, summary, generalBooleanModel, data,
-					outputs, modelDirectory, bnetOutputDirectory));
+			simulationFileList = new ArrayList<String>();
+			IntStream.range(0, numberOfSimulations).parallel().forEach(
+					run -> RandomManager.withRandom(randomSeedsList.get(run), () -> runSimulation(run, config, summary,
+							generalBooleanModel, data, outputs, modelDirectory, bnetOutputDirectory, logDirectory)));
+			mergeLogFiles(logDirectory);
 		} else {
 			// Run evolution simulations in serial
-			simulations.stream().forEach(run -> runSimulation(run, config, summary, generalBooleanModel, data,
-					outputs, modelDirectory, bnetOutputDirectory));
+			IntStream.range(0, numberOfSimulations).forEach(
+					run -> RandomManager.withRandom(randomSeedsList.get(run), () -> runSimulation(run, config, summary,
+							generalBooleanModel, data, outputs, modelDirectory, bnetOutputDirectory, logDirectory)));
 		}
 
 		summary.generateFitnessesReport();
@@ -155,28 +165,48 @@ public class Gitsbe implements Runnable {
 		closeLogger(timer);
 	}
 
-	private void runSimulation(Integer run, Config config, Summary summary, BooleanModel generalBooleanModel,
-			TrainingData data, ModelOutputs outputs, String modelDirectory, String bnetOutputDirectory) {
-		
+	/**
+	 * Merges all Gitsbe simulation logging files into one
+	 * 
+	 * @param logDirectory
+	 */
+	private void mergeLogFiles(String logDirectory) {
+		String mergedLogFilename = new File(logDirectory, "Gitsbe_simulations_log.txt").getAbsolutePath();
+
+		// sort the files to have the simulations in ascending order
+		sortFiles(simulationFileList);
+
+		try {
+			mergeFiles(simulationFileList, mergedLogFilename);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void runSimulation(int run, Config config, Summary summary, BooleanModel generalBooleanModel,
+			TrainingData data, ModelOutputs outputs, String modelDirectory, String bnetOutputDirectory,
+			String logDirectory) {
+
 		int verbosity = 3;
 		int simulation = run + 1;
 		Logger simulation_logger = null;
-		
+
 		// create new logger for each parallel simulation
-		if (config.runParallelSimulations()) { 
-			String filenameOutput = appName + "_simulation_" + String.valueOf(simulation);
-			
+		if (config.runParallelSimulations()) {
+			String filenameOutput = appName + "_simulation_" + String.valueOf(simulation) + "_log.txt";
+			addFileToSimulationFileList(new File(logDirectory, filenameOutput).getAbsolutePath());
 			try {
-				simulation_logger = new Logger(filenameOutput, directoryOutput, verbosity, true);
+				simulation_logger = new Logger(filenameOutput, logDirectory, verbosity, true);
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
 		} else {
 			simulation_logger = this.logger;
 		}
-		
-		simulation_logger.outputHeader(1, "Evolutionary algorithms, evolution " + (simulation) + " of " + config.getSimulations());
-		
+
+		simulation_logger.outputHeader(1,
+				"Evolutionary algorithms, evolution " + (simulation) + " of " + config.getSimulations());
+
 		Evolution ga = new Evolution(summary, generalBooleanModel,
 				generalBooleanModel.getModelName() + "_run_" + run + "_", data, outputs, modelDirectory,
 				bnetOutputDirectory, config, simulation_logger);
@@ -189,8 +219,12 @@ public class Gitsbe implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		addModelsToSummaryBestModelList(ga, run, config, summary, simulation_logger);
+	}
+
+	synchronized private void addFileToSimulationFileList(String filename) {
+		simulationFileList.add(filename);
 	}
 
 	private void exportDifferentModelFormats(Config config, BooleanModel generalBooleanModel) {
@@ -213,7 +247,7 @@ public class Gitsbe implements Runnable {
 			}
 		}
 	}
-	
+
 	private void exportTrimmedSifNetworkFile(Config config, BooleanModel generalBooleanModel) {
 		if (config.isExportTrimmedSif()) {
 			try {
@@ -225,7 +259,7 @@ public class Gitsbe implements Runnable {
 			}
 		}
 	}
-	
+
 	private void exportBooleanModelFileInGinmlFormat(Config config, BooleanModel generalBooleanModel) {
 		if (config.isExportGinml()) {
 			try {
@@ -237,13 +271,14 @@ public class Gitsbe implements Runnable {
 			}
 		}
 	}
-	
+
 	/**
-	 * Write in the Gitsbe logger the network's model in different formats  
+	 * Write in the Gitsbe logger the network's model in different formats
+	 * 
 	 * @param generalBooleanModel
 	 */
 	private void outputDifferentModelFormats(BooleanModel generalBooleanModel) {
-		
+
 		logger.outputHeader(3, "General model in Booleannet format");
 		logger.outputLines(3, generalBooleanModel.getModelBooleannet());
 
@@ -260,8 +295,9 @@ public class Gitsbe implements Runnable {
 			e.printStackTrace();
 		}
 	}
-	
-	synchronized private void addModelsToSummaryBestModelList(Evolution ga, int run, Config config, Summary summary, Logger simulation_logger) {
+
+	synchronized private void addModelsToSummaryBestModelList(Evolution ga, int run, Config config, Summary summary,
+			Logger simulation_logger) {
 		for (int i = 0; i < ga.bestModels.size(); i++) {
 			if (ga.bestModels.get(i).getFitness() > config.getFitness_threshold()) {
 				simulation_logger.outputStringMessage(2,
@@ -271,11 +307,12 @@ public class Gitsbe implements Runnable {
 		}
 	}
 
-	private ModelOutputs loadModelOutputs() {
+	private ModelOutputs loadModelOutputs(BooleanModel generalBooleanModel) {
 		ModelOutputs outputs = null;
 		try {
 			outputs = new ModelOutputs(filenameModelOutputs, logger);
 		} catch (IOException e) {
+			e.printStackTrace();
 			File file = new File(directoryOutput);
 			filenameModelOutputs = file.getParent() + "/" + "modeloutputs.tab";
 			logger.outputStringMessage(1,
@@ -288,18 +325,21 @@ public class Gitsbe implements Runnable {
 				System.exit(1);
 			}
 		}
-		
+
 		logger.outputHeader(1, "Model Outputs");
 		logger.outputLines(1, outputs.getModelOutputs());
-		
+
+		outputs.checkModelOutputNodeNames(generalBooleanModel);
+
 		return outputs;
 	}
 
-	private TrainingData loadTrainingData() {
+	private TrainingData loadTrainingData(BooleanModel generalBooleanModel) {
 		TrainingData data = null;
 		try {
 			data = new TrainingData(filenameTrainingData, logger);
 		} catch (IOException e) {
+			e.printStackTrace();
 			File file = new File(directoryOutput);
 			filenameTrainingData = file.getParent() + "/" + "training_data.tab";
 			logger.outputStringMessage(1,
@@ -312,11 +352,13 @@ public class Gitsbe implements Runnable {
 				System.exit(1);
 			}
 		}
-		
+
 		logger.outputHeader(2, "Training Data");
 		logger.outputLines(2, data.getTrainingDataVerbose());
 		logger.outputStringMessage(2, "Max fitness: " + data.getMaxFitness() + "\n");
-		
+
+		data.checkTrainingDataConsistency(generalBooleanModel);
+
 		return data;
 	}
 
@@ -341,7 +383,8 @@ public class Gitsbe implements Runnable {
 			else if (!config.isPreserve_outputs())
 				generalModel.removeOutputs();
 
-			// Assemble single interactions into equations with multiple regulators based on trimming and complexes
+			// Assemble single interactions into equations with multiple regulators based on
+			// trimming and complexes
 			generalModel.buildMultipleInteractions();
 
 			generalBooleanModel = new BooleanModel(generalModel, logger);
@@ -354,8 +397,7 @@ public class Gitsbe implements Runnable {
 
 	private void cleanTmpDirectory(Config config, File tempDir) {
 		if (!config.isPreserve_tmp_files()) {
-			logger.outputStringMessage(2, "");
-			logger.outputStringMessage(2, "Deleting temporary directory: " + tempDir.getAbsolutePath());
+			logger.outputStringMessage(2, "\n" + "Deleting temporary directory: " + tempDir.getAbsolutePath());
 			deleteFilesFromDirectory(tempDir);
 			tempDir.delete();
 		}
@@ -370,27 +412,28 @@ public class Gitsbe implements Runnable {
 		logger.outputStringMessage(1, "\nWith that we say thank you and good bye!");
 		logger.finish();
 	}
-	
+
 	private Summary initializeSummary(Config config) {
 		Summary summary = null;
 		try {
-			summary = new Summary(new File(this.directoryOutput, nameProject).getPath() + "_summary.txt", logger, config);
+			summary = new Summary(new File(this.directoryOutput, nameProject).getPath() + "_summary.txt", logger,
+					config);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
 		}
 		return summary;
 	}
-	
+
 	private Config loadConfigFile() {
 		Config config = null;
 		try {
 			config = new Config(filenameConfig, logger);
 		} catch (IOException e) {
+			e.printStackTrace();
 			File file = new File(directoryOutput);
 			filenameConfig = file.getParent() + "/" + "config.tab";
 			logger.outputStringMessage(1, "Cannot find config file, generating template file: " + filenameConfig);
-			
 			try {
 				Config.writeConfigFileTemplate(filenameConfig);
 				config = new Config(filenameConfig, logger);
@@ -399,18 +442,18 @@ public class Gitsbe implements Runnable {
 				System.exit(1);
 			}
 		}
-		
+
 		this.verbosity = config.getVerbosity();
 		logger.outputHeader(1, "Config options");
 		logger.outputLines(1, config.getConfig());
 		return config;
 	}
 
-	private void initializeLogger(String directoryOutput) {
+	private void initializeGitsbeLogger(String directory) {
 		try {
 			int verbosity = 3;
-			String filenameOutput = appName + "_" + nameProject;
-			logger = new Logger(filenameOutput, directoryOutput, verbosity, true);
+			String filenameOutput = appName + "_" + nameProject + "_log.txt";
+			this.logger = new Logger(filenameOutput, directory, verbosity, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -420,6 +463,5 @@ public class Gitsbe implements Runnable {
 		Calendar calendarData = Calendar.getInstance();
 		logger.outputHeader(1, appName + " " + version);
 		logger.outputStringMessage(1, "Start: " + dateFormat.format(calendarData.getTime()));
-		logger.setDebug(false);
 	}
 }

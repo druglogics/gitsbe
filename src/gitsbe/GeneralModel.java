@@ -18,14 +18,6 @@ public class GeneralModel {
 		this.logger = logger;
 	}
 
-	public void loadStableStateFile(String filename) throws IOException {
-
-	}
-
-	public void loadComplexesFile(String filename) throws IOException {
-
-	}
-
 	public int size() {
 		return multipleInteractions.size();
 	}
@@ -49,7 +41,7 @@ public class GeneralModel {
 		// Read given file
 		logger.outputStringMessage(1, "Reading .sif file: " + filename);
 		
-		ArrayList<String> lines = readLinesFromFile(filename);
+		ArrayList<String> lines = readLinesFromFile(filename, true);
 		for (int index = 0; index < lines.size(); ++index)
 			interactions.add(lines.get(index));
 
@@ -57,7 +49,7 @@ public class GeneralModel {
 
 			if (interactions.get(i).toString().length() > 0) {
 
-				String line = (String) interactions.get(i);
+				String line = interactions.get(i);
 
 				if (line.contains("<->")) {
 					String line1 = line.replace("<->", "<-");
@@ -378,6 +370,7 @@ public class GeneralModel {
 		this.modelName = path;
 	}
 
+	@Override
 	public String toString() {
 		String tostring = new String();
 

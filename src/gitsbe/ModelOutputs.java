@@ -45,7 +45,7 @@ public class ModelOutputs {
 
 		globaloutput /= stableStates.size();
 
-		return ((globaloutput - getMinOutput()) / (getMaxOutput() - getMinOutput() + 1));
+		return ((globaloutput - getMinOutput()) / (getMaxOutput() - getMinOutput()));
 	}
 
 	public float getMaxOutput() {
@@ -71,7 +71,6 @@ public class ModelOutputs {
 	public static void saveModelOutputsFileTemplate(String filename) throws IOException {
 		PrintWriter writer = new PrintWriter(filename, "UTF-8");
 
-		// Write header with '#'
 		writer.println("# File for defining model outputs");
 		writer.println("# Model outputs specified must match names used in model definition");
 		writer.println("# ");
@@ -86,16 +85,15 @@ public class ModelOutputs {
 		writer.println("CASP8\t-1");
 		writer.println("CASP9\t-1");
 		writer.println("FOXO3\t-1");
-		
+
 		writer.flush();
 		writer.close();
 	}
 
 	public void loadModelOutputsFile(String filename) throws IOException {
-		logger.outputStringMessage(3,
-				"Reading model outputs file: " + new File(filename).getAbsolutePath());
-		
-		ArrayList<String> lines = readLinesFromFile(filename);
+		logger.outputStringMessage(3, "Reading model outputs file: " + new File(filename).getAbsolutePath());
+
+		ArrayList<String> lines = readLinesFromFile(filename, true);
 
 		for (int i = 0; i < lines.size(); i++) {
 			String temp[] = lines.get(i).split("\t");
@@ -103,13 +101,48 @@ public class ModelOutputs {
 		}
 	}
 
+	/**
+	 * Adds errors to the log if there are node names that are not defined in the
+	 * model/network topology
+	 * 
+	 * @param outputs
+	 * @param booleanModels
+	 */
+	public void checkModelOutputNodeNames(BooleanModel booleanModel) {
+		logger.outputHeader(3, "Checking Model Output node names");
+
+		ArrayList<String> nodes = booleanModel.getNodeNames();
+
+		for (String nodeName : this.getNodeNames()) {
+			if (!nodes.contains(nodeName)) {
+				logger.outputStringMessage(3, "ERROR: Node " + nodeName + " is not in network file.");
+				System.exit(1);
+			}
+		}
+	}
+
+	/**
+	 * A verbose representation of the model outputs used for logging purposes
+	 * 
+	 * @return
+	 */
 	public String[] getModelOutputs() {
 		ArrayList<String> lines = new ArrayList<String>();
 
 		for (int index = 0; index < modelOutputs.size(); index++) {
 			lines.add(modelOutputs.get(index).getName() + " with weight: " + modelOutputs.get(index).getWeight());
 		}
-		
-		return (String[]) lines.toArray(new String[0]);
+
+		return lines.toArray(new String[0]);
+	}
+
+	public ArrayList<String> getNodeNames() {
+		ArrayList<String> nodeNames = new ArrayList<String>();
+
+		for (OutputWeight outputWeight : this.modelOutputs) {
+			nodeNames.add(outputWeight.getName());
+		}
+
+		return nodeNames;
 	}
 }

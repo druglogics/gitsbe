@@ -34,8 +34,7 @@ public class Config {
 	private int andmutations;
 	private int shufflemutations;
 	private int topology_mutations;
-	private int target_fitness;
-	private int target_fitness_percent;
+	private float target_fitness;
 	private int bootstrap_mutations_factor;
 	private int mutations_factor;
 	private int bootstrap_shuffle_factor;
@@ -53,14 +52,14 @@ public class Config {
 	public Config(String filename, Logger logger) throws IOException {
 		this.filenameConfig = filename;
 		this.logger = logger;
-		
+
 		loadConfigFile(filename);
 	}
 
 	private void loadConfigFile(String filename) throws IOException {
 
 		logger.outputStringMessage(3, "Reading config file: " + new File(filename).getAbsolutePath());
-		ArrayList<String> lines = readLinesFromFile(filename);
+		ArrayList<String> lines = readLinesFromFile(filename, true);
 
 		// Process lines
 		for (int i = 0; i < lines.size(); i++) {
@@ -163,11 +162,7 @@ public class Config {
 				break;
 
 			case "target_fitness:":
-				target_fitness = Integer.parseInt(value);
-				break;
-
-			case "target_fitness_percent:":
-				target_fitness_percent = Integer.parseInt(value);
+				target_fitness = Float.parseFloat(value);
 				break;
 
 			case "bootstrap_mutations_factor:":
@@ -211,8 +206,8 @@ public class Config {
 				"export_trimmed_sif", "export_ginml", "parallel_simulations", "population", "generations", "selection",
 				"crossovers", "mutations", "balancemutations", "randommutations", "complexmutations", "familymutations",
 				"inhibitorymutations", "activatorymutations", "ormutations", "andmutations", "shufflemutations",
-				"topology_mutations", "target_fitness", "target_fitness_percent", "bootstrap_mutations_factor",
-				"mutations_factor", "bootstrap_shuffle_factor", "shuffle_factor", "bootstrap_topology_mutations_factor",
+				"topology_mutations", "target_fitness", "bootstrap_mutations_factor", "mutations_factor",
+				"bootstrap_shuffle_factor", "shuffle_factor", "bootstrap_topology_mutations_factor",
 				"topology_mutations_factor", "simulations", "models_saved", "fitness_threshold" };
 
 		String values[] = { Boolean.toString(preserve_outputs), Boolean.toString(preserve_inputs),
@@ -224,12 +219,11 @@ public class Config {
 				Integer.toString(complexmutations), Integer.toString(familymutations),
 				Integer.toString(inhibitorymutations), Integer.toString(activatorymutations),
 				Integer.toString(ormutations), Integer.toString(andmutations), Integer.toString(shufflemutations),
-				Integer.toString(topology_mutations), Integer.toString(target_fitness),
-				Integer.toString(target_fitness_percent), Integer.toString(bootstrap_mutations_factor),
-				Integer.toString(mutations_factor), Integer.toString(bootstrap_shuffle_factor),
-				Integer.toString(shuffle_factor), Integer.toString(bootstrap_topology_mutations_factor),
-				Integer.toString(topology_mutations_factor), Integer.toString(simulations),
-				Integer.toString(models_saved), Float.toString(fitness_threshold) };
+				Integer.toString(topology_mutations), Float.toString(target_fitness),
+				Integer.toString(bootstrap_mutations_factor), Integer.toString(mutations_factor),
+				Integer.toString(bootstrap_shuffle_factor), Integer.toString(shuffle_factor),
+				Integer.toString(bootstrap_topology_mutations_factor), Integer.toString(topology_mutations_factor),
+				Integer.toString(simulations), Integer.toString(models_saved), Float.toString(fitness_threshold) };
 
 		ArrayList<String> lines = new ArrayList<String>();
 
@@ -239,7 +233,7 @@ public class Config {
 
 		// adding an empty line for visibility purposes :)
 		lines.add(parameters.length, "");
-		return (String[]) lines.toArray(new String[0]);
+		return lines.toArray(new String[0]);
 
 	}
 
@@ -274,9 +268,9 @@ public class Config {
 		writer.println("simulations:\t3");
 		writer.println();
 		writer.println("# Run simulations in parallel");
-		writer.println("parallel_simulations:\tfalse");
+		writer.println("parallel_simulations:\ttrue");
 		writer.println();
-		writer.println("# Number of generations per simulation (or less if target_fitness is defined, below)");
+		writer.println("# Number of generations per simulation (or less if target_fitness is reached, see below)");
 		writer.println("generations:\t10");
 		writer.println();
 		writer.println("# Number of models per generation");
@@ -300,12 +294,8 @@ public class Config {
 		writer.println("shufflemutations:\t0");
 		writer.println("topology_mutations:\t10");
 		writer.println();
-		writer.println("# Target fitness threshold to stop evolution (0 means disabled)");
-		writer.println("target_fitness:\t0");
-		writer.println("");
-		writer.println(
-				"# Target fitness threshold to stop evolution in percent of max possible fitness given by steady state (0 means disabled)");
-		writer.println("target_fitness_percent:\t80");
+		writer.println("# Target fitness threshold to stop evolution (1 is the absolute maximum value)");
+		writer.println("target_fitness:\t0.9");
 		writer.println();
 		writer.println(
 				"# Factor to multiply number of mutations until initial phase is over (>0 stable states obtained)");
@@ -332,7 +322,7 @@ public class Config {
 		writer.println();
 		writer.println("# Threshold for saving models");
 		writer.println("fitness_threshold:\t0.1");
-		
+
 		writer.flush();
 		writer.close();
 	}
@@ -427,12 +417,8 @@ public class Config {
 		return andmutations;
 	}
 
-	public int getTarget_fitness() {
+	public float getTarget_fitness() {
 		return target_fitness;
-	}
-
-	public int getTarget_fitness_percent() {
-		return target_fitness_percent;
 	}
 
 	public int getBootstrap_mutations_factor() {

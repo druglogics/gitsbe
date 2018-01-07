@@ -31,7 +31,7 @@ public class TrainingData {
 	public void readData(String filename) throws IOException {
 		logger.outputStringMessage(3,
 				"Reading training data observations file: " + new File(filename).getAbsolutePath());
-		ArrayList<String> lines = readLinesFromFile(filename);
+		ArrayList<String> lines = readLinesFromFile(filename, true);
 
 		// Define variables to be read from training data file
 
@@ -45,7 +45,6 @@ public class TrainingData {
 				condition = new ArrayList<String>(Arrays.asList(lines.get(i + 1).split("\t")));
 				i++;
 			}
-
 			if (lines.get(i).toLowerCase().equals("response")) {
 				observation = new ArrayList<String>(Arrays.asList(lines.get(i + 1).split("\t")));
 				i++;
@@ -55,13 +54,57 @@ public class TrainingData {
 				observations.add(new TrainingDataObservation(condition, observation, weight));
 			}
 		}
+	}
 
+	/**
+	 * Adds warnings (errors) to the log if there are node names in the responses
+	 * (conditions) that are not defined in the model/network topology
+	 * 
+	 * @param outputs
+	 * @param booleanModels
+	 */
+	public void checkTrainingDataConsistency(BooleanModel booleanModel) {
+		logger.outputHeader(3, "Checking Training Data");
+
+		ArrayList<String> nodes = booleanModel.getNodeNames();
+
+		for (TrainingDataObservation observation : this.observations) {
+			ArrayList<String> conditions = observation.getCondition();
+			ArrayList<String> responses = observation.getResponse();
+
+			checkConditions(nodes, conditions);
+			checkResponses(nodes, responses);
+		}
+	}
+
+	private void checkResponses(ArrayList<String> nodes, ArrayList<String> responses) {
+		for (String response : responses) {
+			if (!response.split(":")[0].equals("globaloutput")) {
+				String nodeName = response.split(":")[0];
+				if (!nodes.contains(nodeName)) {
+					logger.outputStringMessage(3, "Warning: Node " + nodeName + " defined in response " + response
+							+ " is not in network file.");
+				}
+			}
+		}
+	}
+
+	private void checkConditions(ArrayList<String> nodes, ArrayList<String> conditions) {
+		for (String condition : conditions) {
+			if (!condition.equals("-")) {
+				String nodeName = condition.split(":")[0];
+				if (!nodes.contains(nodeName)) {
+					logger.outputStringMessage(3, "ERROR: Node " + nodeName + " defined in condition " + condition
+							+ " is not in network file.");
+					System.exit(1);
+				}
+			}
+		}
 	}
 
 	public static void writeTrainingDataTemplateFile(String filename) throws IOException {
 		PrintWriter writer = new PrintWriter(filename, "UTF-8");
-		
-		// Write header with '#'
+
 		writer.println("# Gitsbe training data file");
 		writer.println("# Each condition specified contains a condition given by drug");
 		writer.println("# Each condition specified contains a set node states and/or a global output");
@@ -78,6 +121,7 @@ public class TrainingData {
 		writer.println("Response");
 		writer.println("globaloutput:0");
 		writer.println("Weight:0.1");
+
 		writer.flush();
 		writer.close();
 	}
@@ -93,7 +137,6 @@ public class TrainingData {
 		maxFitness = getWeightSum();
 		maxFitness += 1; // a fitness of +1 is given for a model with a stable state per condition, thus
 							// max fitness must be increased
-
 		return maxFitness;
 	}
 

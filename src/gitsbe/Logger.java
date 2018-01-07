@@ -13,7 +13,7 @@ import java.util.Arrays;
  * 
  * @author Asmund Flobak
  * 
- * email: asmund.flobak@ntnu.no
+ *         email: asmund.flobak@ntnu.no
  *
  */
 
@@ -22,9 +22,9 @@ public class Logger {
 	private String filenameOutput;
 	private String directory;
 	private PrintWriter writerOutput;
-	
-	private boolean consoleOutput = true;
-	private boolean debugMode = false;
+
+	private boolean consoleOutput;
+	private boolean debugMode;
 	private int verbosity;
 
 	/**
@@ -39,22 +39,22 @@ public class Logger {
 	 *            info, 2 = less important, 3 = everything
 	 * @throws IOException
 	 */
-	public Logger(String filenameOutput, String directory, int verbosity, boolean consoleOutput)
-			throws IOException {
+	public Logger(String filenameOutput, String directory, int verbosity, boolean consoleOutput) throws IOException {
 
 		// Initialize variables
 		this.directory = directory;
-		this.filenameOutput = new File(directory, filenameOutput).getPath() + "_log.txt";
-		
+		this.filenameOutput = new File(directory, filenameOutput).getPath();
+
 		// Initialize (also create) file writers
 		this.writerOutput = new PrintWriter(this.filenameOutput);
-		
+
 		this.setVerbosity(verbosity);
 		this.consoleOutput = consoleOutput;
+		this.debugMode = false;
 
 		outputStringMessage(1, "Logger started, logging to directory: " + this.directory);
 	}
-	
+
 	public void finish() {
 		writerOutput.close();
 	}
@@ -90,10 +90,11 @@ public class Logger {
 		if (verbosity <= this.verbosity) {
 			writerOutput.println(msg);
 			writerOutput.flush();
-			if (consoleOutput) System.out.println(msg);
+			if (consoleOutput)
+				System.out.println(msg);
 		}
 	}
-	
+
 	/**
 	 * Output several lines
 	 * 
@@ -104,7 +105,8 @@ public class Logger {
 		if (verbosity <= this.verbosity) {
 			for (int i = 0; i < msg.length; i++) {
 				writerOutput.println(msg[i]);
-				if (consoleOutput) System.out.println(msg[i]);
+				if (consoleOutput)
+					System.out.println(msg[i]);
 			}
 			writerOutput.flush();
 		}
@@ -125,9 +127,10 @@ public class Logger {
 
 			for (int i = 0; i < msg.length; i++) {
 				writer.println(msg[i]);
-				if (consoleOutput) System.out.println(msg[i]);
+				if (consoleOutput)
+					System.out.println(msg[i]);
 			}
-			
+
 			writer.flush();
 			writer.close();
 		} catch (IOException e) {
@@ -150,7 +153,8 @@ public class Logger {
 			PrintWriter writer = new PrintWriter(bw);
 
 			writer.println(msg);
-			if (consoleOutput) System.out.println(msg);
+			if (consoleOutput)
+				System.out.println(msg);
 
 			writer.flush();
 			writer.close();
@@ -177,7 +181,7 @@ public class Logger {
 
 		}
 	}
-	
+
 	public void outputHeaderToFile(String filename, String msg) {
 		try {
 			FileWriter fw = new FileWriter(filename, true);
@@ -187,7 +191,8 @@ public class Logger {
 			writer.println("\n" + msg);
 			writer.println(dashes(msg.length()));
 
-			if (consoleOutput) System.out.println(msg);
+			if (consoleOutput)
+				System.out.println(msg);
 
 			writer.flush();
 			writer.close();
@@ -195,7 +200,7 @@ public class Logger {
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * Get string with specified number of dashes
 	 * 

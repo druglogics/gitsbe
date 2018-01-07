@@ -31,7 +31,8 @@ public class BooleanModel {
 		this.logger = logger;
 	}
 
-	// Constructor for defining Boolean model from a "general model" with interactions
+	// Constructor for defining Boolean model from a "general model" with
+	// interactions
 	public BooleanModel(GeneralModel generalModel, Logger logger) {
 
 		this.logger = logger;
@@ -75,7 +76,7 @@ public class BooleanModel {
 		logger.outputStringMessage(1, "Loading Boolean model from file: " + filename);
 
 		try {
-			lines = readLinesFromFile(filename);
+			lines = readLinesFromFile(filename, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 			return;
@@ -160,7 +161,6 @@ public class BooleanModel {
 		return stableStates.size();
 	}
 
-	
 	public void exportSifFile(String directoryOutput, String filename)
 			throws FileNotFoundException, UnsupportedEncodingException {
 
@@ -177,7 +177,7 @@ public class BooleanModel {
 	public void setVerbosity(int verbosity) {
 		this.verbosity = verbosity;
 	}
-	
+
 	public void exportBoolNetFile(String outputDirectory, String filename)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter writer = new PrintWriter(new File(outputDirectory, filename), "UTF-8");
@@ -201,10 +201,10 @@ public class BooleanModel {
 	}
 
 	public void saveFileInGitsbeFormat(String directoryName) throws IOException {
-		
+
 		String filename = this.modelName.substring(this.modelName.lastIndexOf('/') + 1) + ".gitsbe";
 		PrintWriter writer = new PrintWriter(new File(directoryName, filename).getPath(), "UTF-8");
-		
+
 		// Write header with '#'
 		writer.println("#Boolean model file in gitsbe format");
 
@@ -242,7 +242,7 @@ public class BooleanModel {
 
 	public void writeGinmlFile(String directoryOutput, String filename, ArrayList<SingleInteraction> singleInteractions)
 			throws IOException {
-		
+
 		PrintWriter writer = new PrintWriter(new File(directoryOutput, filename).getAbsolutePath(), "UTF-8");
 		String[] expressions = this.printBooleanModelGinmlExpressions();
 
@@ -311,7 +311,7 @@ public class BooleanModel {
 
 		temp = temp.replace("&", "&amp;");
 		String lines[] = temp.split("\n");
-		
+
 		return lines;
 	}
 
@@ -395,7 +395,7 @@ public class BooleanModel {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			
+
 			// Redirecting the output of BNReduction.sh
 			BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			while (r.ready()) {
@@ -410,8 +410,8 @@ public class BooleanModel {
 		String filename = directoryOutput + File.separator + modelName + ".dat.fp";
 
 		logger.outputStringMessage(2, "Reading steady states: " + filename);
-		ArrayList<String> lines = readLinesFromFile(filename);
-		
+		ArrayList<String> lines = readLinesFromFile(filename, true);
+
 		for (int index = 0; index < lines.size(); ++index)
 			stableStates.add(lines.get(index));
 
@@ -423,7 +423,7 @@ public class BooleanModel {
 					for (int i = 0; i < stableStates.size(); i++) {
 						logger.outputStringMessage(2, "Stable state " + (i + 1) + ": " + stableStates.get(i));
 					}
-					
+
 					// Debug info
 					for (int i = 0; i < stableStates.get(0).length(); i++) {
 						String states = "";
@@ -432,14 +432,14 @@ public class BooleanModel {
 							states += "\t" + stableStates.get(j).charAt(i);
 						}
 
-						logger.debug(mapAlternativeNames.get(i)[0] + states) ;
+						logger.debug(mapAlternativeNames.get(i)[0] + states);
 					}
 
 				}
 			}
 
 			else {
-				logger.outputStringMessage(2, "BNReduction found no stable states.\n");
+				logger.outputStringMessage(2, "BNReduction found no stable states.");
 			}
 		}
 	}
@@ -494,7 +494,7 @@ public class BooleanModel {
 				index = i;
 			}
 		}
-		
+
 		return index;
 	}
 
@@ -506,11 +506,11 @@ public class BooleanModel {
 	public boolean hasStableStates() {
 		return (stableStates.size() > 0);
 	}
-	
+
 	/**
-	 * Returns an 2-dimensional Array where the first row has the node names and 
-	 * every other row contains the truth values (0 or 1) of the corresponding node (column)
-	 * in the stable state
+	 * Returns an 2-dimensional Array where the first row has the node names and
+	 * every other row contains the truth values (0 or 1) of the corresponding node
+	 * (column) in the stable state
 	 */
 	public String[][] getStableStates() {
 		String[][] result = new String[stableStates.size() + 1][getNodeNames().size()];
@@ -523,7 +523,6 @@ public class BooleanModel {
 		}
 
 		return result;
-
 	}
 
 	/**
@@ -534,14 +533,13 @@ public class BooleanModel {
 	 */
 	protected void modifyEquation(String equation) {
 		// Get index of equation for specified target
-		int index = getIndexOfEquation(equation.split(" ")[0].trim());
+		String target = equation.split(" ")[0].trim();
+		int index = getIndexOfEquation(target);
 
 		if (index < 0) {
 			logger.outputStringMessage(1, "Target of equation [" + equation
 					+ "] not found, this will crash the program. Non-matching name in topology and query?");
 		}
 		booleanEquations.set(index, new BooleanEquation(equation));
-
 	}
-
 }

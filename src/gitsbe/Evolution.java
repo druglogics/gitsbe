@@ -1,6 +1,6 @@
 package gitsbe;
 
-import static gitsbe.Util.*;
+import static gitsbe.RandomManager.*;
 import static java.lang.Math.*;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -74,9 +74,8 @@ public class Evolution {
 
 			// Calculate stable states and fitness
 			for (int i = 0; i < config.getPopulation(); i++) {
-			
 				logger.outputStringMessage(2, "\nModel " + generationModels.get(i).getModelName());
-				
+
 				try {
 					generationModels.get(i).calculateFitness(data, modelOutputs, directoryOutput);
 				} catch (FileNotFoundException e) {
@@ -86,26 +85,23 @@ public class Evolution {
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			
 			}
 
 			// Append summary (fitness values for all models in current generation)
 			addSummaryFitnessValues(generationModels, fitnesses);
 
 			// Selection (update bestModels)
-			float highestFitness = selection(generationModels, generation);
+			float fitnessScore = selection(generationModels, generation);
 
 			// Break if highestFitness is over
-			logger.outputStringMessage(0, "Comparing: " + String.valueOf(highestFitness) + " with: "
-					+ String.valueOf((data.getMaxFitness() * config.getTarget_fitness_percent() / 100)));
+			logger.outputStringMessage(0, "Comparing: " + String.valueOf(fitnessScore) + " with: "
+					+ String.valueOf(config.getTarget_fitness()));
 
-			if (highestFitness > (data.getMaxFitness() * config.getTarget_fitness_percent() / 100)) {
+			if (fitnessScore > config.getTarget_fitness()) {
 				logger.outputStringMessage(2, "Breaking evolution after " + generation
-						+ " generations, since target fitness reached (" + config.getTarget_fitness_percent() + " %)");
+						+ " generations, since the target fitness value is reached: " + config.getTarget_fitness());
 				break;
 			}
-
-			// Break if highestFitness is not improving over generations
 
 		}
 
@@ -115,14 +111,21 @@ public class Evolution {
 
 	}
 
+	/**
+	 * Sets the best models of the current generation
+	 * 
+	 * @param generationModels
+	 * @param generation
+	 * @return The smallest fitness score among the best models selected
+	 * 
+	 */
 	private float selection(ArrayList<MutatedBooleanModel> generationModels, int generation) {
+		float currentMaxFitness = 0;
+
 		// Choose the new bestModels based on the highest fitness score
-		float highestFitness = 0, currentMaxFitness = 0;
-
 		for (int i = 0; i < config.getSelection(); i++) {
-			currentMaxFitness = 0; // reset currentMaxFitness
-
 			int indexBest = 0;
+			currentMaxFitness = 0; // reset currentMaxFitness
 
 			for (int k = 0; k < generationModels.size(); k++) {
 				if (generationModels.get(k).getFitness() > currentMaxFitness) {
@@ -134,10 +137,6 @@ public class Evolution {
 			// Add the highest fitness model and remove it from the generation's model list
 			bestModels.set(i, generationModels.get(indexBest));
 			generationModels.remove(indexBest);
-
-			// keep track of the highest fitness among the best models
-			if (highestFitness < currentMaxFitness)
-				highestFitness = currentMaxFitness;
 		}
 
 		// If all best models have a stableState with fitness > 0 then
@@ -156,7 +155,7 @@ public class Evolution {
 		}
 		logger.outputStringMessage(2, "\n");
 
-		return highestFitness;
+		return currentMaxFitness;
 
 	}
 
@@ -169,7 +168,6 @@ public class Evolution {
 		}
 
 		fitnesses.add(generationfitness);
-
 	}
 
 	private void crossover(ArrayList<MutatedBooleanModel> generationModels, int generation) {
@@ -184,7 +182,6 @@ public class Evolution {
 			logger.outputStringMessage(3, "Define new model " + baseModelName + "_G" + generation + "_M" + i + " from "
 					+ bestModels.get(parent1).getModelName() + " and " + bestModels.get(parent2).getModelName());
 		}
-
 	}
 
 	private void mutateModels(ArrayList<MutatedBooleanModel> generationModels) {
