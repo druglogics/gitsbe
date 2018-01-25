@@ -79,21 +79,21 @@ public class Gitsbe implements Runnable {
 
 	@Override
 	public void run() {
-
+		
 		System.out.print("Welcome to " + appName + " " + version + "\n\n");
-
+		
 		// Create output directory
-		if (!createDirectory(directoryOutput, logger))
+		if (!createDirectory(directoryOutput))
 			return;
-
-		// Create models folder (subfolder to directoryOutput)
+		
+		// Create models directory (subfolder to directoryOutput)
 		String modelDirectory = new File(directoryOutput, "models").getAbsolutePath();
-		if (!createDirectory(modelDirectory, logger))
+		if (!createDirectory(modelDirectory))
 			return;
 
-		// Create log folder (subfolder to directoryOutput)
+		// Create log directory (subfolder to directoryOutput)
 		String logDirectory = new File(directoryOutput, "log").getAbsolutePath();
-		if (!createDirectory(logDirectory, logger))
+		if (!createDirectory(logDirectory))
 			return;
 
 		// Start logger

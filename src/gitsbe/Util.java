@@ -2,13 +2,11 @@ package gitsbe;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -91,14 +89,73 @@ public class Util {
 		return lines;
 	}
 
+	/**
+	 * Create a directory based on given path string and output message in the
+	 * logger
+	 * 
+	 * @param directory
+	 * @param logger
+	 * @return
+	 */
 	public static boolean createDirectory(String directory, Logger logger) {
-		if (!new File(directory).mkdir()) {
-			if (!new File(directory).exists()) {
-				logger.outputStringMessage(1, "ERROR creating folder: " + directory + ", exiting.");
+		File directoryFile = new File(directory);
+		
+		if (!directoryFile.mkdir()) {
+			if (!directoryFile.exists()) {
+				logger.outputStringMessage(1, "ERROR creating directory: " + directory + ", exiting.");
 				return false;
 			}
 		}
+		
+		logger.outputStringMessage(1, "Created directory: " + directory);
 		return true;
+	}
+	
+	/**
+	 * Create a directory based on the given path string. 
+	 * If it already exists, it will be firstly deleted.
+	 * 
+	 * @param directory
+	 */
+	public static boolean createDirectory(String directory) {
+		File directoryFile = new File(directory);
+		
+		if (directoryFile.exists()) {
+			deleteFilesFromDirectory(directoryFile);
+			directoryFile.delete();
+		}
+		
+		if (!directoryFile.mkdir()) {
+			if (!directoryFile.exists()) {
+				 System.out.println("ERROR creating directory: " + directory + ", exiting.");
+				 return false;
+			}
+		}
+		
+		System.out.println("Created directory: " + directory);
+		return true;
+	}
+	
+	/**
+	 * Returns true if file is completely empty
+	 * @param filename
+	 * @return
+	 */
+	public static boolean isFileEmpty(String filename) {
+		BufferedReader br = null;
+		try {
+			br = new BufferedReader(new FileReader(filename));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}     
+		try {
+			if (br.readLine() == null) {
+			    return true;
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		return false;
 	}
 
 	/**
@@ -131,32 +188,87 @@ public class Util {
 		return filename.substring(0, extensionIndex);
 	}
 
-	public static void copy(File sourceLocation, File targetLocation) throws IOException {
-		if (sourceLocation.isDirectory()) {
-			copyDirectory(sourceLocation, targetLocation);
-		} else {
-			copyFile(sourceLocation, targetLocation);
-		}
-	}
+	public static void removeLineFromFile(String file, String lineToRemove) {
+		try {
+			File inFile = new File(file);
 
-	public static void copyDirectory(File source, File target) throws IOException {
-		if (!target.exists()) {
-			target.mkdir();
-		}
-
-		for (String f : source.list()) {
-			copy(new File(source, f), new File(target, f));
-		}
-	}
-
-	public static void copyFile(File source, File target) throws IOException {
-		try (InputStream in = new FileInputStream(source); OutputStream out = new FileOutputStream(target)) {
-			byte[] buf = new byte[1024];
-			int length;
-			while ((length = in.read(buf)) > 0) {
-				out.write(buf, 0, length);
+			if (!inFile.isFile()) {
+				System.out.println("Parameter is not an existing file");
+				return;
 			}
+
+			// Construct the new file that will later be renamed to the original filename.
+			File tempFile = new File(inFile.getAbsolutePath() + ".tmp");
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
+
+			String line = null;
+
+			// Read from the original file and write to the new
+			// unless content matches data to be removed.
+			while ((line = br.readLine()) != null) {
+
+				if (!line.trim().equals(lineToRemove)) {
+
+					pw.println(line);
+					pw.flush();
+				}
+			}
+			pw.close();
+			br.close();
+
+			// Delete the original file
+			if (!inFile.delete()) {
+				System.out.println("Could not delete file");
+				return;
+			}
+
+			// Rename the new file to the filename the original file had.
+			if (!tempFile.renameTo(inFile))
+				System.out.println("Could not rename file");
+
+		} catch (FileNotFoundException ex) {
+			ex.printStackTrace();
+		} catch (IOException ex) {
+			ex.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Copies file to directory (both String variables should be the absolute pathnames)
+	 * @param file
+	 * @param directory
+	 * @throws IOException
+	 */
+	public static void copyFileToDirectory(String file, String directory) throws IOException {
+		String filename = new File(file).getName();
+		String outputFile = new File(directory, filename).getAbsolutePath();
+		
+		PrintWriter writerOutput = new PrintWriter(outputFile);
+		ArrayList<String> lines = readLinesFromFile(file, false);
+		
+		for (String line : lines) {
+			writerOutput.println(line);
+		}
+		writerOutput.flush();
+		writerOutput.close();
+	}
+	
+	/**
+	 * Duplicates file creating outputFile (both String variables should be the absolute pathnames)
+	 * @param file
+	 * @param outputFile
+	 * @throws IOException
+	 */
+	public static void duplicateFile(String file, String outputFile) throws IOException {
+		PrintWriter writerOutput = new PrintWriter(outputFile);
+		ArrayList<String> lines = readLinesFromFile(file, false);
+		
+		for (String line : lines) {
+			writerOutput.println(line);
+		}
+		writerOutput.flush();
+		writerOutput.close();
 	}
 
 	/**
@@ -239,5 +351,4 @@ public class Util {
 			e.printStackTrace();
 		}
 	}
-
 }
