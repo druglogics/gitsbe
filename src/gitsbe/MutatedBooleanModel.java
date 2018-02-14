@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.io.File;
 
 public class MutatedBooleanModel extends BooleanModel {
@@ -19,24 +20,12 @@ public class MutatedBooleanModel extends BooleanModel {
 	// Constructor for creating a mutated model offspring from two parents, using
 	// crossover
 	public MutatedBooleanModel(MutatedBooleanModel parent1, MutatedBooleanModel parent2, String modelName,
-			Logger logger) {
+			Logger logger, Config config) {
 
 		super(logger);
 
-		// Copy Boolean equations
-		booleanEquations = new ArrayList<BooleanEquation>();
-
-		int indexCrossover = randInt(0, parent1.booleanEquations.size());
-
-		// Add equations from parent1
-		for (int i = 0; i < indexCrossover; i++) {
-			this.booleanEquations.add(new BooleanEquation(parent1.booleanEquations.get(i)));
-		}
-
-		// Add equations from parent2
-		for (int i = indexCrossover; i < parent2.booleanEquations.size(); i++) {
-			this.booleanEquations.add(new BooleanEquation(parent2.booleanEquations.get(i)));
-		}
+		// Copy Boolean equations from parents
+		crossoverCopy(logger, config, parent1, parent2);
 
 		// Copy mapAlternativeNames
 		this.mapAlternativeNames = new ArrayList<String[]>();
@@ -50,7 +39,60 @@ public class MutatedBooleanModel extends BooleanModel {
 
 		// Assign modelName
 		this.modelName = modelName;
+	}
 
+	private void crossoverCopy(Logger logger, Config config, MutatedBooleanModel parent1, MutatedBooleanModel parent2) {
+		booleanEquations = new ArrayList<BooleanEquation>();
+
+		int crossovers = config.getCrossovers();
+		int numberOfBooleanEquations = parent1.booleanEquations.size();
+		logger.debug("Crossovers: " + crossovers + "\nNumber of boolean equations: " + numberOfBooleanEquations);
+
+		if (crossovers >= numberOfBooleanEquations - 1) {
+			// the offspring will take equations alternatively from the parents
+			for (int i = 0; i < numberOfBooleanEquations; i++) {
+				if ((i % 2) == 0) {
+					this.booleanEquations.add(new BooleanEquation(parent1.booleanEquations.get(i)));
+					logger.debug("i: " + i + " -> Added equation from parent 1");
+				} else {
+					this.booleanEquations.add(new BooleanEquation(parent2.booleanEquations.get(i)));
+					logger.debug("i: " + i + " -> Added equation from parent 2");
+				}
+			}
+		} else {
+			ArrayList<Integer> crossoverList = new ArrayList<>();
+			for (int i = 0; i < crossovers; i++) {
+				crossoverList.add(randInt(0, numberOfBooleanEquations));
+			}
+			Collections.sort(crossoverList);
+			crossoverList.add(numberOfBooleanEquations);
+			logger.debug(crossoverList.toString());
+
+			int currentIndex = 0;
+			int currentParent = 1;
+
+			for (int crossoverIndex : crossoverList) {
+				int i;
+				logger.debug("currentindex: " + currentIndex + " CrossoverIndex: " + crossoverIndex
+						+ " Current parent: " + currentParent);
+				for (i = currentIndex; i < crossoverIndex; i++) {
+					if (currentParent == 1) {
+						this.booleanEquations.add(new BooleanEquation(parent1.booleanEquations.get(i)));
+						logger.debug("i: " + i + " -> Added equation from parent 1");
+					} else {
+						this.booleanEquations.add(new BooleanEquation(parent2.booleanEquations.get(i)));
+						logger.debug("i: " + i + " -> Added equation from parent 2");
+					}
+				}
+				currentIndex = i;
+
+				// change parent
+				if (currentParent == 1)
+					currentParent = 2;
+				else
+					currentParent = 1;
+			}
+		}
 	}
 
 	public void introduceRandomMutation(int numberOfMutations) {

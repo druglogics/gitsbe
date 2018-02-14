@@ -177,7 +177,7 @@ public class Evolution {
 			int parent2 = randInt(0, config.getSelection() - 1);
 
 			generationModels.add(new MutatedBooleanModel(bestModels.get(parent1), bestModels.get(parent2),
-					baseModelName + "_G" + generation + "_M" + i, logger));
+					baseModelName + "_G" + generation + "_M" + i, logger, config));
 
 			logger.outputStringMessage(3, "Define new model " + baseModelName + "_G" + generation + "_M" + i + " from "
 					+ bestModels.get(parent1).getModelName() + " and " + bestModels.get(parent2).getModelName());
