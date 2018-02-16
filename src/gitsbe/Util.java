@@ -29,14 +29,6 @@ public class Util {
 		return false;
 	}
 
-	public static void deleteFilesFromDirectory(File dir) {
-		for (File file : dir.listFiles()) {
-			if (file.isDirectory())
-				deleteFilesFromDirectory(file);
-			file.delete();
-		}
-	}
-
 	/**
 	 * Makes the directory path absolute (if it is not already)
 	 * 
@@ -113,7 +105,7 @@ public class Util {
 	
 	/**
 	 * Create a directory based on the given path string. 
-	 * If it already exists, it will be firstly deleted.
+	 * If it already exists, the function call returns false.
 	 * 
 	 * @param directory
 	 */
@@ -121,8 +113,8 @@ public class Util {
 		File directoryFile = new File(directory);
 		
 		if (directoryFile.exists()) {
-			deleteFilesFromDirectory(directoryFile);
-			directoryFile.delete();
+			System.out.println("ERROR: Directory: " + directory + " already exists!");
+			return false;
 		}
 		
 		if (!directoryFile.mkdir()) {

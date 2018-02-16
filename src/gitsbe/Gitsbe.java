@@ -1,6 +1,7 @@
 package gitsbe;
 
 import static gitsbe.Util.*;
+import static gitsbe.FileDeleter.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,7 +36,7 @@ public class Gitsbe implements Runnable {
 	private String filenameTrainingData;
 	private String filenameConfig;
 	private String directoryOutput;
-	private String directoryTemp;
+	private String directoryTmp;
 	private String nameProject;
 	private String filenameModelOutputs;
 
@@ -49,14 +50,14 @@ public class Gitsbe implements Runnable {
 	private ArrayList<String> simulationFileList;
 
 	public Gitsbe(String nameProject, String filenameNetwork, String filenameTrainingData, String filenameModelOutputs,
-			String filenameConfig, String directoryOutput, String directoryTemp) {
+			String filenameConfig, String directoryOutput, String directoryTmp) {
 		this.nameProject = nameProject;
 		this.filenameNetwork = filenameNetwork;
 		this.filenameTrainingData = filenameTrainingData;
 		this.filenameModelOutputs = filenameModelOutputs;
 		this.filenameConfig = filenameConfig;
 		this.directoryOutput = directoryOutput;
-		this.directoryTemp = directoryTemp;
+		this.directoryTmp = directoryTmp;
 	}
 
 	// constructor with model outputs
@@ -74,18 +75,18 @@ public class Gitsbe implements Runnable {
 		this.filenameModelOutputs = filenameModelOutputs;
 		this.filenameConfig = filenameConfig;
 		this.directoryOutput = directoryOutput;
-		this.directoryTemp = new File(directoryOutput, "gitsbe_tmp").getAbsolutePath();
+		this.directoryTmp = new File(directoryOutput, "gitsbe_tmp").getAbsolutePath();
 	}
 
 	@Override
 	public void run() {
-		
+
 		System.out.print("Welcome to " + appName + " " + version + "\n\n");
-		
+
 		// Create output directory
 		if (!createDirectory(directoryOutput))
 			return;
-		
+
 		// Create models directory (subfolder to directoryOutput)
 		String modelDirectory = new File(directoryOutput, "models").getAbsolutePath();
 		if (!createDirectory(modelDirectory))
@@ -120,10 +121,9 @@ public class Gitsbe implements Runnable {
 		ModelOutputs outputs = loadModelOutputs(generalBooleanModel);
 
 		// Create temp directory
-		File tempDir = new File(directoryTemp);
-		if (!createDirectory(directoryTemp, logger))
+		if (!createDirectory(directoryTmp, logger))
 			return;
-		String bnetOutputDirectory = directoryTemp;
+		initializeFileDeleter(config);
 
 		// Summary report for Gitsbe
 		Summary summary = initializeSummary(config);
@@ -139,15 +139,15 @@ public class Gitsbe implements Runnable {
 		if (config.runParallelSimulations()) {
 			// Run evolution simulations in parallel
 			simulationFileList = new ArrayList<String>();
-			IntStream.range(0, numberOfSimulations).parallel().forEach(
-					run -> RandomManager.withRandom(randomSeedsList.get(run), () -> runSimulation(run, config, summary,
-							generalBooleanModel, data, outputs, modelDirectory, bnetOutputDirectory, logDirectory)));
+			IntStream.range(0, numberOfSimulations).parallel()
+					.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run), () -> runSimulation(run, config,
+							summary, generalBooleanModel, data, outputs, modelDirectory, logDirectory)));
 			mergeLogFiles(logDirectory);
 		} else {
 			// Run evolution simulations in serial
-			IntStream.range(0, numberOfSimulations).forEach(
-					run -> RandomManager.withRandom(randomSeedsList.get(run), () -> runSimulation(run, config, summary,
-							generalBooleanModel, data, outputs, modelDirectory, bnetOutputDirectory, logDirectory)));
+			IntStream.range(0, numberOfSimulations)
+					.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run), () -> runSimulation(run, config,
+							summary, generalBooleanModel, data, outputs, modelDirectory, logDirectory)));
 		}
 
 		summary.generateFitnessesReport();
@@ -156,13 +156,20 @@ public class Gitsbe implements Runnable {
 		saveBestModelsToFile(summary);
 
 		// Clean tmp directory
-		cleanTmpDirectory(config, tempDir);
+		cleanDirectory(logger);
 
 		// Stop timer
 		timer.stopTimer();
 		logger.outputHeader(1, "\nThe end");
 
 		closeLogger(timer);
+	}
+
+	private void initializeFileDeleter(Config config) {
+		FileDeleter fileDeleter = new FileDeleter(directoryTmp);
+		if (!config.isPreserve_tmp_files()) {
+			fileDeleter.activate();
+		}
 	}
 
 	/**
@@ -184,8 +191,7 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void runSimulation(int run, Config config, Summary summary, BooleanModel generalBooleanModel,
-			TrainingData data, ModelOutputs outputs, String modelDirectory, String bnetOutputDirectory,
-			String logDirectory) {
+			TrainingData data, ModelOutputs outputs, String modelDirectory, String logDirectory) {
 
 		int verbosity = 3;
 		int simulation = run + 1;
@@ -208,8 +214,8 @@ public class Gitsbe implements Runnable {
 				"Evolutionary algorithms, evolution " + (simulation) + " of " + config.getSimulations());
 
 		Evolution ga = new Evolution(summary, generalBooleanModel,
-				generalBooleanModel.getModelName() + "_run_" + run + "_", data, outputs, modelDirectory,
-				bnetOutputDirectory, config, simulation_logger);
+				generalBooleanModel.getModelName() + "_run_" + run + "_", data, outputs, modelDirectory, directoryTmp,
+				config, simulation_logger);
 
 		ga.evolve(run);
 		ga.outputBestModels();
@@ -393,14 +399,6 @@ public class Gitsbe implements Runnable {
 			generalBooleanModel = new BooleanModel(filenameNetwork, logger);
 		}
 		return generalBooleanModel;
-	}
-
-	private void cleanTmpDirectory(Config config, File tempDir) {
-		if (!config.isPreserve_tmp_files()) {
-			logger.outputStringMessage(2, "\n" + "Deleting temporary directory: " + tempDir.getAbsolutePath());
-			deleteFilesFromDirectory(tempDir);
-			tempDir.delete();
-		}
 	}
 
 	private void closeLogger(Timer timer) {

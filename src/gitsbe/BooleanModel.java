@@ -1,6 +1,7 @@
 package gitsbe;
 
 import static gitsbe.Util.*;
+import static gitsbe.FileDeleter.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -366,18 +367,57 @@ public class BooleanModel {
 		String[] modelVC = this.getModelVelizCuba();
 
 		// Write model to file for 'BNreduction.sh'
-		PrintWriter writer = new PrintWriter(directoryOutput + File.separator + modelName + ".dat", "UTF-8");
+		String modelDataFileVC = new File(directoryOutput, modelName + ".dat").getAbsolutePath();
+		PrintWriter writer = new PrintWriter(modelDataFileVC, "UTF-8");
 
 		for (int i = 0; i < modelVC.length; i++) {
 			writer.println(modelVC[i]);
 		}
-
 		writer.close();
 
+		// Run the BNReduction script
+		runBNReduction(modelDataFileVC);
+
+		// Read stable states from BNReduction.sh output file
+		String fixedPointsFile = new File(directoryOutput, modelName + ".dat.fp").getAbsolutePath();
+
+		logger.outputStringMessage(2, "Reading steady states: " + fixedPointsFile);
+		ArrayList<String> lines = readLinesFromFile(fixedPointsFile, true);
+
+		for (int index = 0; index < lines.size(); ++index)
+			stableStates.add(lines.get(index));
+
+		if (logger.getVerbosity() >= 2) {
+			if (stableStates.size() > 0) {
+				if (stableStates.get(0).toString().length() > 0) {
+
+					logger.outputStringMessage(2, "BNReduction found " + stableStates.size() + " stable states:");
+					for (int i = 0; i < stableStates.size(); i++) {
+						logger.outputStringMessage(2, "Stable state " + (i + 1) + ": " + stableStates.get(i));
+					}
+
+					// Debug info
+					for (int i = 0; i < stableStates.get(0).length(); i++) {
+						String states = "";
+						for (int j = 0; j < stableStates.size(); j++) {
+							states += "\t" + stableStates.get(j).charAt(i);
+						}
+						logger.debug(mapAlternativeNames.get(i)[0] + states);
+					}
+				}
+			} else {
+				logger.outputStringMessage(2, "BNReduction found no stable states.");
+			}
+		}
+
+		deleteFilesMatchingPattern(logger, modelName);
+	}
+
+	private void runBNReduction(String modelDataFileVC) {
+		String BNReductionScriptFile = new File(directoryBNET, "BNReduction.sh").getAbsolutePath();
+
 		try {
-			ProcessBuilder pb = new ProcessBuilder("timeout", "30",
-					new File(directoryBNET, "BNReduction.sh").getAbsolutePath(),
-					new File(directoryOutput, modelName + ".dat").getAbsolutePath());
+			ProcessBuilder pb = new ProcessBuilder("timeout", "30", BNReductionScriptFile, modelDataFileVC);
 
 			if (logger.getVerbosity() >= 3) {
 				pb.redirectErrorStream(true);
@@ -404,43 +444,6 @@ public class BooleanModel {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
-
-		// Read stable states from BNReduction.sh output file
-		String filename = directoryOutput + File.separator + modelName + ".dat.fp";
-
-		logger.outputStringMessage(2, "Reading steady states: " + filename);
-		ArrayList<String> lines = readLinesFromFile(filename, true);
-
-		for (int index = 0; index < lines.size(); ++index)
-			stableStates.add(lines.get(index));
-
-		if (logger.getVerbosity() >= 2) {
-			if (stableStates.size() > 0) {
-				if (stableStates.get(0).toString().length() > 0) {
-
-					logger.outputStringMessage(2, "BNReduction found " + stableStates.size() + " stable states:");
-					for (int i = 0; i < stableStates.size(); i++) {
-						logger.outputStringMessage(2, "Stable state " + (i + 1) + ": " + stableStates.get(i));
-					}
-
-					// Debug info
-					for (int i = 0; i < stableStates.get(0).length(); i++) {
-						String states = "";
-
-						for (int j = 0; j < stableStates.size(); j++) {
-							states += "\t" + stableStates.get(j).charAt(i);
-						}
-
-						logger.debug(mapAlternativeNames.get(i)[0] + states);
-					}
-
-				}
-			}
-
-			else {
-				logger.outputStringMessage(2, "BNReduction found no stable states.");
-			}
 		}
 	}
 
