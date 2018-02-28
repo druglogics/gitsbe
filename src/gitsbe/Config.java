@@ -19,6 +19,7 @@ public class Config {
 	private boolean export_ginml;
 
 	private boolean parallel_simulations;
+	private int forkJoinPoolSize;
 	private int population;
 	private int generations;
 	private int selection;
@@ -108,6 +109,9 @@ public class Config {
 			case "parallel_simulations:":
 				parallel_simulations = Boolean.parseBoolean(value);
 				break;
+
+			case "forkJoinPoolSize:":
+				forkJoinPoolSize = Integer.parseInt(value);
 
 			case "population:":
 				population = Integer.parseInt(value);
@@ -203,27 +207,29 @@ public class Config {
 	public String[] getConfig() {
 
 		String parameters[] = { "preserve_outputs", "preserve_inputs", "preserve_tmp_files", "export_boolean_model",
-				"export_trimmed_sif", "export_ginml", "parallel_simulations", "population", "generations", "selection",
-				"crossovers", "mutations", "balancemutations", "randommutations", "complexmutations", "familymutations",
-				"inhibitorymutations", "activatorymutations", "ormutations", "andmutations", "shufflemutations",
-				"topology_mutations", "target_fitness", "bootstrap_mutations_factor", "mutations_factor",
-				"bootstrap_shuffle_factor", "shuffle_factor", "bootstrap_topology_mutations_factor",
-				"topology_mutations_factor", "simulations", "models_saved", "fitness_threshold" };
+				"export_trimmed_sif", "export_ginml", "parallel_simulations", "forkJoinPoolSize", "population",
+				"generations", "selection", "crossovers", "mutations", "balancemutations", "randommutations",
+				"complexmutations", "familymutations", "inhibitorymutations", "activatorymutations", "ormutations",
+				"andmutations", "shufflemutations", "topology_mutations", "target_fitness",
+				"bootstrap_mutations_factor", "mutations_factor", "bootstrap_shuffle_factor", "shuffle_factor",
+				"bootstrap_topology_mutations_factor", "topology_mutations_factor", "simulations", "models_saved",
+				"fitness_threshold" };
 
 		String values[] = { Boolean.toString(preserve_outputs), Boolean.toString(preserve_inputs),
 				Boolean.toString(preserve_tmp_files), Boolean.toString(export_boolean_model),
 				Boolean.toString(export_trimmed_sif), Boolean.toString(export_ginml),
-				Boolean.toString(parallel_simulations), Integer.toString(population), Integer.toString(generations),
-				Integer.toString(selection), Integer.toString(crossovers), Integer.toString(mutations),
-				Integer.toString(balancemutations), Integer.toString(randommutations),
-				Integer.toString(complexmutations), Integer.toString(familymutations),
-				Integer.toString(inhibitorymutations), Integer.toString(activatorymutations),
-				Integer.toString(ormutations), Integer.toString(andmutations), Integer.toString(shufflemutations),
-				Integer.toString(topology_mutations), Float.toString(target_fitness),
-				Integer.toString(bootstrap_mutations_factor), Integer.toString(mutations_factor),
-				Integer.toString(bootstrap_shuffle_factor), Integer.toString(shuffle_factor),
-				Integer.toString(bootstrap_topology_mutations_factor), Integer.toString(topology_mutations_factor),
-				Integer.toString(simulations), Integer.toString(models_saved), Float.toString(fitness_threshold) };
+				Boolean.toString(parallel_simulations), Integer.toString(forkJoinPoolSize),
+				Integer.toString(population), Integer.toString(generations), Integer.toString(selection),
+				Integer.toString(crossovers), Integer.toString(mutations), Integer.toString(balancemutations),
+				Integer.toString(randommutations), Integer.toString(complexmutations),
+				Integer.toString(familymutations), Integer.toString(inhibitorymutations),
+				Integer.toString(activatorymutations), Integer.toString(ormutations), Integer.toString(andmutations),
+				Integer.toString(shufflemutations), Integer.toString(topology_mutations),
+				Float.toString(target_fitness), Integer.toString(bootstrap_mutations_factor),
+				Integer.toString(mutations_factor), Integer.toString(bootstrap_shuffle_factor),
+				Integer.toString(shuffle_factor), Integer.toString(bootstrap_topology_mutations_factor),
+				Integer.toString(topology_mutations_factor), Integer.toString(simulations),
+				Integer.toString(models_saved), Float.toString(fitness_threshold) };
 
 		ArrayList<String> lines = new ArrayList<String>();
 
@@ -269,6 +275,11 @@ public class Config {
 		writer.println();
 		writer.println("# Run simulations in parallel");
 		writer.println("parallel_simulations:\ttrue");
+		writer.println();
+		writer.println("# Maximum number (>1) of allowed parallel simulations");
+		writer.print("# The standard value would be to have as many parallel simulations as the machine's Cores ");
+		writer.println("(reduce it if too many parallel simulations are causing issues)");
+		writer.println("forkJoinPoolSize:\t4");
 		writer.println();
 		writer.println("# Number of generations per simulation (or less if target_fitness is reached, see below)");
 		writer.println("generations:\t10");
@@ -441,6 +452,10 @@ public class Config {
 	 */
 	public boolean runParallelSimulations() {
 		return parallel_simulations;
+	}
+
+	public int getForkJoinPoolSize() {
+		return forkJoinPoolSize;
 	}
 
 	public int getModels_saved() {

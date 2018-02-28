@@ -138,6 +138,7 @@ public class Gitsbe implements Runnable {
 
 		if (config.runParallelSimulations()) {
 			// Run evolution simulations in parallel
+			setNumberOfAllowedParallelSimulations(config);
 			simulationFileList = new ArrayList<String>();
 			IntStream.range(0, numberOfSimulations).parallel()
 					.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run), () -> runSimulation(run, config,
@@ -163,6 +164,12 @@ public class Gitsbe implements Runnable {
 		logger.outputHeader(1, "\nThe end");
 
 		closeLogger(timer);
+	}
+
+	private void setNumberOfAllowedParallelSimulations(Config config) {
+		int parallelSimulationsNumber = config.getForkJoinPoolSize();
+		System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", Integer.toString(parallelSimulationsNumber-1));
+		logger.outputStringMessage(0, "\nSetting number of parallel simulations to: " + parallelSimulationsNumber);
 	}
 
 	private void initializeFileDeleter(Config config) {
