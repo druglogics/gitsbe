@@ -44,7 +44,7 @@ public class Gitsbe implements Runnable {
 	private GeneralModel generalModel;
 
 	// Global variable determining verbosity levels
-	public int verbosity;
+	public int verbosity = 3;
 
 	private Logger logger;
 	private ArrayList<String> simulationFileList;
@@ -169,7 +169,7 @@ public class Gitsbe implements Runnable {
 	private void setNumberOfAllowedParallelSimulations(Config config) {
 		int parallelSimulationsNumber = config.getForkJoinPoolSize();
 		System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", Integer.toString(parallelSimulationsNumber-1));
-		logger.outputStringMessage(0, "\nSetting number of parallel simulations to: " + parallelSimulationsNumber);
+		logger.outputStringMessage(1, "\nSetting number of parallel simulations to: " + parallelSimulationsNumber);
 	}
 
 	private void initializeFileDeleter(Config config) {
@@ -199,8 +199,7 @@ public class Gitsbe implements Runnable {
 
 	private void runSimulation(int run, Config config, Summary summary, BooleanModel generalBooleanModel,
 			TrainingData data, ModelOutputs outputs, String modelDirectory, String logDirectory) {
-
-		int verbosity = 3;
+		
 		int simulation = run + 1;
 		Logger simulation_logger = null;
 
@@ -449,6 +448,8 @@ public class Gitsbe implements Runnable {
 		}
 
 		this.verbosity = config.getVerbosity();
+		// Now that we got the verbosity from the config, we can re-set it in the logger
+		logger.setVerbosity(verbosity);
 		logger.outputHeader(1, "Config options");
 		logger.outputLines(1, config.getConfig());
 		return config;
@@ -456,7 +457,6 @@ public class Gitsbe implements Runnable {
 
 	private void initializeGitsbeLogger(String directory) {
 		try {
-			int verbosity = 3;
 			String filenameOutput = appName + "_" + nameProject + "_log.txt";
 			this.logger = new Logger(filenameOutput, directory, verbosity, true);
 		} catch (IOException e) {

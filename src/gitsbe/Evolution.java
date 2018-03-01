@@ -94,7 +94,7 @@ public class Evolution {
 			float fitnessScore = selection(generationModels, generation);
 
 			// Break if highestFitness is over
-			logger.outputStringMessage(0, "Comparing: " + String.valueOf(fitnessScore) + " with: "
+			logger.outputStringMessage(2, "Comparing: " + String.valueOf(fitnessScore) + " with: "
 					+ String.valueOf(config.getTarget_fitness()));
 
 			if (fitnessScore > config.getTarget_fitness()) {
