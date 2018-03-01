@@ -133,9 +133,8 @@ public class MutatedBooleanModel extends BooleanModel {
 			booleanEquations.get(randomEquationIndex).mutateRegulator();
 
 			if (!booleanEquations.get(randomEquationIndex).getBooleanEquation().equals(orig))
-				logger.outputStringMessage(1, "Exchanging equation " + randomEquationIndex + "\n\t" + orig + "\n\t" + ""
+				logger.outputStringMessage(2, "Exchanging equation " + randomEquationIndex + "\n\t" + orig + "\n\t" + ""
 						+ booleanEquations.get(randomEquationIndex).getBooleanEquation() + "\n");
-
 		}
 	}
 
@@ -239,7 +238,7 @@ public class MutatedBooleanModel extends BooleanModel {
 					ArrayList<Float> matches = new ArrayList<Float>();
 
 					for (int indexState = 1; indexState < stableStates.length; indexState++) {
-						logger.outputStringMessage(1, "Checking stable state no. " + indexState + ":");
+						logger.outputStringMessage(2, "Checking stable state no. " + indexState + ":");
 
 						float matchSum = 0;
 						foundObservations = 0;
@@ -254,12 +253,12 @@ public class MutatedBooleanModel extends BooleanModel {
 								foundObservations++;
 								float match = 1 - Math.abs(
 										Integer.parseInt(stableStates[indexState][indexNode]) - Float.parseFloat(obs));
-								logger.outputStringMessage(1, "Match for observation on node " + node + ": " + match
+								logger.outputStringMessage(2, "Match for observation on node " + node + ": " + match
 										+ " (1 - |" + stableStates[indexState][indexNode] + "-" + obs + "|)");
 								matchSum += match;
 							}
 						}
-						logger.outputStringMessage(1,
+						logger.outputStringMessage(2,
 								"From " + foundObservations + " observations, found " + matchSum + " matches");
 						matches.add(matchSum);
 					}
@@ -268,7 +267,7 @@ public class MutatedBooleanModel extends BooleanModel {
 						averageMatch += matches.get(index);
 					}
 					averageMatch /= matches.size();
-					logger.outputStringMessage(1, "Average match value through all stable states: " + averageMatch);
+					logger.outputStringMessage(2, "Average match value through all stable states: " + averageMatch);
 					conditionfitness += averageMatch;
 
 					if (foundObservations > 0) {

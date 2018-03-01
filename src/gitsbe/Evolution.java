@@ -61,7 +61,7 @@ public class Evolution {
 		// Evolve models through mutations, crossover and selection
 		for (int generation = 0; generation < config.getGenerations(); generation++) {
 
-			logger.outputHeader(2, "Generation " + generation);
+			logger.outputHeader(1, "Generation " + generation);
 
 			// Define generation
 			ArrayList<MutatedBooleanModel> generationModels = new ArrayList<MutatedBooleanModel>();

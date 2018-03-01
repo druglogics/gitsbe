@@ -387,27 +387,25 @@ public class BooleanModel {
 		for (int index = 0; index < lines.size(); ++index)
 			stableStates.add(lines.get(index));
 
-		if (logger.getVerbosity() >= 2) {
-			if (stableStates.size() > 0) {
-				if (stableStates.get(0).toString().length() > 0) {
+		if (stableStates.size() > 0) {
+			if (stableStates.get(0).toString().length() > 0) {
 
-					logger.outputStringMessage(2, "BNReduction found " + stableStates.size() + " stable states:");
-					for (int i = 0; i < stableStates.size(); i++) {
-						logger.outputStringMessage(2, "Stable state " + (i + 1) + ": " + stableStates.get(i));
-					}
-
-					// Debug info
-					for (int i = 0; i < stableStates.get(0).length(); i++) {
-						String states = "";
-						for (int j = 0; j < stableStates.size(); j++) {
-							states += "\t" + stableStates.get(j).charAt(i);
-						}
-						logger.debug(mapAlternativeNames.get(i)[0] + states);
-					}
+				logger.outputStringMessage(1, "BNReduction found " + stableStates.size() + " stable states:");
+				for (int i = 0; i < stableStates.size(); i++) {
+					logger.outputStringMessage(2, "Stable state " + (i + 1) + ": " + stableStates.get(i));
 				}
-			} else {
-				logger.outputStringMessage(2, "BNReduction found no stable states.");
+
+				// Debug info
+				for (int i = 0; i < stableStates.get(0).length(); i++) {
+					String states = "";
+					for (int j = 0; j < stableStates.size(); j++) {
+						states += "\t" + stableStates.get(j).charAt(i);
+					}
+					logger.debug(mapAlternativeNames.get(i)[0] + states);
+				}
 			}
+		} else {
+			logger.outputStringMessage(1, "BNReduction found no stable states.");
 		}
 
 		deleteFilesMatchingPattern(logger, modelName);
