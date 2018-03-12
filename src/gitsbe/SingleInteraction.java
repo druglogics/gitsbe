@@ -40,7 +40,11 @@ public class SingleInteraction {
 	}
 
 	public void setInteraction(String interaction) {
-		String[] temp = interaction.split(" ", 3);
+		String[] temp = interaction.split(" ");
+		if (temp.length != 3) {
+			System.out.println("ERROR: Wrongly formatted interaction: " + interaction);
+			System.exit(1);
+		}
 		this.setInteraction(temp[0], temp[1], temp[2]);
 	}
 
@@ -75,6 +79,11 @@ public class SingleInteraction {
 			case "<->":
 			case "<-|":
 			case "|-|":
+			default:
+				System.out.println("ERROR: Wrongly formatted interaction type:");
+				System.out.println("Source: " + firstNode + " Interaction type: "
+						+ interaction + " Target: " + secondNode);
+				System.exit(1);
 		}
 	}
 
