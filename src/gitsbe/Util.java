@@ -94,7 +94,7 @@ public class Util {
 		
 		if (!directoryFile.mkdir()) {
 			if (!directoryFile.exists()) {
-				logger.outputStringMessage(1, "ERROR creating directory: " + directory + ", exiting.");
+				logger.error("Error in creating directory: " + directory + ", exiting.");
 				return false;
 			}
 		}
@@ -119,7 +119,7 @@ public class Util {
 		
 		if (!directoryFile.mkdir()) {
 			if (!directoryFile.exists()) {
-				 System.out.println("ERROR creating directory: " + directory + ", exiting.");
+				 System.out.println("Error in creating directory: " + directory + ", exiting.");
 				 return false;
 			}
 		}

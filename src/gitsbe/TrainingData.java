@@ -94,7 +94,7 @@ public class TrainingData {
 			if (!condition.equals("-")) {
 				String nodeName = condition.split(":")[0];
 				if (!nodes.contains(nodeName)) {
-					logger.outputStringMessage(3, "ERROR: Node " + nodeName + " defined in condition " + condition
+					logger.error("Node " + nodeName + " defined in condition " + condition
 							+ " is not in network file.");
 					System.exit(1);
 				}

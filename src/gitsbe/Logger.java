@@ -232,4 +232,17 @@ public class Logger {
 		debugMode = mode;
 	}
 
+	/**
+	 * Outputs the specified error message ignoring verbosity level
+	 * 
+	 * @param message
+	 */
+	public void error(String message) {
+		String errorMessage = "ERROR: " + message;
+		writerOutput.println(errorMessage);
+		writerOutput.flush();
+		if (consoleOutput)
+			System.out.println(errorMessage);
+	}
+
 }

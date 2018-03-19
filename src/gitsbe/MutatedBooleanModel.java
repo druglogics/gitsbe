@@ -196,8 +196,7 @@ public class MutatedBooleanModel extends BooleanModel {
 					else if (state.equals("0"))
 						equation += "false";
 					else {
-						logger.outputStringMessage(1,
-								"ERROR: Training data with incorrectly formatted response: " + condition.get(j));
+						logger.error("Training data with incorrectly formatted response: " + condition.get(j));
 						continue;
 					}
 

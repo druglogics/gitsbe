@@ -122,7 +122,7 @@ public class GeneralModel {
 						} else if (singleInteraction.getArc() == -1) {
 							multipleInteraction.addInhibitoryRegulator(singleInteraction.getSource());
 						} else {
-							logger.outputStringMessage(1, "\nERROR: Interaction without regulator found: \n");
+							logger.error("Interaction without regulator found: \n");
 						}
 					}
 				}
