@@ -1,7 +1,9 @@
-package gitsbe;
+package eu.druglogics.gitsbe;
 
-import static gitsbe.Util.*;
-import static gitsbe.FileDeleter.*;
+// import eu.druglogics.gitsbe.BooleanEquation;
+
+import static eu.druglogics.gitsbe.Util.*;
+import static eu.druglogics.gitsbe.FileDeleter.*;
 
 import java.io.BufferedReader;
 import java.io.File;

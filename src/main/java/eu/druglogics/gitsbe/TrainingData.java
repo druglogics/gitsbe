@@ -1,6 +1,6 @@
-package gitsbe;
+package eu.druglogics.gitsbe;
 
-import static gitsbe.Util.*;
+import static eu.druglogics.gitsbe.Util.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class TrainingData {
 
 	/**
 	 * Read training data from file
-	 * 
+	 *
 	 * @param filename
 	 * @throws IOException
 	 */

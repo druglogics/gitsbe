@@ -1,4 +1,4 @@
-package gitsbe;
+package eu.druglogics.gitsbe;
 
 public class Timer {
 	private long startTime;

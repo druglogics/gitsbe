@@ -1,4 +1,4 @@
-package gitsbe;
+package eu.druglogics.gitsbe;
 
 import java.io.IOException;
 import java.io.PrintWriter;

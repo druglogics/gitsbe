@@ -1,7 +1,6 @@
-package gitsbe;
+package eu.druglogics.gitsbe;
 
-import static gitsbe.Util.*;
-
+import static eu.druglogics.gitsbe.Util.*;
 import static java.lang.Math.*;
 
 import java.io.File;
@@ -105,8 +104,7 @@ public class ModelOutputs {
 	 * Adds errors to the log if there are node names that are not defined in the
 	 * model/network topology
 	 * 
-	 * @param outputs
-	 * @param booleanModels
+	 * @param booleanModel
 	 */
 	public void checkModelOutputNodeNames(BooleanModel booleanModel) {
 		logger.outputHeader(3, "Checking Model Output node names");
@@ -123,8 +121,7 @@ public class ModelOutputs {
 
 	/**
 	 * A verbose representation of the model outputs used for logging purposes
-	 * 
-	 * @return
+	 *
 	 */
 	public String[] getModelOutputs() {
 		ArrayList<String> lines = new ArrayList<String>();
