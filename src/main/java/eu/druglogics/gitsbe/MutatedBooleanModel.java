@@ -1,6 +1,7 @@
 package eu.druglogics.gitsbe;
 
 import static eu.druglogics.gitsbe.RandomManager.*;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;

@@ -1,7 +1,5 @@
 package eu.druglogics.gitsbe;
 
-// import eu.druglogics.gitsbe.BooleanEquation;
-
 import static eu.druglogics.gitsbe.Util.*;
 import static eu.druglogics.gitsbe.FileDeleter.*;
 
