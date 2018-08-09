@@ -44,7 +44,6 @@ public class FileDeleter {
 	 * only if the fileDeleter is "activated"
 	 * 
 	 * @param logger
-	 * @param directory
 	 */
 	public static void cleanDirectory(Logger logger) {
 		if (isActive()) {
