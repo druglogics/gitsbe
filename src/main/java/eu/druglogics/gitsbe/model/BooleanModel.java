@@ -1,7 +1,9 @@
-package eu.druglogics.gitsbe;
+package eu.druglogics.gitsbe.model;
 
-import static eu.druglogics.gitsbe.Util.*;
-import static eu.druglogics.gitsbe.FileDeleter.*;
+import eu.druglogics.gitsbe.util.Logger;
+
+import static eu.druglogics.gitsbe.util.Util.*;
+import static eu.druglogics.gitsbe.util.FileDeleter.*;
 
 import java.io.BufferedReader;
 import java.io.File;

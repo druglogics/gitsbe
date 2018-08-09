@@ -1,6 +1,7 @@
-package eu.druglogics.gitsbe;
+package eu.druglogics.gitsbe.model;
 
-import static eu.druglogics.gitsbe.RandomManager.*;
+import static eu.druglogics.gitsbe.util.RandomManager.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

@@ -1,4 +1,8 @@
-package eu.druglogics.gitsbe;
+package eu.druglogics.gitsbe.output;
+
+import eu.druglogics.gitsbe.input.Config;
+import eu.druglogics.gitsbe.model.MutatedBooleanModel;
+import eu.druglogics.gitsbe.util.Logger;
 
 import java.io.IOException;
 import java.io.PrintWriter;

@@ -1,6 +1,9 @@
-package eu.druglogics.gitsbe;
+package eu.druglogics.gitsbe.input;
 
-import static eu.druglogics.gitsbe.Util.*;
+import eu.druglogics.gitsbe.util.Logger;
+import eu.druglogics.gitsbe.model.BooleanModel;
+
+import static eu.druglogics.gitsbe.util.Util.*;
 import static java.lang.Math.*;
 
 import java.io.File;

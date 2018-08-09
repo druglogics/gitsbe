@@ -1,6 +1,6 @@
 package eu.druglogics.gitsbe;
 
-import static eu.druglogics.gitsbe.Util.*;
+import static eu.druglogics.gitsbe.util.Util.*;
 
 public class Launcher {
 

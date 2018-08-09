@@ -1,14 +1,19 @@
-package eu.druglogics.gitsbe;
+package eu.druglogics.gitsbe.model;
 
-import static eu.druglogics.gitsbe.RandomManager.*;
+import eu.druglogics.gitsbe.input.Config;
+import eu.druglogics.gitsbe.input.ModelOutputs;
+import eu.druglogics.gitsbe.input.TrainingData;
+import eu.druglogics.gitsbe.util.Logger;
+
+import static eu.druglogics.gitsbe.util.RandomManager.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.io.File;
 
 public class MutatedBooleanModel extends BooleanModel {
 

@@ -1,4 +1,4 @@
-package eu.druglogics.gitsbe;
+package eu.druglogics.gitsbe.util;
 
 import java.util.Objects;
 import java.util.Random;

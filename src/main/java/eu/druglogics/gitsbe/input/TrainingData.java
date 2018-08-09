@@ -1,6 +1,9 @@
-package eu.druglogics.gitsbe;
+package eu.druglogics.gitsbe.input;
 
-import static eu.druglogics.gitsbe.Util.*;
+import eu.druglogics.gitsbe.util.Logger;
+import eu.druglogics.gitsbe.model.BooleanModel;
+
+import static eu.druglogics.gitsbe.util.Util.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,9 +62,7 @@ public class TrainingData {
 	/**
 	 * Adds warnings (errors) to the log if there are node names in the responses
 	 * (conditions) that are not defined in the model/network topology
-	 * 
-	 * @param outputs
-	 * @param booleanModels
+	 *
 	 */
 	public void checkTrainingDataConsistency(BooleanModel booleanModel) {
 		logger.outputHeader(3, "Checking Training Data");

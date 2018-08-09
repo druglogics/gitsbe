@@ -1,4 +1,4 @@
-package eu.druglogics.gitsbe;
+package eu.druglogics.gitsbe.util;
 
 import java.io.BufferedReader;
 import java.io.File;

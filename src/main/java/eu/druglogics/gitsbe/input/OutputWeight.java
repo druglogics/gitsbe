@@ -1,4 +1,4 @@
-package eu.druglogics.gitsbe;
+package eu.druglogics.gitsbe.input;
 
 public class OutputWeight {
 

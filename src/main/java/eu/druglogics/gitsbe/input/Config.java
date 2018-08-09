@@ -1,6 +1,8 @@
-package eu.druglogics.gitsbe;
+package eu.druglogics.gitsbe.input;
 
-import static eu.druglogics.gitsbe.Util.*;
+import eu.druglogics.gitsbe.util.Logger;
+
+import static eu.druglogics.gitsbe.util.Util.*;
 
 import java.io.File;
 import java.io.IOException;

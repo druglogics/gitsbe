@@ -1,4 +1,4 @@
-package eu.druglogics.gitsbe;
+package eu.druglogics.gitsbe.input;
 
 import java.util.ArrayList;
 import java.util.Arrays;

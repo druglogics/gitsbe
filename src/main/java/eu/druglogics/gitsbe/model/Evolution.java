@@ -1,6 +1,12 @@
-package eu.druglogics.gitsbe;
+package eu.druglogics.gitsbe.model;
 
-import static eu.druglogics.gitsbe.RandomManager.*;
+import eu.druglogics.gitsbe.output.Summary;
+import eu.druglogics.gitsbe.input.Config;
+import eu.druglogics.gitsbe.input.ModelOutputs;
+import eu.druglogics.gitsbe.input.TrainingData;
+import eu.druglogics.gitsbe.util.Logger;
+
+import static eu.druglogics.gitsbe.util.RandomManager.*;
 import static java.lang.Math.*;
 
 import java.io.FileNotFoundException;
@@ -10,20 +16,19 @@ import java.util.ArrayList;
 
 public class Evolution {
 
-	ArrayList<MutatedBooleanModel> bestModels;
+	public ArrayList<MutatedBooleanModel> bestModels;
 
 	// Input parameters for genetic algorithm
-	BooleanModel generalBooleanModel;
-	String baseModelName;
-	TrainingData data;
-	String modelDirectory;
-	Summary summary;
-	String directoryOutput;
-	float[][] fitnessEvolution;
+	private BooleanModel generalBooleanModel;
+	private String baseModelName;
+	private TrainingData data;
+	private String modelDirectory;
+	private Summary summary;
+	private String directoryOutput;
 	private Config config;
 	private Logger logger;
 	private ModelOutputs modelOutputs;
-	private boolean initialphase;
+	private boolean initialPhase;
 
 	public Evolution(Summary summary, BooleanModel generalBooleanModel, String baseModelName, TrainingData data,
 			ModelOutputs modelOutputs, String modelDirectory, String directoryOutput, Config config, Logger logger) {
@@ -46,8 +51,8 @@ public class Evolution {
 				+ config.getPopulation() + " models per generation.");
 
 		// Evolution is in an initial phase until a stable state exists
-		initialphase = true;
-		logger.outputStringMessage(3, "Setting initial phase to: " + initialphase);
+		initialPhase = true;
+		logger.outputStringMessage(3, "Setting initial phase to: " + initialPhase);
 
 		bestModels = new ArrayList<MutatedBooleanModel>();
 
@@ -144,9 +149,9 @@ public class Evolution {
 		// initial phase is over (currentMaxFitness holds the smallest highest fitness
 		// score among
 		// the best models)
-		if ((initialphase) && (currentMaxFitness > 0)) {
-			initialphase = false;
-			logger.outputStringMessage(3, "Setting initial phase to: " + initialphase);
+		if ((initialPhase) && (currentMaxFitness > 0)) {
+			initialPhase = false;
+			logger.outputStringMessage(3, "Setting initial phase to: " + initialPhase);
 		}
 
 		logger.outputStringMessage(2, "\nBest models in generation " + generation + ": ");
@@ -191,7 +196,7 @@ public class Evolution {
 			int shuffle_factor;
 			int topology_mutations_factor;
 
-			if (initialphase) {
+			if (initialPhase) {
 				mutations_factor = config.getBootstrap_mutations_factor();
 				shuffle_factor = config.getBootstrap_shuffle_factor();
 				topology_mutations_factor = config.getBootstrap_topology_mutations_factor();

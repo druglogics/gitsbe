@@ -1,7 +1,19 @@
 package eu.druglogics.gitsbe;
 
-import static eu.druglogics.gitsbe.Util.*;
-import static eu.druglogics.gitsbe.FileDeleter.*;
+import eu.druglogics.gitsbe.input.Config;
+import eu.druglogics.gitsbe.input.ModelOutputs;
+import eu.druglogics.gitsbe.input.TrainingData;
+import eu.druglogics.gitsbe.output.Summary;
+import eu.druglogics.gitsbe.model.Evolution;
+import eu.druglogics.gitsbe.model.BooleanModel;
+import eu.druglogics.gitsbe.model.GeneralModel;
+import eu.druglogics.gitsbe.util.Logger;
+import eu.druglogics.gitsbe.util.RandomManager;
+import eu.druglogics.gitsbe.util.Timer;
+import eu.druglogics.gitsbe.util.FileDeleter;
+
+import static eu.druglogics.gitsbe.util.Util.*;
+import static eu.druglogics.gitsbe.util.FileDeleter.*;
 
 import java.io.File;
 import java.io.FileNotFoundException;
