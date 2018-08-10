@@ -19,10 +19,71 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>runExampleAGS</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>eu.druglogics.gitsbe.Launcher</mainClass>
+                                    <arguments>
+                                        <argument>--project</argument>
+                                        <argument>test</argument>
+                                        <argument>--network</argument>
+                                        <argument>example_run_ags/toy_ags_network.sif</argument>
+                                        <argument>--trainingdata</argument>
+                                        <argument>example_run_ags/toy_ags_training_data.tab</argument>
+                                        <argument>--config</argument>
+                                        <argument>example_run_ags/toy_ags_config.tab</argument>
+                                        <argument>--modeloutputs</argument>
+                                        <argument>example_run_ags/toy_ags_modeloutputs.tab</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <dependencies>
+        <!-- Parser for command line parameters -->
+        <dependency>
+            <groupId>com.beust</groupId>
+            <artifactId>jcommander</artifactId>
+            <version>1.72</version>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>junit</groupId>
