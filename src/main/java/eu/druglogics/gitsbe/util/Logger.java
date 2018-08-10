@@ -43,7 +43,7 @@ public class Logger {
 
 		// Initialize variables
 		this.directory = directory;
-		this.filenameOutput = new File(directory, filenameOutput).getPath();
+		this.filenameOutput = new File(directory, filenameOutput).getAbsolutePath();
 
 		// Initialize (also create) file writers
 		this.writerOutput = new PrintWriter(this.filenameOutput);

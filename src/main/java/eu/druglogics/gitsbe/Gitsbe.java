@@ -72,24 +72,6 @@ public class Gitsbe implements Runnable {
 		this.directoryTmp = directoryTmp;
 	}
 
-	// constructor with model outputs
-	public Gitsbe(String nameProject, String filenameNetwork, String filenameTrainingData, String filenameModelOutputs,
-			String filenameConfig) {
-		this.nameProject = nameProject;
-
-		DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
-		Calendar cal = Calendar.getInstance();
-
-		String directoryOutput = dateFormat.format(cal.getTime()) + "_" + nameProject + File.separator;
-
-		this.filenameNetwork = filenameNetwork;
-		this.filenameTrainingData = filenameTrainingData;
-		this.filenameModelOutputs = filenameModelOutputs;
-		this.filenameConfig = filenameConfig;
-		this.directoryOutput = directoryOutput;
-		this.directoryTmp = new File(directoryOutput, "gitsbe_tmp").getAbsolutePath();
-	}
-
 	@Override
 	public void run() {
 
@@ -432,7 +414,7 @@ public class Gitsbe implements Runnable {
 	private Summary initializeSummary(Config config) {
 		Summary summary = null;
 		try {
-			summary = new Summary(new File(this.directoryOutput, nameProject).getPath() + "_summary.txt", logger,
+			summary = new Summary(new File(this.directoryOutput, nameProject).getAbsolutePath() + "_summary.txt", logger,
 					config);
 		} catch (IOException e) {
 			e.printStackTrace();
