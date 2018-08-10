@@ -127,6 +127,17 @@ public class Util {
 		System.out.println("Created directory: " + directory);
 		return true;
 	}
+
+	public static String inferInputDir(String filename) {
+		String inputDirectory;
+		String parentDir = new File(filename).getParent();
+		if (parentDir != null) {
+			inputDirectory = new File(parentDir).getAbsolutePath();
+		} else {
+			inputDirectory =  new File(System.getProperty("user.dir")).getAbsolutePath();
+		}
+		return inputDirectory;
+	}
 	
 	/**
 	 * Returns true if file is completely empty

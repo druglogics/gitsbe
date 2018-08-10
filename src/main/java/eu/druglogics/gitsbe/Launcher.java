@@ -36,8 +36,9 @@ public class Launcher {
             String filenameModelOutputs = arguments.getFilenameModelOutputs();
             String filenameConfig = arguments.getFilenameConfig();
 
-            // Inferring the input directory (should be the one that has the input files)
-            String directoryInput = new File(new File(filenameNetwork).getParent()).getAbsolutePath();
+            // Inferring the input directory
+            String directoryInput = inferInputDir(filenameNetwork);
+
             DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
             String directoryOutput = new File(directoryInput,
                     projectName + "_" + dateFormat.format(Calendar.getInstance().getTime()))

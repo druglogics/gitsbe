@@ -31,7 +31,7 @@ cd example_run_ags
 java -cp ../target/gitsbe-{version}-jar-with-dependencies.jar eu.druglogics.gitsbe.Launcher --project=test --network=toy_ags_network.sif --trainingdata=toy_ags_training_data.tab --config=toy_ags_config.tab --modeloutputs=toy_ags_modeloutputs.tab
 ```
 
-or run the mvn profile:
+or run the mvn profile from the gitsbe root directory:
 ```
 mvn compile -P runExampleAGS
 ```
