@@ -106,8 +106,7 @@ public class BooleanModel {
 					break;
 				case "mapping:":
 
-					String[] temp = new String[2];
-					temp = line.split(" = ");
+					String[] temp = line.split(" = ");
 					mapAlternativeNames.add(new String[] { temp[0].trim(), temp[1].trim() });
 
 					break;
@@ -139,22 +138,18 @@ public class BooleanModel {
 		// Copy Boolean equations
 		this.booleanEquations = new ArrayList<BooleanEquation>();
 
-		for (int i = 0; i < booleanModel.booleanEquations.size(); i++) {
-			booleanEquations.add(booleanModel.booleanEquations.get(i));
-		}
+		booleanEquations.addAll(booleanModel.booleanEquations);
 
 		// Copy mapAlternativeNames
 		this.mapAlternativeNames = new ArrayList<String[]>();
 
-		for (int i = 0; i < booleanModel.mapAlternativeNames.size(); i++) {
-			this.mapAlternativeNames.add(booleanModel.mapAlternativeNames.get(i));
-		}
+		this.mapAlternativeNames.addAll(booleanModel.mapAlternativeNames);
 
 		// Stable states (empty)
 		stableStates = new ArrayList<String>();
 
 		// Copy modelName
-		this.modelName = new String(booleanModel.modelName);
+		this.modelName = booleanModel.modelName;
 
 		this.verbosity = logger.getVerbosity();
 
@@ -386,8 +381,7 @@ public class BooleanModel {
 		logger.outputStringMessage(2, "Reading steady states: " + fixedPointsFile);
 		ArrayList<String> lines = readLinesFromFile(fixedPointsFile, true);
 
-		for (int index = 0; index < lines.size(); ++index)
-			stableStates.add(lines.get(index));
+		stableStates.addAll(lines);
 
 		if (stableStates.size() > 0) {
 			if (stableStates.get(0).toString().length() > 0) {
