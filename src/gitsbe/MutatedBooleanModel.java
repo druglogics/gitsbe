@@ -248,13 +248,18 @@ public class MutatedBooleanModel extends BooleanModel {
 
 							int indexNode = getIndexOfEquation(node);
 
+							// Find matches between computed stable state and observed steady state
 							if (indexNode >= 0) {
-								foundObservations++;
-								float match = 1 - Math.abs(
-										Integer.parseInt(stableStates[indexState][indexNode]) - Float.parseFloat(obs));
-								logger.outputStringMessage(2, "Match for observation on node " + node + ": " + match
-										+ " (1 - |" + stableStates[indexState][indexNode] + "-" + obs + "|)");
-								matchSum += match;
+
+								// Check if there is a number reported 
+								if ((obs.length() > 0) & (Character.isDigit(obs.charAt(0)))) {
+									foundObservations++;
+									float match = 1 - Math.abs(
+											Integer.parseInt(stableStates[indexState][indexNode]) - Float.parseFloat(obs));
+									logger.outputStringMessage(2, "Match for observation on node " + node + ": " + match
+											+ " (1 - |" + stableStates[indexState][indexNode] + "-" + obs + "|)");
+									matchSum += match;
+								}
 							}
 						}
 						logger.outputStringMessage(2,
