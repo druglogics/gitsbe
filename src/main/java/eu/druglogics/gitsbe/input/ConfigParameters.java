@@ -7,21 +7,21 @@ public class ConfigParameters {
 
     // Global section
     public int verbosity;
-    public boolean preserve_tmp_files;
-    public boolean compress_log_and_temporary_files;
-    public boolean parallel_simulations;
-    public int fork_join_pool_size;
+    public boolean delete_tmp_files;
+    public boolean compress_log_and_tmp_files;
+    public boolean use_parallel_sim;
+    public int parallel_sim_num;
     public String attractor_tool;
 
     // Gitsbe section
 
     // Model trimming
-    public boolean preserve_outputs;
-    public boolean preserve_inputs;
+    public boolean remove_output_nodes;
+    public boolean remove_input_nodes;
     // Exporting network file
-    public boolean export_gitsbe_model;
-    public boolean export_trimmed_sif;
-    public boolean export_ginml;
+    public boolean export_to_gitsbe;
+    public boolean export_to_sif;
+    public boolean export_to_ginml;
     // Parameters for the simulations
     public int population;
     public int generations;
@@ -43,58 +43,50 @@ public class ConfigParameters {
     public float fitness_threshold;
 
     // Drabme section
-    public int combination_size;
+    public int max_drug_comb_size;
 
     public int getVerbosity() {
         return verbosity;
     }
 
-    public boolean isPreserve_tmp_files() {
-        return preserve_tmp_files;
+    public boolean deleteTmpDir() {
+        return delete_tmp_files;
     }
 
-    /**
-     * Returns true or false whether the simulations will run in parallel or not
-     *
-     * @return
-     */
-    public boolean isParallel_simulations() {
-        return parallel_simulations;
+    // Returns true or false whether the simulations will run in parallel or not
+    public boolean useParallelSimulations() {
+        return use_parallel_sim;
     }
 
-    public int getFork_join_pool_size() {
-        return fork_join_pool_size;
+    public int parallelSimulationsNumber() {
+        return parallel_sim_num;
     }
 
-    public String getAttractor_tool() {
+    public String getAttractorTool() {
         return attractor_tool;
     }
 
-    public boolean isExport_gitsbe_model() {
-        return export_gitsbe_model;
+    public boolean exportToGitsbeFormat() {
+        return export_to_gitsbe;
     }
 
-    public boolean isExport_trimmed_sif() {
-        return export_trimmed_sif;
+    public boolean exportToSif() {
+        return export_to_sif;
     }
 
-    public boolean isExport_ginml() {
-        return export_ginml;
+    public boolean exportToGinML() {
+        return export_to_ginml;
     }
 
-    public boolean isPreserve_outputs() {
-        return preserve_outputs;
+    public boolean removeOutputNodes() {
+        return remove_output_nodes;
     }
 
-    public boolean isPreserve_inputs() {
-        return preserve_inputs;
+    public boolean removeInputNodes() {
+        return remove_input_nodes;
     }
 
-    /**
-     * Get number of models in current generation
-     *
-     * @return
-     */
+    // Get number of models in current generation
     public int getPopulation() {
         return population;
     }
@@ -103,11 +95,7 @@ public class ConfigParameters {
         return generations;
     }
 
-    /**
-     * Number of (best) models selected for next generation
-     *
-     * @return
-     */
+    // Number of (best) models selected for next generation
     public int getSelection() {
         return selection;
     }
@@ -116,73 +104,69 @@ public class ConfigParameters {
         return crossovers;
     }
 
-    public int getBalance_mutations() {
+    public int getBalanceMutations() {
         return balance_mutations;
     }
 
-    public int getRandom_mutations() {
+    public int getRandomMutations() {
         return random_mutations;
     }
 
-    public int getShuffle_mutations() {
+    public int getShuffleMutations() {
         return shuffle_mutations;
     }
 
-    public int getTopology_mutations() {
+    public int getTopologyMutations() {
         return topology_mutations;
     }
 
-    public float getTarget_fitness() {
+    public float getTargetFitness() {
         return target_fitness;
     }
 
-    public int getBootstrap_mutations_factor() {
+    public int getBootstrapMutationsFactor() {
         return bootstrap_mutations_factor;
     }
 
-    public int getMutations_factor() {
+    public int getMutationsFactor() {
         return mutations_factor;
     }
 
-    public int getBootstrap_shuffle_factor() {
+    public int getBootstrapShuffleFactor() {
         return bootstrap_shuffle_factor;
     }
 
-    public int getShuffle_factor() {
+    public int getShuffleFactor() {
         return shuffle_factor;
     }
 
-    public int getBootstrap_topology_mutations_factor() {
+    public int getBootstrapTopologyMutationsFactor() {
         return bootstrap_topology_mutations_factor;
     }
 
-    public int getTopology_mutations_factor() {
+    public int getTopologyMutationsFactor() {
         return topology_mutations_factor;
     }
 
-    /**
-     * Number of times (simulations) to run the evolutionary algorithm
-     *
-     * @return
-     */
+    // Number of times (simulations) to run the evolutionary algorithm
     public int getSimulations() {
         return simulations;
     }
 
-    public int getModels_saved() {
+    public int getNumOfModelsToSave() {
         return models_saved;
     }
 
-    public float getFitness_threshold() {
+    public float getFitnessThreshold() {
         return fitness_threshold;
     }
 
-    public boolean isCompress_log_and_temporary_files() {
-        return compress_log_and_temporary_files;
+    public boolean compressLogsAndTmpFiles() {
+        return compress_log_and_tmp_files;
     }
 
-    public int getCombination_size() {
-        return combination_size;
+    public int getCombinationSize() {
+        return max_drug_comb_size;
     }
 
     public String[] getParameters() {

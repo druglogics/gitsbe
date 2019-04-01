@@ -130,7 +130,7 @@ public class Gitsbe implements Runnable {
 			randomSeedsList.add(new Random(run));
 		}
 
-		if (config.isParallel_simulations()) {
+		if (config.useParallelSimulations()) {
 			// Run evolution simulations in parallel
 			setNumberOfAllowedParallelSimulations(config);
 			simulationFileList = new ArrayList<String>();
@@ -173,14 +173,14 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void setNumberOfAllowedParallelSimulations(Config config) {
-		int parallelSimulationsNumber = config.getFork_join_pool_size();
+		int parallelSimulationsNumber = config.parallelSimulationsNumber();
 		System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", Integer.toString(parallelSimulationsNumber-1));
 		logger.outputStringMessage(1, "\nSetting number of parallel simulations to: " + parallelSimulationsNumber);
 	}
 
 	private void initializeFileDeleter(Config config) {
 		FileDeleter fileDeleter = new FileDeleter(directoryTmp);
-		if (!config.isPreserve_tmp_files()) {
+		if (config.deleteTmpDir()) {
 			fileDeleter.activate();
 		}
 	}
@@ -191,7 +191,7 @@ public class Gitsbe implements Runnable {
 	 * @param logDirectory
 	 */
 	private void mergeLogFiles(String logDirectory) {
-		String mergedLogFilename = new File(logDirectory, appName + "_simulations_log.txt").getAbsolutePath();
+		String mergedLogFilename = new File(logDirectory, appName + "_simulations.log").getAbsolutePath();
 
 		// sort the files to have the simulations in ascending order
 		sortFiles(simulationFileList);
@@ -210,7 +210,7 @@ public class Gitsbe implements Runnable {
 		Logger simulation_logger = null;
 
 		// create new logger for each parallel simulation
-		if (config.isParallel_simulations()) {
+		if (config.useParallelSimulations()) {
 			String filenameOutput = appName + "_simulation_" + String.valueOf(simulation) + ".log";
 			addFileToSimulationFileList(new File(logDirectory, filenameOutput).getAbsolutePath());
 			try {
@@ -234,7 +234,7 @@ public class Gitsbe implements Runnable {
 		ga.outputBestModels();
 
 		try {
-			ga.saveBestModels(config.getModels_saved(), config.getFitness_threshold());
+			ga.saveBestModels(config.getNumOfModelsToSave(), config.getFitnessThreshold());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -256,7 +256,7 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void exportBooleanModelFileInGitsbeFormat(Config config, BooleanModel generalBooleanModel) {
-		if (config.isExport_gitsbe_model()) {
+		if (config.exportToGitsbeFormat()) {
 			try {
 				logger.outputStringMessage(2,
 						"Exporting .sif file in .gitsbe format: " + removeExtension(generalBooleanModel.getModelName()) + ".gitsbe");
@@ -268,7 +268,7 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void exportTrimmedSifNetworkFile(Config config, BooleanModel generalBooleanModel) {
-		if (config.isExport_trimmed_sif()) {
+		if (config.exportToSif()) {
 			try {
 				String filename = generalBooleanModel.getModelName() + "_trimmed.sif";
 				logger.outputStringMessage(2, "Exporting trimmed .sif file: " + filename);
@@ -280,7 +280,7 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void exportBooleanModelFileInGinmlFormat(Config config, BooleanModel generalBooleanModel) {
-		if (config.isExport_ginml()) {
+		if (config.exportToGinML()) {
 			try {
 				String filename = generalBooleanModel.getModelName() + "_export.ginml";
 				logger.outputStringMessage(2, "Exporting .sif file in GINML format: " + filename);
@@ -318,7 +318,7 @@ public class Gitsbe implements Runnable {
 	synchronized private void addModelsToSummaryBestModelList(Evolution ga, int run, Config config, Summary summary,
 			Logger simulation_logger) {
 		for (int i = 0; i < ga.bestModels.size(); i++) {
-			if (ga.bestModels.get(i).getFitness() > config.getFitness_threshold()) {
+			if (ga.bestModels.get(i).getFitness() > config.getFitnessThreshold()) {
 				simulation_logger.outputStringMessage(2,
 						"Adding model " + ga.bestModels.get(i).getModelName() + " to summary output models list.");
 				summary.addModel(run, ga.bestModels.get(i));
@@ -394,12 +394,12 @@ public class Gitsbe implements Runnable {
 				e1.printStackTrace();
 			}
 
-			// if both config variables are true, no removal of nodes will be done
-			if (!config.isPreserve_inputs() & !config.isPreserve_outputs())
+			// if both config variables are false, no removal of nodes will be done
+			if (config.removeInputNodes() & config.removeOutputNodes())
 				generalModel.removeInputsOutputs();
-			else if (!config.isPreserve_inputs())
+			else if (config.removeInputNodes())
 				generalModel.removeInputs();
-			else if (!config.isPreserve_outputs())
+			else if (config.removeOutputNodes())
 				generalModel.removeOutputs();
 
 			// Assemble single interactions into equations with multiple regulators based on

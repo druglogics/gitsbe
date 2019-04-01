@@ -101,11 +101,11 @@ public class Evolution {
 
 			// Break if highestFitness is over
 			logger.outputStringMessage(2, "Comparing: " + String.valueOf(fitnessScore) + " with: "
-					+ String.valueOf(config.getTarget_fitness()));
+					+ String.valueOf(config.getTargetFitness()));
 
-			if (fitnessScore > config.getTarget_fitness()) {
+			if (fitnessScore > config.getTargetFitness()) {
 				logger.outputStringMessage(2, "Breaking evolution after " + generation
-						+ " generations, since the target fitness value is reached: " + config.getTarget_fitness());
+						+ " generations, since the target fitness value is reached: " + config.getTargetFitness());
 				break;
 			}
 
@@ -197,39 +197,39 @@ public class Evolution {
 			int topology_mutations_factor;
 
 			if (initialPhase) {
-				mutations_factor = config.getBootstrap_mutations_factor();
-				shuffle_factor = config.getBootstrap_shuffle_factor();
-				topology_mutations_factor = config.getBootstrap_topology_mutations_factor();
+				mutations_factor = config.getBootstrapMutationsFactor();
+				shuffle_factor = config.getBootstrapShuffleFactor();
+				topology_mutations_factor = config.getBootstrapTopologyMutationsFactor();
 			} else {
-				mutations_factor = config.getMutations_factor();
-				shuffle_factor = config.getShuffle_factor();
-				topology_mutations_factor = config.getTopology_mutations_factor();
+				mutations_factor = config.getMutationsFactor();
+				shuffle_factor = config.getShuffleFactor();
+				topology_mutations_factor = config.getTopologyMutationsFactor();
 			}
 
-			if ((config.getBalance_mutations() * mutations_factor) > 0) {
-				logger.outputStringMessage(3, "Introducing " + (config.getBalance_mutations() * mutations_factor)
+			if ((config.getBalanceMutations() * mutations_factor) > 0) {
+				logger.outputStringMessage(3, "Introducing " + (config.getBalanceMutations() * mutations_factor)
 						+ " balance mutations to model " + generationModels.get(i).getModelName());
-				generationModels.get(i).introduceBalanceMutation(mutations_factor * config.getBalance_mutations());
+				generationModels.get(i).introduceBalanceMutation(mutations_factor * config.getBalanceMutations());
 			}
 
-			if ((config.getRandom_mutations() * mutations_factor) > 0) {
-				logger.outputStringMessage(3, "Introducing " + (config.getRandom_mutations() * mutations_factor)
+			if ((config.getRandomMutations() * mutations_factor) > 0) {
+				logger.outputStringMessage(3, "Introducing " + (config.getRandomMutations() * mutations_factor)
 						+ " random mutations to model " + generationModels.get(i).getModelName());
-				generationModels.get(i).introduceRandomMutation(mutations_factor * config.getRandom_mutations());
+				generationModels.get(i).introduceRandomMutation(mutations_factor * config.getRandomMutations());
 			}
 
-			if ((config.getShuffle_mutations() * shuffle_factor) > 0) {
-				logger.outputStringMessage(3, "Introducing " + (config.getShuffle_mutations() * shuffle_factor)
+			if ((config.getShuffleMutations() * shuffle_factor) > 0) {
+				logger.outputStringMessage(3, "Introducing " + (config.getShuffleMutations() * shuffle_factor)
 						+ " regulator priority shuffle mutations to model " + generationModels.get(i).getModelName());
-				generationModels.get(i).shuffleRandomRegulatorPriorities(shuffle_factor * config.getShuffle_mutations());
+				generationModels.get(i).shuffleRandomRegulatorPriorities(shuffle_factor * config.getShuffleMutations());
 			}
 
-			if ((config.getTopology_mutations() * topology_mutations_factor) > 0) {
+			if ((config.getTopologyMutations() * topology_mutations_factor) > 0) {
 				logger.outputStringMessage(3,
-						"Introducing " + (config.getTopology_mutations() * topology_mutations_factor)
+						"Introducing " + (config.getTopologyMutations() * topology_mutations_factor)
 								+ " topology mutations to model " + generationModels.get(i).getModelName());
 
-				generationModels.get(i).topologyMutations(topology_mutations_factor * config.getTopology_mutations());
+				generationModels.get(i).topologyMutations(topology_mutations_factor * config.getTopologyMutations());
 			}
 		}
 	}

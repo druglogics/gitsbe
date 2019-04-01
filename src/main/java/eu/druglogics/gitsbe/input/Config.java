@@ -44,20 +44,20 @@ public class Config extends ConfigParameters {
 					verbosity = Integer.parseInt(value);
 					break;
 
-				case "preserve_tmp_files":
-					preserve_tmp_files = Boolean.parseBoolean(value);
+				case "delete_tmp_files":
+					delete_tmp_files = Boolean.parseBoolean(value);
 					break;
 
-				case "compress_log_and_temporary_files":
-					compress_log_and_temporary_files = Boolean.parseBoolean(value);
+				case "compress_log_and_tmp_files":
+					compress_log_and_tmp_files = Boolean.parseBoolean(value);
 					break;
 
-				case "parallel_simulations":
-					parallel_simulations = Boolean.parseBoolean(value);
+				case "use_parallel_sim":
+					use_parallel_sim = Boolean.parseBoolean(value);
 					break;
 
-				case "fork_join_pool_size":
-					fork_join_pool_size = Integer.parseInt(value);
+				case "parallel_sim_num":
+					parallel_sim_num = Integer.parseInt(value);
 					break;
 
 				case "attractor_tool":
@@ -65,24 +65,24 @@ public class Config extends ConfigParameters {
 					checkAttractorTool();
 					break;
 
-				case "preserve_outputs":
-					preserve_outputs = Boolean.parseBoolean(value);
+				case "remove_output_nodes":
+					remove_output_nodes = Boolean.parseBoolean(value);
 					break;
 
-				case "preserve_inputs":
-					preserve_inputs = Boolean.parseBoolean(value);
+				case "remove_input_nodes":
+					remove_input_nodes = Boolean.parseBoolean(value);
 					break;
 
-				case "export_gitsbe_model":
-					export_gitsbe_model = Boolean.parseBoolean(value);
+				case "export_to_gitsbe":
+					export_to_gitsbe = Boolean.parseBoolean(value);
 					break;
 
-				case "export_trimmed_sif":
-					export_trimmed_sif = Boolean.parseBoolean(value);
+				case "export_to_sif":
+					export_to_sif = Boolean.parseBoolean(value);
 					break;
 
-				case "export_ginml":
-					export_ginml = Boolean.parseBoolean(value);
+				case "export_to_ginml":
+					export_to_ginml = Boolean.parseBoolean(value);
 					break;
 
 				case "population":
@@ -157,8 +157,8 @@ public class Config extends ConfigParameters {
 					fitness_threshold = Float.parseFloat(value);
 					break;
 
-				case "combination_size":
-					combination_size = Integer.parseInt(value);
+				case "max_drug_comb_size":
+					max_drug_comb_size = Integer.parseInt(value);
 					break;
 
 				default:
