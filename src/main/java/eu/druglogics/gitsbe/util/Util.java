@@ -327,38 +327,18 @@ public class Util {
 		return str;
 	}
 
-	// May not be working...
-	public static void compressDirectory(String filenameArchive, String directory, Logger logger) {
-		// tar cvfz tmp.tar.gz tmp
+	public static String getFileExtension(String filename) {
+		String extension = "";
 
 		try {
-			ProcessBuilder pb = new ProcessBuilder("tar", "cvfz", filenameArchive, "-C",
-					new File(directory).getParent(), new File(directory).getName());
-
-			if (logger.getVerbosity() >= 3) {
-				pb.redirectErrorStream(true);
-				pb.redirectOutput();
+			if (filename != null) {
+				extension = filename.substring(filename.lastIndexOf("."));
 			}
-
-			logger.outputStringMessage(3, "Compressing temporary models: " + filenameArchive);
-
-			Process p;
-			p = pb.start();
-
-			try {
-				p.waitFor();
-
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-			BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			while (r.ready()) {
-				logger.outputStringMessage(3, r.readLine());
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			extension = "";
 		}
+
+		return extension;
 	}
+
 }

@@ -211,7 +211,7 @@ public class Gitsbe implements Runnable {
 
 		// create new logger for each parallel simulation
 		if (config.isParallel_simulations()) {
-			String filenameOutput = appName + "_simulation_" + String.valueOf(simulation) + "_log.txt";
+			String filenameOutput = appName + "_simulation_" + String.valueOf(simulation) + ".log";
 			addFileToSimulationFileList(new File(logDirectory, filenameOutput).getAbsolutePath());
 			try {
 				simulation_logger = new Logger(filenameOutput, logDirectory, verbosity, true);
@@ -384,7 +384,7 @@ public class Gitsbe implements Runnable {
 	private BooleanModel loadGeneralBooleanModel(Config config) {
 		BooleanModel generalBooleanModel;
 
-		if (filenameNetwork.substring(filenameNetwork.length() - ".sif".length()).toLowerCase().equals(".sif")) {
+		if (getFileExtension(filenameNetwork).equals(".sif")) {
 
 			// Create generalModel from interactions file
 			logger.outputStringMessage(3, "Loading model from .sif file: " + filenameNetwork);
@@ -464,7 +464,7 @@ public class Gitsbe implements Runnable {
 
 	private void initializeGitsbeLogger(String directory) {
 		try {
-			String filenameOutput = appName + "_" + nameProject + "_log.txt";
+			String filenameOutput = appName + "_" + nameProject + ".log";
 			this.logger = new Logger(filenameOutput, directory, verbosity, true);
 		} catch (IOException e) {
 			e.printStackTrace();

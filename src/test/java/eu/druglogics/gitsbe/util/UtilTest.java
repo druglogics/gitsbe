@@ -31,4 +31,17 @@ public class UtilTest {
         Assert.assertEquals("file", Util.removeExtension(testFile1));
         Assert.assertEquals("file", Util.removeExtension(testFile2));
     }
+
+    @Test
+    public void test_get_file_extension() {
+        String filename1 = "file1.png";
+        String filename2 = "file2.cmd";
+        String filename3 = "file3.try.sif";
+        String filename4 = "/home/user/file3.try.sif";
+
+        Assert.assertEquals(".png", Util.getFileExtension(filename1));
+        Assert.assertEquals(".cmd", Util.getFileExtension(filename2));
+        Assert.assertEquals(".sif", Util.getFileExtension(filename3));
+        Assert.assertEquals(".sif", Util.getFileExtension(filename4));
+    }
 }
