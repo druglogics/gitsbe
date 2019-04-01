@@ -6,7 +6,10 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 
 /**
  * A (very) simple logger
@@ -245,4 +248,22 @@ public class Logger {
 			System.out.println(errorMessage);
 	}
 
+	public void writeFirstLoggingMessage(String appName, String version) {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Calendar calendarData = Calendar.getInstance();
+
+		this.outputHeader(1, appName + " " + version);
+		this.outputStringMessage(1, "Start: " + dateFormat.format(calendarData.getTime()));
+	}
+
+	public void writeLastLoggingMessage(Timer timer) {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		Calendar calendarData = Calendar.getInstance();
+
+		this.outputStringMessage(1, "End: " + dateFormat.format(calendarData.getTime()));
+		this.outputStringMessage(1, "Analysis completed in " + timer.getHoursOfDuration() + " hours, "
+				+ timer.getMinutesOfDuration() + " minutes, and " + timer.getSecondsOfDuration() + " seconds ");
+		this.outputStringMessage(1, "\nWith that we say thank you and good bye!");
+		this.finish();
+	}
 }

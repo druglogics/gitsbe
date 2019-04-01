@@ -7,19 +7,13 @@ import eu.druglogics.gitsbe.output.Summary;
 import eu.druglogics.gitsbe.model.Evolution;
 import eu.druglogics.gitsbe.model.BooleanModel;
 import eu.druglogics.gitsbe.model.GeneralModel;
-import eu.druglogics.gitsbe.util.Logger;
-import eu.druglogics.gitsbe.util.RandomManager;
-import eu.druglogics.gitsbe.util.Timer;
-import eu.druglogics.gitsbe.util.FileDeleter;
+import eu.druglogics.gitsbe.util.*;
 
 import static eu.druglogics.gitsbe.util.Util.*;
 import static eu.druglogics.gitsbe.util.FileDeleter.*;
 
 import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Properties;
 import java.util.Random;
 import java.util.stream.IntStream;
@@ -156,7 +150,7 @@ public class Gitsbe implements Runnable {
 		timer.stopTimer();
 		logger.outputHeader(1, "\nThe end");
 
-		closeLogger(timer);
+		logger.writeLastLoggingMessage(timer);
 	}
 
 	private void loadGitsbeProperties() {
@@ -414,16 +408,6 @@ public class Gitsbe implements Runnable {
 		return generalBooleanModel;
 	}
 
-	private void closeLogger(Timer timer) {
-		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		Calendar calendarData = Calendar.getInstance();
-		logger.outputStringMessage(1, "End: " + dateFormat.format(calendarData.getTime()));
-		logger.outputStringMessage(1, "Analysis completed in " + timer.getHoursOfDuration() + " hours, "
-				+ timer.getMinutesOfDuration() + " minutes, and " + timer.getSecondsOfDuration() + " seconds ");
-		logger.outputStringMessage(1, "\nWith that we say thank you and good bye!");
-		logger.finish();
-	}
-
 	private Summary initializeSummary(Config config) {
 		Summary summary = null;
 		try {
@@ -471,9 +455,6 @@ public class Gitsbe implements Runnable {
 			System.exit(1);
 		}
 
-		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-		Calendar calendarData = Calendar.getInstance();
-		logger.outputHeader(1, appName + " " + version);
-		logger.outputStringMessage(1, "Start: " + dateFormat.format(calendarData.getTime()));
+		logger.writeFirstLoggingMessage(appName, version);
 	}
 }
