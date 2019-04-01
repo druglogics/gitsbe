@@ -1,23 +1,30 @@
 # gitsbe
 
-This module defines models compliant with observed behavior (training data) based on a genetic algorithm simulation. For the steady state calculation, the [BNReduction tool](https://github.com/alanavc/BNReduction) is used.
+This module defines models compliant with observed behavior (training data) 
+based on a genetic algorithm simulation. For the steady state calculation, 
+the [BNReduction tool](https://github.com/alanavc/BNReduction) is used.
 
 ## Input
 
 - A network file (in `.sif` format).
 - A training data file (can include both the steady state and perturbation data)
-- A model outputs file (nodes with weights that affect the calculation of the model simulation output)
-- A configuration file (includes parameters essential for the genetic algorithm simulation)
+- A model outputs file (nodes with weights that affect the calculation of the 
+model simulation output)
+- A configuration file (includes parameters essential for the genetic algorithm 
+simulation)
 
 ## Output
 
-- A `model` directory with files in `.gitsbe` format, which represent the boolean models that best fitted to the configuration and training data that the simulation of the genetic algorithm was based on.
+- A `model` directory with files in `.gitsbe` format, which represent the boolean 
+models that best fitted to the configuration and training data that the simulation 
+of the genetic algorithm was based on.
 - A summary file that includes the models' fitness evolution.
 - The network file can be exported to many standard formats (e.g. gitsbe)
 
 ## Install
 
 ```
+# tested with maven 3.5.2
 git clone https://bitbucket.org/asmundf/gitsbe.git
 mvn clean install
 ```
