@@ -6,7 +6,7 @@ the [BNReduction tool](https://github.com/alanavc/BNReduction) is used.
 
 ## Input
 
-- A network file (in `.sif` format).
+- A network file (in `.sif` format, space-delimited).
 - A training data file (can include both the steady state and perturbation data)
 - A model outputs file (nodes with weights that affect the calculation of the 
 model simulation output)
