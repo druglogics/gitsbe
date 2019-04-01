@@ -25,14 +25,12 @@ public class GeneralModel {
 	}
 
 	public void loadInteractionFile(String filenameInteractions) throws IOException {
-
-		// Load supported filetype, based on suffix
-		switch (filenameInteractions.substring(filenameInteractions.length() - 3).toLowerCase()) {
-		case "sif":
+		String fileExtension = getFileExtension(filenameInteractions);
+		if (fileExtension.equals(".sif"))
 			this.loadSifFile(filenameInteractions);
-			break;
-		}
-
+		else
+			logger.error("New file extension used to load general model, " +
+					"currently not supported");
 	}
 
 	private void loadSifFile(String filename) throws IOException {

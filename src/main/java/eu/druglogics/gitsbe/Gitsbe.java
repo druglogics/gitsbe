@@ -390,8 +390,8 @@ public class Gitsbe implements Runnable {
 			logger.outputStringMessage(3, "Loading model from .sif file: " + filenameNetwork);
 			try {
 				generalModel.loadInteractionFile(filenameNetwork);
-			} catch (IOException e1) {
-				e1.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 
 			// if both config variables are false, no removal of nodes will be done

@@ -85,8 +85,8 @@ public class BooleanModel {
 			return;
 		}
 
-		// load gitsbe file format
-		if (filename.substring(filename.length() - ".gitsbe".length()).toLowerCase().equals(".gitsbe")) {
+		String fileExtension = getFileExtension(filename);
+		if (fileExtension.equals(".gitsbe")) {
 			// Boolean equations
 			this.booleanEquations = new ArrayList<BooleanEquation>();
 
@@ -113,7 +113,7 @@ public class BooleanModel {
 				}
 			}
 
-		} else if (filename.substring(filename.length() - ".booleannet".length()).equals(".booleannet")) {
+		} else if (fileExtension.equals(".booleannet")) {
 			// Boolean equations
 			this.booleanEquations = new ArrayList<BooleanEquation>();
 
