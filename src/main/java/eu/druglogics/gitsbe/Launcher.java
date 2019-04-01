@@ -36,7 +36,7 @@ public class Launcher {
             String filenameModelOutputs = arguments.getFilenameModelOutputs();
             String filenameConfig = arguments.getFilenameConfig();
 
-            // Inferring the input directory
+            // Inferring the input directory from the network file
             String directoryInput = inferInputDir(filenameNetwork);
 
             DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");

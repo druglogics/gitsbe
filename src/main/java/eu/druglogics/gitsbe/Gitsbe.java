@@ -15,14 +15,12 @@ import eu.druglogics.gitsbe.util.FileDeleter;
 import static eu.druglogics.gitsbe.util.Util.*;
 import static eu.druglogics.gitsbe.util.FileDeleter.*;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Properties;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -41,8 +39,8 @@ import java.util.stream.IntStream;
 
 public class Gitsbe implements Runnable {
 
-	private static String appName = "Gitsbe";
-	private String version = "v0.4";
+	private static String appName;
+	private static String version;
 
 	private String filenameNetwork;
 	private String filenameTrainingData;
@@ -74,6 +72,8 @@ public class Gitsbe implements Runnable {
 
 	@Override
 	public void run() {
+
+		loadGitsbeProperties();
 
 		System.out.print("Welcome to " + appName + " " + version + "\n\n");
 
@@ -130,7 +130,7 @@ public class Gitsbe implements Runnable {
 			randomSeedsList.add(new Random(run));
 		}
 
-		if (config.runParallelSimulations()) {
+		if (config.isParallel_simulations()) {
 			// Run evolution simulations in parallel
 			setNumberOfAllowedParallelSimulations(config);
 			simulationFileList = new ArrayList<String>();
@@ -160,8 +160,20 @@ public class Gitsbe implements Runnable {
 		closeLogger(timer);
 	}
 
+	private void loadGitsbeProperties() {
+		final Properties properties = new Properties();
+		try {
+			properties.load(this.getClass().getClassLoader().getResourceAsStream("gitsbe.properties"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		version = properties.getProperty("version");
+		appName = properties.getProperty("appName");
+	}
+
 	private void setNumberOfAllowedParallelSimulations(Config config) {
-		int parallelSimulationsNumber = config.getForkJoinPoolSize();
+		int parallelSimulationsNumber = config.getFork_join_pool_size();
 		System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", Integer.toString(parallelSimulationsNumber-1));
 		logger.outputStringMessage(1, "\nSetting number of parallel simulations to: " + parallelSimulationsNumber);
 	}
@@ -179,7 +191,7 @@ public class Gitsbe implements Runnable {
 	 * @param logDirectory
 	 */
 	private void mergeLogFiles(String logDirectory) {
-		String mergedLogFilename = new File(logDirectory, "Gitsbe_simulations_log.txt").getAbsolutePath();
+		String mergedLogFilename = new File(logDirectory, appName + "_simulations_log.txt").getAbsolutePath();
 
 		// sort the files to have the simulations in ascending order
 		sortFiles(simulationFileList);
@@ -198,7 +210,7 @@ public class Gitsbe implements Runnable {
 		Logger simulation_logger = null;
 
 		// create new logger for each parallel simulation
-		if (config.runParallelSimulations()) {
+		if (config.isParallel_simulations()) {
 			String filenameOutput = appName + "_simulation_" + String.valueOf(simulation) + "_log.txt";
 			addFileToSimulationFileList(new File(logDirectory, filenameOutput).getAbsolutePath());
 			try {
@@ -213,8 +225,9 @@ public class Gitsbe implements Runnable {
 		simulation_logger.outputHeader(1,
 				"Evolutionary algorithms, evolution " + (simulation) + " of " + config.getSimulations());
 
-		Evolution ga = new Evolution(summary, generalBooleanModel,
-				generalBooleanModel.getModelName() + "_run_" + run + "_", data, outputs, modelDirectory, directoryTmp,
+		String baseModelName = removeExtension(generalBooleanModel.getModelName()) + "_run_" + run + "_";
+		Evolution ga = new Evolution(summary, generalBooleanModel, baseModelName,
+				 data, outputs, modelDirectory, directoryTmp,
 				config, simulation_logger);
 
 		ga.evolve(run);
@@ -243,10 +256,10 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void exportBooleanModelFileInGitsbeFormat(Config config, BooleanModel generalBooleanModel) {
-		if (config.isExportBoolean_model()) {
+		if (config.isExport_gitsbe_model()) {
 			try {
 				logger.outputStringMessage(2,
-						"Exporting .sif file in gitsbe format: " + generalBooleanModel.getModelName() + ".gitsbe");
+						"Exporting .sif file in .gitsbe format: " + removeExtension(generalBooleanModel.getModelName()) + ".gitsbe");
 				generalBooleanModel.saveFileInGitsbeFormat(directoryOutput);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -255,7 +268,7 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void exportTrimmedSifNetworkFile(Config config, BooleanModel generalBooleanModel) {
-		if (config.isExportTrimmedSif()) {
+		if (config.isExport_trimmed_sif()) {
 			try {
 				String filename = generalBooleanModel.getModelName() + "_trimmed.sif";
 				logger.outputStringMessage(2, "Exporting trimmed .sif file: " + filename);
@@ -267,10 +280,10 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void exportBooleanModelFileInGinmlFormat(Config config, BooleanModel generalBooleanModel) {
-		if (config.isExportGinml()) {
+		if (config.isExport_ginml()) {
 			try {
 				String filename = generalBooleanModel.getModelName() + "_export.ginml";
-				logger.outputStringMessage(2, "Exporting .sif file in ginml format: " + filename);
+				logger.outputStringMessage(2, "Exporting .sif file in GINML format: " + filename);
 				generalBooleanModel.writeGinmlFile(directoryOutput, filename, generalModel.getSingleInteractions());
 			} catch (IOException e) {
 				e.printStackTrace();

@@ -30,7 +30,7 @@ public class Logger {
 	/**
 	 * Initialize logger
 	 * 
-	 * @param filenameOuput
+	 * @param filenameOutput
 	 *            name of output file. Verbosity decides amount of output.
 	 * @param directory
 	 *            is name of directory for output.

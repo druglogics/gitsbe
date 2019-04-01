@@ -320,6 +320,13 @@ public class Util {
 		}
 	}
 
+	public static String removeLastChar(String str) {
+		if (str != null && str.length() > 0) {
+			str = str.substring(0, str.length() - 1);
+		}
+		return str;
+	}
+
 	// May not be working...
 	public static void compressDirectory(String filenameArchive, String directory, Logger logger) {
 		// tar cvfz tmp.tar.gz tmp

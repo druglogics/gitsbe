@@ -200,7 +200,7 @@ public class BooleanModel {
 
 	public void saveFileInGitsbeFormat(String directoryName) throws IOException {
 
-		String filename = this.modelName.substring(this.modelName.lastIndexOf('/') + 1) + ".gitsbe";
+		String filename = removeExtension(this.modelName) + ".gitsbe";
 		PrintWriter writer = new PrintWriter(new File(directoryName, filename).getAbsolutePath(), "UTF-8");
 
 		// Write header with '#'

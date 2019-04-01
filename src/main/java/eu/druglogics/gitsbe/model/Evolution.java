@@ -206,30 +206,30 @@ public class Evolution {
 				topology_mutations_factor = config.getTopology_mutations_factor();
 			}
 
-			if ((config.getBalancemutations() * mutations_factor) > 0) {
-				logger.outputStringMessage(3, "Introducing " + (config.getBalancemutations() * mutations_factor)
+			if ((config.getBalance_mutations() * mutations_factor) > 0) {
+				logger.outputStringMessage(3, "Introducing " + (config.getBalance_mutations() * mutations_factor)
 						+ " balance mutations to model " + generationModels.get(i).getModelName());
-				generationModels.get(i).introduceBalanceMutation(mutations_factor * config.getBalancemutations());
+				generationModels.get(i).introduceBalanceMutation(mutations_factor * config.getBalance_mutations());
 			}
 
-			if ((config.getRandommutations() * mutations_factor) > 0) {
-				logger.outputStringMessage(3, "Introducing " + (config.getRandommutations() * mutations_factor)
+			if ((config.getRandom_mutations() * mutations_factor) > 0) {
+				logger.outputStringMessage(3, "Introducing " + (config.getRandom_mutations() * mutations_factor)
 						+ " random mutations to model " + generationModels.get(i).getModelName());
-				generationModels.get(i).introduceRandomMutation(mutations_factor * config.getRandommutations());
+				generationModels.get(i).introduceRandomMutation(mutations_factor * config.getRandom_mutations());
 			}
 
-			if ((config.getShufflemutations() * shuffle_factor) > 0) {
-				logger.outputStringMessage(3, "Introducing " + (config.getShuffle_factor() * shuffle_factor)
+			if ((config.getShuffle_mutations() * shuffle_factor) > 0) {
+				logger.outputStringMessage(3, "Introducing " + (config.getShuffle_mutations() * shuffle_factor)
 						+ " regulator priority shuffle mutations to model " + generationModels.get(i).getModelName());
-				generationModels.get(i).shuffleRandomRegulatorPriorities(shuffle_factor * config.getShufflemutations());
+				generationModels.get(i).shuffleRandomRegulatorPriorities(shuffle_factor * config.getShuffle_mutations());
 			}
 
-			if ((config.getTopologyMutations() * topology_mutations_factor) > 0) {
+			if ((config.getTopology_mutations() * topology_mutations_factor) > 0) {
 				logger.outputStringMessage(3,
-						"Introducing " + (config.getTopologyMutations() * topology_mutations_factor)
+						"Introducing " + (config.getTopology_mutations() * topology_mutations_factor)
 								+ " topology mutations to model " + generationModels.get(i).getModelName());
 
-				generationModels.get(i).topologyMutations(topology_mutations_factor * config.getTopologyMutations());
+				generationModels.get(i).topologyMutations(topology_mutations_factor * config.getTopology_mutations());
 			}
 		}
 	}

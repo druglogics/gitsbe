@@ -127,8 +127,7 @@ public class MutatedBooleanModel extends BooleanModel {
 	/**
 	 * Introduce mutations to topology, removing regulators of nodes (but not all
 	 * regulators for any node)
-	 * 
-	 * @param i
+	 *
 	 */
 	public void topologyMutations(int numberOfMutations) {
 		for (int i = 0; i < numberOfMutations; i++) {
