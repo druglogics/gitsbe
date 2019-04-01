@@ -53,9 +53,6 @@ public class Gitsbe implements Runnable {
 	// Declare one general model that is defined by input files
 	private GeneralModel generalModel;
 
-	// Global variable determining verbosity levels
-	public int verbosity = 3;
-
 	private Logger logger;
 	private ArrayList<String> simulationFileList;
 
@@ -135,14 +132,16 @@ public class Gitsbe implements Runnable {
 			setNumberOfAllowedParallelSimulations(config);
 			simulationFileList = new ArrayList<String>();
 			IntStream.range(0, numberOfSimulations).parallel()
-					.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run), () -> runSimulation(run, config,
-							summary, generalBooleanModel, data, outputs, modelDirectory, logDirectory)));
+				.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run),
+						 () -> runSimulation(run, config, summary, generalBooleanModel,
+								 data, outputs, modelDirectory, logDirectory)));
 			mergeLogFiles(logDirectory);
 		} else {
 			// Run evolution simulations in serial
 			IntStream.range(0, numberOfSimulations)
-					.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run), () -> runSimulation(run, config,
-							summary, generalBooleanModel, data, outputs, modelDirectory, logDirectory)));
+				.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run),
+						 () -> runSimulation(run, config, summary, generalBooleanModel,
+								 data, outputs, modelDirectory, logDirectory)));
 		}
 
 		summary.generateFitnessesReport();
@@ -208,6 +207,7 @@ public class Gitsbe implements Runnable {
 		
 		int simulation = run + 1;
 		Logger simulation_logger = null;
+		int verbosity = logger.getVerbosity();
 
 		// create new logger for each parallel simulation
 		if (config.useParallelSimulations()) {
@@ -454,7 +454,7 @@ public class Gitsbe implements Runnable {
 			}
 		}
 
-		this.verbosity = config.getVerbosity();
+		int verbosity = config.getVerbosity();
 		// Now that we got the verbosity from the config, we can re-set it in the logger
 		logger.setVerbosity(verbosity);
 		logger.outputHeader(1, "Config options");
@@ -465,7 +465,7 @@ public class Gitsbe implements Runnable {
 	private void initializeGitsbeLogger(String directory) {
 		try {
 			String filenameOutput = appName + "_" + nameProject + ".log";
-			this.logger = new Logger(filenameOutput, directory, verbosity, true);
+			this.logger = new Logger(filenameOutput, directory, 3, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
