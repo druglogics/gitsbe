@@ -141,7 +141,7 @@ public class Gitsbe implements Runnable {
 		summary.generateFitnessesReport();
 
 		// Save Models in appropriate file
-		saveBestModelsToFile(summary);
+		saveBestModelsToFile(summary, config);
 
 		// Clean tmp directory
 		cleanDirectory(logger);
@@ -299,11 +299,11 @@ public class Gitsbe implements Runnable {
 		logger.outputLines(3, generalBooleanModel.getModelVelizCuba());
 	}
 
-	private void saveBestModelsToFile(Summary summary) {
+	private void saveBestModelsToFile(Summary summary, Config config) {
 		String filenameBooleanModelsIndex = new File(directoryOutput, nameProject).getAbsolutePath() + "_models.txt";
 
 		try {
-			summary.saveModelsIndexFile(filenameBooleanModelsIndex);
+			summary.saveModelsIndexFile(filenameBooleanModelsIndex, config);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

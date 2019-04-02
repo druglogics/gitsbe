@@ -78,19 +78,23 @@ public class Summary {
 		bestModels.get(simulation).add(model);
 	}
 
-	public void saveModelsIndexFile(String filename) throws IOException {
-		
+	public void saveModelsIndexFile(String filename, Config config) throws IOException {
+
+		int maxNumOfModelsToSave = config.getNumOfModelsToSave();
 		PrintWriter writer = new PrintWriter(filename, "UTF-8");
 
 		// Write header with '#'
 		writer.println("# Each line contains a filename pointing to model to include in analysis");
 		
 		// Write columns with model-defined node names for Veliz-Cuba's algorithm
-		for (int i = 0; i < bestModels.size(); i++) {
-			for (int j = 0; j < bestModels.get(i).size(); j++) {
-				writer.println(bestModels.get(i).get(j).getFilename());
-			}
-		}
+		bestModels.forEach(bestModelsPerSimulation -> {
+			int count = 0;
+			for (MutatedBooleanModel bestModel : bestModelsPerSimulation)
+				if (count < maxNumOfModelsToSave) {
+					writer.println(bestModel.getFilename());
+					count++;
+				}
+		});
 
 		writer.close();
 	}
