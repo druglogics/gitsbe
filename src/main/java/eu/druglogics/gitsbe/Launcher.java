@@ -2,7 +2,7 @@ package eu.druglogics.gitsbe;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import eu.druglogics.gitsbe.util.CommandLineArgs;
+import eu.druglogics.gitsbe.input.CommandLineArgs;
 
 import java.io.File;
 import java.text.DateFormat;

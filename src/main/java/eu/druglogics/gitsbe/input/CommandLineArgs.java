@@ -1,4 +1,4 @@
-package eu.druglogics.gitsbe.util;
+package eu.druglogics.gitsbe.input;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;

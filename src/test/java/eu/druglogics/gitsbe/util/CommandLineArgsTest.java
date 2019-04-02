@@ -2,6 +2,7 @@ package eu.druglogics.gitsbe.util;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import eu.druglogics.gitsbe.input.CommandLineArgs;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
