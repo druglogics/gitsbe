@@ -39,6 +39,11 @@ public class Launcher {
             // Inferring the input directory from the network file
             String directoryInput = inferInputDir(filenameNetwork);
 
+            // projectName is not required
+            if (projectName == null) {
+                projectName = getFileName(directoryInput);
+            }
+
             DateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
             String directoryOutput = new File(directoryInput,
                     projectName + "_" + dateFormat.format(Calendar.getInstance().getTime()))
