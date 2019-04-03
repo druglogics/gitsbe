@@ -36,10 +36,10 @@ public class Launcher {
             String filenameModelOutputs = arguments.getFilenameModelOutputs();
             String filenameConfig = arguments.getFilenameConfig();
 
-            // Inferring the input directory from the network file
-            String directoryInput = inferInputDir(filenameNetwork);
+            // Inferring the input directory from the config file
+            String directoryInput = inferInputDir(filenameConfig);
 
-            // projectName is not required
+            // projectName is not required, but we set it either way
             if (projectName == null) {
                 projectName = getFileName(directoryInput);
             }

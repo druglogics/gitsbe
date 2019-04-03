@@ -21,7 +21,7 @@ public class FileDeleter {
 		FileDeleter.state = state;
 	}
 
-	public static boolean isActive() {
+	private static boolean isActive() {
 		return state;
 	}
 
@@ -32,8 +32,10 @@ public class FileDeleter {
 			for (File file : dir.listFiles()) {
 				String filename = file.getName();
 				if (filename.toLowerCase().contains(pattern.toLowerCase())) {
-					logger.outputStringMessage(2, "Deleting file: " + file.getName());
-					file.delete();
+					logger.outputStringMessage(2, "Deleting file: "
+							+ file.getName());
+					if (!file.delete())
+						logger.error("Couldn't delete file: " + filename);
 				}
 			}
 		}
@@ -48,9 +50,11 @@ public class FileDeleter {
 	public static void cleanDirectory(Logger logger) {
 		if (isActive()) {
 			File dir = new File(directory);
-			logger.outputStringMessage(2, "\n" + "Deleting temporary directory: " + dir.getAbsolutePath());
-			deleteFilesFromDirectory(dir);
-			dir.delete();
+			logger.outputStringMessage(2, "\n" +
+					"Deleting temporary directory: " + dir.getAbsolutePath());
+			deleteFilesFromDirectory(dir, logger);
+			if (!dir.delete())
+				logger.error("Couldn't delete directory: " + directory);
 		}
 	}
 
@@ -59,11 +63,12 @@ public class FileDeleter {
 	 * 
 	 * @param directory
 	 */
-	public static void deleteFilesFromDirectory(File directory) {
+	private static void deleteFilesFromDirectory(File directory, Logger logger) {
 		for (File file : directory.listFiles()) {
 			if (file.isDirectory())
-				deleteFilesFromDirectory(file);
-			file.delete();
+				deleteFilesFromDirectory(file, logger);
+			if (!file.delete())
+				logger.error("Couldn't delete file: " + file);
 		}
 	}
 

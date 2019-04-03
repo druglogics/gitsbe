@@ -36,13 +36,13 @@ public class Gitsbe implements Runnable {
 	private static String appName;
 	private static String version;
 
+	private String projectName;
 	private String filenameNetwork;
 	private String filenameTrainingData;
+	private String filenameModelOutputs;
 	private String filenameConfig;
 	private String directoryOutput;
 	private String directoryTmp;
-	private String nameProject;
-	private String filenameModelOutputs;
 
 	// Declare one general model that is defined by input files
 	private GeneralModel generalModel;
@@ -50,9 +50,10 @@ public class Gitsbe implements Runnable {
 	private Logger logger;
 	private ArrayList<String> simulationFileList;
 
-	public Gitsbe(String nameProject, String filenameNetwork, String filenameTrainingData, String filenameModelOutputs,
-			String filenameConfig, String directoryOutput, String directoryTmp) {
-		this.nameProject = nameProject;
+	public Gitsbe(String projectName, String filenameNetwork, String filenameTrainingData,
+				  String filenameModelOutputs, String filenameConfig,
+				  String directoryOutput, String directoryTmp) {
+		this.projectName = projectName;
 		this.filenameNetwork = filenameNetwork;
 		this.filenameTrainingData = filenameTrainingData;
 		this.filenameModelOutputs = filenameModelOutputs;
@@ -68,19 +69,14 @@ public class Gitsbe implements Runnable {
 
 		System.out.print("Welcome to " + appName + " " + version + "\n\n");
 
-		// Create output directory
-		if (!createDirectory(directoryOutput))
-			return;
+        createOutputDirectory();
 
 		// Create models directory (subfolder to directoryOutput)
 		String modelDirectory = new File(directoryOutput, "models").getAbsolutePath();
-		if (!createDirectory(modelDirectory))
-			return;
+		createModelDirectory(modelDirectory);
 
-		// Create log directory (subfolder to directoryOutput)
-		String logDirectory = new File(directoryOutput, "log").getAbsolutePath();
-		if (!createDirectory(logDirectory))
-			return;
+        String logDirectory = new File(directoryOutput, "log").getAbsolutePath();
+        createLogDirectory(logDirectory);
 
 		// Start logger
 		initializeGitsbeLogger(logDirectory);
@@ -105,10 +101,8 @@ public class Gitsbe implements Runnable {
 		// Load output weights
 		ModelOutputs outputs = loadModelOutputs(generalBooleanModel);
 
-		// Create temp directory
-		if (!createDirectory(directoryTmp, logger))
-			return;
-		initializeFileDeleter(config);
+        createTmpDirectory();
+		activateFileDeleter(config);
 
 		// Summary report for Gitsbe
 		Summary summary = initializeSummary(config);
@@ -153,7 +147,7 @@ public class Gitsbe implements Runnable {
 		logger.writeLastLoggingMessage(timer);
 	}
 
-	private void loadGitsbeProperties() {
+    private void loadGitsbeProperties() {
 		final Properties properties = new Properties();
 		try {
 			properties.load(this.getClass().getClassLoader().getResourceAsStream("gitsbe.properties"));
@@ -165,13 +159,45 @@ public class Gitsbe implements Runnable {
 		appName = properties.getProperty("appName");
 	}
 
+    private void createOutputDirectory() {
+        try {
+            createDirectory(directoryOutput);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createModelDirectory(String modelDirectory) {
+        try {
+            createDirectory(modelDirectory);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+
+    private void createLogDirectory(String logDirectory) {
+        try {
+            createDirectory(logDirectory);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void createTmpDirectory() {
+        try {
+            createDirectory(directoryTmp, logger);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 	private void setNumberOfAllowedParallelSimulations(Config config) {
 		int parallelSimulationsNumber = config.parallelSimulationsNumber();
 		System.setProperty("java.util.concurrent.ForkJoinPool.common.parallelism", Integer.toString(parallelSimulationsNumber-1));
 		logger.outputStringMessage(1, "\nSetting number of parallel simulations to: " + parallelSimulationsNumber);
 	}
 
-	private void initializeFileDeleter(Config config) {
+	private void activateFileDeleter(Config config) {
 		FileDeleter fileDeleter = new FileDeleter(directoryTmp);
 		if (config.deleteTmpDir()) {
 			fileDeleter.activate();
@@ -300,7 +326,7 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void saveBestModelsToFile(Summary summary, Config config) {
-		String filenameBooleanModelsIndex = new File(directoryOutput, nameProject).getAbsolutePath() + "_models.txt";
+		String filenameBooleanModelsIndex = new File(directoryOutput, projectName).getAbsolutePath() + "_models.txt";
 
 		try {
 			summary.saveModelsIndexFile(filenameBooleanModelsIndex, config);
@@ -411,7 +437,7 @@ public class Gitsbe implements Runnable {
 	private Summary initializeSummary(Config config) {
 		Summary summary = null;
 		try {
-			summary = new Summary(new File(this.directoryOutput, nameProject).getAbsolutePath() + "_summary.txt", logger,
+			summary = new Summary(new File(this.directoryOutput, projectName).getAbsolutePath() + "_summary.txt", logger,
 					config);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -428,7 +454,8 @@ public class Gitsbe implements Runnable {
 			e.printStackTrace();
 			File file = new File(directoryOutput);
 			filenameConfig = file.getParent() + "/" + "config.tab";
-			logger.outputStringMessage(1, "Cannot find config file, generating template file: " + filenameConfig);
+			logger.outputStringMessage(1, "Cannot find config " +
+					"file, generating template file: " + filenameConfig);
 			try {
 				Config.writeConfigFileTemplate(filenameConfig);
 				config = new Config(filenameConfig, logger);
@@ -448,7 +475,7 @@ public class Gitsbe implements Runnable {
 
 	private void initializeGitsbeLogger(String directory) {
 		try {
-			String filenameOutput = appName + "_" + nameProject + ".log";
+			String filenameOutput = appName + "_" + projectName + ".log";
 			this.logger = new Logger(filenameOutput, directory, 3, true);
 		} catch (IOException e) {
 			e.printStackTrace();
