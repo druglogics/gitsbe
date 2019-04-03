@@ -15,11 +15,12 @@ simulation)
 
 ## Output
 
-- A `model` directory with files in `.gitsbe` format, which represent the boolean 
+- A **models directory** with files in `.gitsbe` format, which represent the boolean 
 models that best fitted to the configuration and training data that the simulation 
 of the genetic algorithm was based on.
-- A summary file that includes the models' fitness evolution.
-- The network file can be exported to many standard formats (e.g. gitsbe)
+- A **summary file** that includes the models' fitness evolution.
+- A **network file** can be exported to many standard formats 
+(e.g. .gitsbe, .sif, .ginml)
 
 ## Install
 
@@ -46,4 +47,5 @@ mvn compile -P runExampleAGS
 
 - Note that its best that all input files are on the same directory like in the 
 example above. The output directory with all the generated result files when 
-using the the `gitsbe.Launcher` will be next to where the network file is.
+running the `gitsbe.Launcher` will be in the same directory where the 
+configuration file is.
