@@ -88,43 +88,48 @@ public class Util {
 	 * @param logger
 	 * @return
 	 */
-	public static boolean createDirectory(String directory, Logger logger) {
+	public static void createDirectory(String directory, Logger logger) throws IOException {
 		File directoryFile = new File(directory);
-		
+
+		if (directoryFile.exists()) {
+			logger.outputStringMessage(1,"Directory: " + directory +
+					" already exists - " + "no need to recreate it!");
+			return;
+		}
+
 		if (!directoryFile.mkdir()) {
 			if (!directoryFile.exists()) {
-				logger.error("Error in creating directory: " + directory + ", exiting.");
-				return false;
+				throw new IOException("Error in creating directory: " +
+						directory + ", exiting.");
 			}
+		} else {
+			logger.outputStringMessage(1, "Created directory: " +
+					directory);
 		}
-		
-		logger.outputStringMessage(1, "Created directory: " + directory);
-		return true;
 	}
 	
 	/**
-	 * Create a directory based on the given path string. 
-	 * If it already exists, the function call returns false.
+	 * Create a directory based on the given path string
 	 * 
 	 * @param directory
 	 */
-	public static boolean createDirectory(String directory) {
+	public static void createDirectory(String directory) throws IOException {
 		File directoryFile = new File(directory);
 		
 		if (directoryFile.exists()) {
-			System.out.println("ERROR: Directory: " + directory + " already exists!");
-			return false;
+			System.out.println("Directory: " + directory + " already exists - " +
+					"no need to recreate it!");
+			return;
 		}
 		
 		if (!directoryFile.mkdir()) {
 			if (!directoryFile.exists()) {
-				 System.out.println("Error in creating directory: " + directory + ", exiting.");
-				 return false;
+				throw new IOException("Error in creating directory: " +
+						directory + ", exiting.");
 			}
+		} else {
+			System.out.println("Created directory: " + directory);
 		}
-		
-		System.out.println("Created directory: " + directory);
-		return true;
 	}
 
 	public static String inferInputDir(String filename) {

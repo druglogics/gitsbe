@@ -1,7 +1,11 @@
 package eu.druglogics.gitsbe.util;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.io.IOException;
 
 public class UtilTest {
 
@@ -56,5 +60,17 @@ public class UtilTest {
         Assert.assertEquals("file2.cmd", Util.getFileName(filename2));
         Assert.assertEquals("file3.try.sif", Util.getFileName(filename3));
         Assert.assertEquals("file4", Util.getFileName(filename4));
+    }
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
+    @Test
+    public void test_create_directory() throws IOException{
+        exception.expect(IOException.class);
+
+        String userDir = System.getProperty("user.dir");
+        Util.createDirectory(userDir); // directory exists so it will just return
+        Util.createDirectory("");
     }
 }
