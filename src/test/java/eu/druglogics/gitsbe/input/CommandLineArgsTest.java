@@ -1,8 +1,7 @@
-package eu.druglogics.gitsbe.util;
+package eu.druglogics.gitsbe.input;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import eu.druglogics.gitsbe.input.CommandLineArgs;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,7 +13,8 @@ public class CommandLineArgsTest {
     public void test_all_arguments() {
         CommandLineArgs args = new CommandLineArgs();
 
-        String[] argv = {"-p", "project", "-c", "config", "-m", "model", "-t", "train", "-n", "network"};
+        String[] argv = {"-p", "project", "-c", "config", "-m", "model",
+                "-t", "train", "-n", "network"};
         JCommander.newBuilder().addObject(args).build().parse(argv);
 
         Assert.assertEquals(args.getProjectName(), "project");
