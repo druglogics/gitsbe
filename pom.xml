@@ -77,7 +77,7 @@
                                     <mainClass>eu.druglogics.gitsbe.Launcher</mainClass>
                                     <arguments>
                                         <argument>--project</argument>
-                                        <argument>test</argument>
+                                        <argument>example_run_ags</argument>
                                         <argument>--network</argument>
                                         <argument>example_run_ags/toy_ags_network.sif</argument>
                                         <argument>--trainingdata</argument>
