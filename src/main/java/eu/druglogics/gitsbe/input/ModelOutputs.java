@@ -117,7 +117,7 @@ public class ModelOutputs {
 		for (String nodeName : this.getNodeNames()) {
 			if (!nodes.contains(nodeName)) {
 				logger.error("Node " + nodeName + " is not in network file.");
-				System.exit(1);
+				abort();
 			}
 		}
 	}

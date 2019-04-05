@@ -162,8 +162,8 @@ public class Config extends ConfigParameters {
 					break;
 
 				default:
-					logger.outputStringMessage(0,"No parameter exists with the name: " + parameterName);
-					System.exit(1);
+					logger.error("No parameter exists with the name: " + parameterName);
+					abort();
 			}
 		}
 	}

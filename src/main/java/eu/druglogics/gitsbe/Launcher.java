@@ -19,8 +19,12 @@ public class Launcher {
     }
 
     public void start(String[] args) {
-        if (environmentalVariableBNETisNULL())
-            return;
+        try {
+            checkBNET();
+        } catch (Exception e) {
+            e.printStackTrace();
+            abort();
+        }
         setupInputAndRun(args);
     }
 
@@ -64,7 +68,7 @@ public class Launcher {
                 thread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
-                System.exit(1);
+                abort();
             }
         } catch (ParameterException parEx) {
             System.out.println("\nOptions preceded by an asterisk are required.");

@@ -97,7 +97,7 @@ public class TrainingData {
 				if (!nodes.contains(nodeName)) {
 					logger.error("Node " + nodeName + " defined in condition " + condition
 							+ " is not in network file.");
-					System.exit(1);
+					abort();
 				}
 			}
 		}

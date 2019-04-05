@@ -18,14 +18,16 @@ import java.util.Comparator;
  */
 
 public class Util {
-
-	public static boolean environmentalVariableBNETisNULL() {
+	/**
+	 * Checks if the BNET_HOME environment variable is set
+	 *
+	 * @throws Exception
+	 */
+	public static void checkBNET() throws Exception {
 		if (System.getenv("BNET_HOME") == null) {
-			System.out.println("Set environment variable BNET_HOME to point to location of BNReduction.sh");
-			System.out.println("BNReduction can be obtained from https://github.com/alanavc/BNReduction");
-			return true;
+			throw new Exception("Set environment variable BNET_HOME to point to location of " +
+					"BNReduction.sh (see druglogics_dep installation guidelines)");
 		}
-		return false;
 	}
 
 	/**
@@ -348,6 +350,10 @@ public class Util {
 	public static String getFileName(String filename) {
 		File file = new File(filename);
 		return(file.getName());
+	}
+
+	public static void abort() {
+		System.exit(1);
 	}
 
 }

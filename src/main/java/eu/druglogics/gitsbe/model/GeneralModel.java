@@ -39,7 +39,7 @@ public class GeneralModel {
 		this.modelName = new File(filename).getName();
 
 		// Read given file
-		logger.outputStringMessage(1, "Reading .sif file: " + filename);
+		logger.outputStringMessage(1, "Reading .sif file: " + new File(filename).getAbsolutePath());
 		
 		ArrayList<String> lines = readLinesFromFile(filename, true);
 		for (int index = 0; index < lines.size(); ++index)

@@ -12,17 +12,15 @@ public enum AttractorTools {
     }
 
     public String getTool() {
-        return tool;
+        return this.tool;
     }
 
     public static boolean contains(String tool) {
-
         for (AttractorTools attractorToolValue : AttractorTools.values()) {
             if (attractorToolValue.getTool().equals(tool)) {
                 return true;
             }
         }
-
         return false;
     }
 }

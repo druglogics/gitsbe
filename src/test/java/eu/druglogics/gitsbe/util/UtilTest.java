@@ -1,6 +1,7 @@
 package eu.druglogics.gitsbe.util;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -8,6 +9,19 @@ import org.junit.rules.ExpectedException;
 import java.io.IOException;
 
 public class UtilTest {
+
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
+
+    // System Rules (JUnit 4) or System Lambda (JUnit 5)
+    @Ignore("until I find a way to set an enviroment variable to null for testing")
+    @Test
+    public void test_null_bnet_env_var() throws Exception {
+        exception.expect(Exception.class);
+
+        Assert.assertNull(System.getenv("BNET_HOME"));
+        Util.checkBNET();
+    }
 
     @Test
     public void test_infer_input_dir() {
@@ -61,9 +75,6 @@ public class UtilTest {
         Assert.assertEquals("file3.try.sif", Util.getFileName(filename3));
         Assert.assertEquals("file4", Util.getFileName(filename4));
     }
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Test
     public void test_create_directory() throws IOException{

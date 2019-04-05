@@ -361,7 +361,7 @@ public class Gitsbe implements Runnable {
 				outputs = new ModelOutputs(filenameModelOutputs, logger);
 			} catch (IOException e1) {
 				e1.printStackTrace();
-				System.exit(1);
+				abort();
 			}
 		}
 
@@ -388,7 +388,7 @@ public class Gitsbe implements Runnable {
 				data = new TrainingData(filenameTrainingData, logger);
 			} catch (IOException e1) {
 				e1.printStackTrace();
-				System.exit(1);
+				abort();
 			}
 		}
 
@@ -441,7 +441,7 @@ public class Gitsbe implements Runnable {
 					config);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.exit(1);
+			abort();
 		}
 		return summary;
 	}
@@ -461,7 +461,7 @@ public class Gitsbe implements Runnable {
 				config = new Config(filenameConfig, logger);
 			} catch (IOException e1) {
 				e1.printStackTrace();
-				System.exit(1);
+				abort();
 			}
 		}
 
@@ -479,7 +479,7 @@ public class Gitsbe implements Runnable {
 			this.logger = new Logger(filenameOutput, directory, 3, true);
 		} catch (IOException e) {
 			e.printStackTrace();
-			System.exit(1);
+			abort();
 		}
 
 		logger.writeFirstLoggingMessage(appName, version);

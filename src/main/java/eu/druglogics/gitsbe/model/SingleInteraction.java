@@ -1,5 +1,7 @@
 package eu.druglogics.gitsbe.model;
 
+import static eu.druglogics.gitsbe.util.Util.*;
+
 /**
  * 
  * @author Asmund Flobak, email: asmund.flobak@ntnu.no
@@ -42,8 +44,8 @@ public class SingleInteraction {
 	public void setInteraction(String interaction) {
 		String[] temp = interaction.split(" ");
 		if (temp.length != 3) {
-			System.out.println("ERROR: Wrongly formatted interaction: " + interaction);
-			System.exit(1);
+			System.err.println("ERROR: Wrongly formatted interaction: " + interaction);
+			abort();
 		}
 		this.setInteraction(temp[0], temp[1], temp[2]);
 	}
@@ -80,10 +82,10 @@ public class SingleInteraction {
 			case "<-|":
 			case "|-|":
 			default:
-				System.out.println("ERROR: Wrongly formatted interaction type:");
-				System.out.println("Source: " + firstNode + " Interaction type: "
+				System.err.println("ERROR: Wrongly formatted interaction type:");
+				System.err.println("Source: " + firstNode + " Interaction type: "
 						+ interaction + " Target: " + secondNode);
-				System.exit(1);
+				abort();
 		}
 	}
 
