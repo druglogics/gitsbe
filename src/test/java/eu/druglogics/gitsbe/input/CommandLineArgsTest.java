@@ -2,46 +2,44 @@ package eu.druglogics.gitsbe.input;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-public class CommandLineArgsTest {
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class CommandLineArgsTest {
 
     @Test
-    public void test_all_arguments() {
+    void test_all_arguments() {
         CommandLineArgs args = new CommandLineArgs();
 
-        String[] argv = {"-p", "project", "-c", "config", "-m", "model",
-                "-t", "train", "-n", "network"};
+        String[] argv = {"-c", "config", "-m", "model", "-t", "train", "-n", "network"};
         JCommander.newBuilder().addObject(args).build().parse(argv);
 
-        Assert.assertEquals(args.getProjectName(), "project");
-        Assert.assertEquals(args.getFilenameNetwork(), "network");
-        Assert.assertEquals(args.getFilenameConfig(), "config");
-        Assert.assertEquals(args.getFilenameModelOutputs(), "model");
-        Assert.assertEquals(args.getFilenameTrainingData(), "train");
-    }
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
-    @Test
-    public void test_no_arguments() {
-        exception.expect(ParameterException.class);
-
-        CommandLineArgs args = new CommandLineArgs();
-        JCommander.newBuilder().addObject(args).build().parse("");
+        assertNull(args.getProjectName());
+        assertEquals(args.getFilenameNetwork(), "network");
+        assertEquals(args.getFilenameConfig(), "config");
+        assertEquals(args.getFilenameModelOutputs(), "model");
+        assertEquals(args.getFilenameTrainingData(), "train");
     }
 
     @Test
-    public void test_missing_required_arguments() {
-        exception.expect(ParameterException.class);
+    void test_no_arguments() {
+        assertThrows(ParameterException.class, () -> {
+            CommandLineArgs args = new CommandLineArgs();
+            JCommander.newBuilder().addObject(args).build().parse("");
+        },"");
+    }
 
-        CommandLineArgs args = new CommandLineArgs();
-        String[] argv = {"-p", "project", "-c", "config"};
-        JCommander.newBuilder().addObject(args).build().parse(argv);
+    @Test
+    void test_missing_required_arguments() {
+        assertThrows(ParameterException.class, () -> {
+            CommandLineArgs args = new CommandLineArgs();
+            String[] argv = {"-p", "project", "-c", "config"};
+            JCommander.newBuilder().addObject(args).build().parse(argv);
+        }, "");
     }
 
 }

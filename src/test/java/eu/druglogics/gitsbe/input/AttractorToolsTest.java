@@ -1,19 +1,22 @@
 package eu.druglogics.gitsbe.input;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class AttractorToolsTest {
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class AttractorToolsTest {
 
     @Test
-    public void test_contains() {
-        Assert.assertFalse(AttractorTools.contains("a_non_existent_tool"));
-        Assert.assertFalse(AttractorTools.contains("biolqm_fixedpoint_tool"));
+    void test_contains() {
+        assertFalse(AttractorTools.contains("a_non_existent_tool"));
+        assertFalse(AttractorTools.contains("biolqm_fixedpoint_tool"));
 
-        Assert.assertTrue(AttractorTools.contains("bnet_reduction"));
-        Assert.assertTrue(AttractorTools.contains("bnet_reduction_reduced"));
+        assertTrue(AttractorTools.contains("bnet_reduction"));
+        assertTrue(AttractorTools.contains("bnet_reduction_reduced"));
 
-        Assert.assertEquals("bnet_reduction", AttractorTools.BNREDUCTION_FULL.getTool());
-        Assert.assertEquals("bnet_reduction_reduced", AttractorTools.BNREDUCTION_REDUCED.getTool());
+        assertEquals("bnet_reduction", AttractorTools.BNREDUCTION_FULL.getTool());
+        assertEquals("bnet_reduction_reduced", AttractorTools.BNREDUCTION_REDUCED.getTool());
     }
 }

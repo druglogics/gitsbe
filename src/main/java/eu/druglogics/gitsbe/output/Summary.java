@@ -84,7 +84,8 @@ public class Summary {
 		PrintWriter writer = new PrintWriter(filename, "UTF-8");
 
 		// Write header with '#'
-		writer.println("# Each line contains a filename pointing to model to include in analysis");
+		writer.println("# Each line contains a filename pointing to " +
+				"a model that will be used by Drabme");
 		
 		// Write columns with model-defined node names for Veliz-Cuba's algorithm
 		bestModels.forEach(bestModelsPerSimulation -> {
