@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public class Config extends ConfigParameters {
+public class Config extends ConfigParametersGitsbe {
 
 	private Logger logger;
 	private HashMap<String, String> parameterMap;
@@ -37,7 +37,7 @@ public class Config extends ConfigParameters {
 				continue;
 			}
 
-			parameterMap.put(parameterName,value);
+			parameterMap.put(parameterName, value);
 
 			switch (parameterName) {
 				case "verbosity":
@@ -62,7 +62,7 @@ public class Config extends ConfigParameters {
 
 				case "attractor_tool":
 					attractor_tool = value;
-					checkAttractorTool();
+					checkAttractorTool(logger);
 					break;
 
 				case "remove_output_nodes":
@@ -156,24 +156,7 @@ public class Config extends ConfigParameters {
 				case "fitness_threshold":
 					fitness_threshold = Float.parseFloat(value);
 					break;
-
-				case "max_drug_comb_size":
-					max_drug_comb_size = Integer.parseInt(value);
-					break;
-
-				default:
-					logger.error("No parameter exists with the name: " + parameterName);
-					abort();
 			}
-		}
-	}
-
-	private void checkAttractorTool() {
-		if (!AttractorTools.contains(attractor_tool)) {
-			logger.outputStringMessage(0,"The attractor_tool value: " + attractor_tool + " is not in the list of supported tools");
-			logger.outputStringMessage(0,"The bnet_reduction_reduced value will be used for the analysis.");
-
-			attractor_tool = AttractorTools.BNREDUCTION_REDUCED.getTool();
 		}
 	}
 

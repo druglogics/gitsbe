@@ -3,25 +3,17 @@ package eu.druglogics.gitsbe.input;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
-public class ConfigParameters {
-
-    // Global section
-    public int verbosity;
-    public boolean delete_tmp_files;
-    public boolean compress_log_and_tmp_files;
-    public boolean use_parallel_sim;
-    public int parallel_sim_num;
-    public String attractor_tool;
-
-    // Gitsbe section
+public class ConfigParametersGitsbe extends ConfigParametersGlobal{
 
     // Model trimming
     public boolean remove_output_nodes;
     public boolean remove_input_nodes;
-    // Exporting network file
+
+    // Exporting initial network file
     public boolean export_to_gitsbe;
     public boolean export_to_sif;
     public boolean export_to_ginml;
+
     // Parameters for the simulations
     public int population;
     public int generations;
@@ -41,30 +33,6 @@ public class ConfigParameters {
     public int simulations;
     public int models_saved;
     public float fitness_threshold;
-
-    // Drabme section
-    public int max_drug_comb_size;
-
-    public int getVerbosity() {
-        return verbosity;
-    }
-
-    public boolean deleteTmpDir() {
-        return delete_tmp_files;
-    }
-
-    // Returns true or false whether the simulations will run in parallel or not
-    public boolean useParallelSimulations() {
-        return use_parallel_sim;
-    }
-
-    public int parallelSimulationsNumber() {
-        return parallel_sim_num;
-    }
-
-    public String getAttractorTool() {
-        return attractor_tool;
-    }
 
     public boolean exportToGitsbeFormat() {
         return export_to_gitsbe;
@@ -161,16 +129,8 @@ public class ConfigParameters {
         return fitness_threshold;
     }
 
-    public boolean compressLogsAndTmpFiles() {
-        return compress_log_and_tmp_files;
-    }
-
-    public int getCombinationSize() {
-        return max_drug_comb_size;
-    }
-
     public String[] getParameters() {
-        Field[] fields = ConfigParameters.class.getFields();
+        Field[] fields = ConfigParametersGitsbe.class.getDeclaredFields();
 
         return Arrays.stream(fields).map(Field::getName).toArray(String[]::new);
     }
