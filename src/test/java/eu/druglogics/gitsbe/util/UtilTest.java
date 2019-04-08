@@ -39,6 +39,23 @@ class UtilTest {
     }
 
     @Test
+    void test_get_repeated_string() {
+        String emptyStr = "";
+        String testStr  = "test";
+
+        assertEquals("", Util.getRepeatedString(emptyStr, -1));
+        assertEquals("", Util.getRepeatedString(emptyStr, 0));
+        assertEquals("", Util.getRepeatedString(emptyStr, 1));
+        assertEquals("", Util.getRepeatedString(emptyStr, 3));
+
+        assertEquals("", Util.getRepeatedString(testStr, -1));
+        assertEquals("", Util.getRepeatedString(testStr, 0));
+        assertEquals("test", Util.getRepeatedString(testStr, 1));
+        assertEquals("testtest", Util.getRepeatedString(testStr, 2));
+        assertEquals("testtesttesttest", Util.getRepeatedString(testStr, 4));
+    }
+
+    @Test
     void test_remove_extension() {
         String testFile1 = "file.txt";
         String testFile2 = "/home/user/file.sif";
@@ -81,4 +98,6 @@ class UtilTest {
             Util.createDirectory("");
         });
     }
+
+
 }

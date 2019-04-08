@@ -20,7 +20,7 @@ public class TrainingData {
 	public TrainingData(String filenameTrainingData, Logger logger) throws IOException {
 		this.setFilenameTrainingData(filenameTrainingData);
 		this.logger = logger;
-		this.observations = new ArrayList<TrainingDataObservation>();
+		this.observations = new ArrayList<>();
 
 		readData(filenameTrainingData);
 	}
@@ -31,25 +31,25 @@ public class TrainingData {
 	 * @param filename
 	 * @throws IOException
 	 */
-	public void readData(String filename) throws IOException {
+	private void readData(String filename) throws IOException {
 		logger.outputStringMessage(3,
 				"Reading training data observations file: " + new File(filename).getAbsolutePath());
 		ArrayList<String> lines = readLinesFromFile(filename, true);
 
 		// Define variables to be read from training data file
 
-		ArrayList<String> condition = new ArrayList<String>();
-		ArrayList<String> observation = new ArrayList<String>();
-		float weight = 0;
+		ArrayList<String> condition = new ArrayList<>();
+		ArrayList<String> observation = new ArrayList<>();
+		float weight;
 
 		// Process lines
 		for (int i = 0; i < lines.size(); i++) {
 			if (lines.get(i).toLowerCase().equals("condition")) {
-				condition = new ArrayList<String>(Arrays.asList(lines.get(i + 1).split("\t")));
+				condition = new ArrayList<>(Arrays.asList(lines.get(i + 1).split("\t")));
 				i++;
 			}
 			if (lines.get(i).toLowerCase().equals("response")) {
-				observation = new ArrayList<String>(Arrays.asList(lines.get(i + 1).split("\t")));
+				observation = new ArrayList<>(Arrays.asList(lines.get(i + 1).split("\t")));
 				i++;
 			}
 			if (lines.get(i).toLowerCase().startsWith("weight")) {
@@ -83,8 +83,8 @@ public class TrainingData {
 			if (!response.split(":")[0].equals("globaloutput")) {
 				String nodeName = response.split(":")[0];
 				if (!nodes.contains(nodeName)) {
-					logger.outputStringMessage(3, "Warning: Node " + nodeName + " defined in response " + response
-							+ " is not in network file.");
+					logger.outputStringMessage(3, "Warning: Node " + nodeName
+							+ " defined in response " + response + " is not in network file.");
 				}
 			}
 		}
@@ -133,19 +133,20 @@ public class TrainingData {
 	 * @return maxFitness
 	 */
 	public float getMaxFitness() {
-		float maxFitness = 0;
+		float maxFitness;
 
 		maxFitness = getWeightSum();
-		maxFitness += 1; // a fitness of +1 is given for a model with a stable state per condition, thus
-							// max fitness must be increased
+		// a fitness of +1 is given for a model with a stable state
+		// per condition, thus max fitness must be increased
+		maxFitness += 1;
 		return maxFitness;
 	}
 
 	public float getWeightSum() {
 		float weightsum = 0;
 
-		for (int i = 0; i < observations.size(); i++) {
-			weightsum += observations.get(i).getWeight();
+		for (TrainingDataObservation observation : observations) {
+			weightsum += observation.getWeight();
 		}
 		return weightsum;
 	}
@@ -171,19 +172,18 @@ public class TrainingData {
 					+ Arrays.toString(observations.get(i).getCondition().toArray(new String[0]));
 			result[i * 5 + 2] = "Response: "
 					+ Arrays.toString(observations.get(i).getResponse().toArray(new String[0]));
-			result[i * 5 + 3] = "Weight: " + Float.toString(observations.get(i).getWeight());
+			result[i * 5 + 3] = "Weight: " + observations.get(i).getWeight();
 			result[i * 5 + 4] = "";
 		}
 
 		return result;
-
 	}
 
 	public String getFilenameTrainingData() {
 		return filenameTrainingData;
 	}
 
-	public void setFilenameTrainingData(String filenameTrainingData) {
+	private void setFilenameTrainingData(String filenameTrainingData) {
 		this.filenameTrainingData = filenameTrainingData;
 	}
 }

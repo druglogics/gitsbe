@@ -25,12 +25,13 @@ public class Summary {
 	private List<ArrayList<float[]>> fitness;
 	private String summaryFilename;
 	private Logger logger;
-	
+
 	@SuppressWarnings("unchecked")
-	public Summary(String filename, Logger logger, Config config) throws IOException {
-		
-		this.bestModels = Arrays.asList (Stream.generate (ArrayList::new).limit (config.getSimulations()).toArray (ArrayList[]::new));
-		this.fitness = Arrays.asList (Stream.generate (ArrayList::new).limit (config.getSimulations()).toArray (ArrayList[]::new));
+	public Summary(String filename, Logger logger, Config config) {
+		this.bestModels = Arrays.asList (Stream.generate (ArrayList::new).limit
+				(config.getSimulations()).toArray (ArrayList[]::new));
+		this.fitness = Arrays.asList (Stream.generate (ArrayList::new).limit
+				(config.getSimulations()).toArray (ArrayList[]::new));
 		this.setSummaryFilename(filename);
 		this.logger = logger;
 	}
@@ -40,9 +41,9 @@ public class Summary {
 		logger.outputHeaderToFile(summaryFilename, "Summary");
 
 		// Write columns with model-defined node names for Veliz-Cuba's algorithm
-		for (int i = 0; i < bestModels.size(); i++) {
-			for (int j = 0; j < bestModels.get(i).size(); j++) {
-				logger.outputStringMessageToFile(summaryFilename, bestModels.get(i).get(j).getFilename());
+		for (ArrayList<MutatedBooleanModel> bestModel : bestModels) {
+			for (MutatedBooleanModel mutatedBooleanModel : bestModel) {
+				logger.outputStringMessageToFile(summaryFilename, mutatedBooleanModel.getFilename());
 			}
 		}
 
@@ -55,13 +56,13 @@ public class Summary {
 		for (int i = 0; i < fitness.size(); i++) {
 
 			logger.outputStringMessageToFile(summaryFilename, "\nSimulation " + (i + 1));
-			ArrayList<float[]> simulationfit = fitness.get(i);
+			ArrayList<float[]> simulationFitnesses = fitness.get(i);
 
-			for (int row = 0; row < simulationfit.size(); row++) {
+			for (float[] generationFitnesses : simulationFitnesses) {
 				StringBuilder builder = new StringBuilder();
 				String prefix = "";
-				for (int col = 0; col < simulationfit.get(row).length; col++) {
-					builder.append(prefix).append(simulationfit.get(row)[col]);
+				for (float fitnessValue : generationFitnesses) {
+					builder.append(prefix).append(fitnessValue);
 					prefix = "\t";
 				}
 				logger.outputStringMessageToFile(summaryFilename, builder.toString());
@@ -78,7 +79,7 @@ public class Summary {
 		bestModels.get(simulation).add(model);
 	}
 
-	public void saveModelsIndexFile(String filename, Config config) throws IOException {
+	public void saveBestModelsToFile(String filename, Config config) throws IOException {
 
 		int maxNumOfModelsToSave = config.getNumOfModelsToSave();
 		PrintWriter writer = new PrintWriter(filename, "UTF-8");
@@ -100,11 +101,7 @@ public class Summary {
 		writer.close();
 	}
 
-	public String getSummaryFilename() {
-		return summaryFilename;
-	}
-
-	public void setSummaryFilename(String summaryFilename) {
+	private void setSummaryFilename(String summaryFilename) {
 		this.summaryFilename = summaryFilename;
 	}
 	

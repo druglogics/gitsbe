@@ -9,9 +9,7 @@ import eu.druglogics.gitsbe.util.Logger;
 import static eu.druglogics.gitsbe.util.RandomManager.*;
 import static java.lang.Math.*;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 public class Evolution {
@@ -30,8 +28,9 @@ public class Evolution {
 	private ModelOutputs modelOutputs;
 	private boolean initialPhase;
 
-	public Evolution(Summary summary, BooleanModel generalBooleanModel, String baseModelName, TrainingData data,
-			ModelOutputs modelOutputs, String modelDirectory, String directoryOutput, Config config, Logger logger) {
+	public Evolution(Summary summary, BooleanModel generalBooleanModel, String baseModelName,
+					 TrainingData data, ModelOutputs modelOutputs, String modelDirectory,
+					 String directoryOutput, Config config, Logger logger) {
 
 		// Initialize
 		this.summary = summary;
@@ -47,14 +46,14 @@ public class Evolution {
 
 	public void evolve(int run) {
 
-		logger.outputStringMessage(1, "Model optimization over " + config.getGenerations() + " generations with "
-				+ config.getPopulation() + " models per generation.");
+		logger.outputStringMessage(1, "Model optimization over " + config.getGenerations()
+				+ " generations with " + config.getPopulation() + " models per generation.");
 
 		// Evolution is in an initial phase until a stable state exists
 		initialPhase = true;
 		logger.outputStringMessage(3, "Setting initial phase to: " + initialPhase);
 
-		bestModels = new ArrayList<MutatedBooleanModel>();
+		bestModels = new ArrayList<>();
 
 		// Initialize bestModels with original model (in evolution these are replaced by
 		// bestfit models)
@@ -62,7 +61,7 @@ public class Evolution {
 			bestModels.add(new MutatedBooleanModel(generalBooleanModel, logger));
 		}
 
-		ArrayList<float[]> fitnesses = new ArrayList<float[]>();
+		ArrayList<float[]> fitnesses = new ArrayList<>();
 
 		// Evolve models through mutations, crossover and selection
 		for (int generation = 0; generation < config.getGenerations(); generation++) {
@@ -70,7 +69,7 @@ public class Evolution {
 			logger.outputHeader(1, "Generation " + generation);
 
 			// Define generation
-			ArrayList<MutatedBooleanModel> generationModels = new ArrayList<MutatedBooleanModel>();
+			ArrayList<MutatedBooleanModel> generationModels = new ArrayList<>();
 
 			// Crossover (generate the models of the generation)
 			crossover(generationModels, generation);
@@ -84,10 +83,6 @@ public class Evolution {
 
 				try {
 					generationModels.get(i).calculateFitness(data, modelOutputs, directoryOutput);
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -100,12 +95,13 @@ public class Evolution {
 			float fitnessScore = selection(generationModels, generation);
 
 			// Break if highestFitness is over
-			logger.outputStringMessage(2, "Comparing: " + String.valueOf(fitnessScore) + " with: "
-					+ String.valueOf(config.getTargetFitness()));
+			logger.outputStringMessage(2, "Comparing: " + (fitnessScore)
+					+ " with: " + (config.getTargetFitness()));
 
 			if (fitnessScore > config.getTargetFitness()) {
 				logger.outputStringMessage(2, "Breaking evolution after " + generation
-						+ " generations, since the target fitness value is reached: " + config.getTargetFitness());
+						+ " generations, since the target fitness value is reached: "
+						+ config.getTargetFitness());
 				break;
 			}
 
@@ -155,9 +151,9 @@ public class Evolution {
 		}
 
 		logger.outputStringMessage(2, "\nBest models in generation " + generation + ": ");
-		for (int k = 0; k < bestModels.size(); k++) {
+		for (MutatedBooleanModel bestModel : bestModels) {
 			logger.outputStringMessage(2,
-					"\t" + bestModels.get(k).getModelName() + "\tFitness: " + bestModels.get(k).getFitness());
+					"\t" + bestModel.getModelName() + "\tFitness: " + bestModel.getFitness());
 		}
 		logger.outputStringMessage(2, "\n");
 
@@ -167,13 +163,13 @@ public class Evolution {
 
 	private void addSummaryFitnessValues(ArrayList<MutatedBooleanModel> generationModels,
 			ArrayList<float[]> fitnesses) {
-		float generationfitness[] = new float[config.getPopulation()];
+		float[] generationFitness = new float[config.getPopulation()];
 
 		for (int i = 0; i < config.getPopulation(); i++) {
-			generationfitness[i] = generationModels.get(i).getFitness();
+			generationFitness[i] = generationModels.get(i).getFitness();
 		}
 
-		fitnesses.add(generationfitness);
+		fitnesses.add(generationFitness);
 	}
 
 	private void crossover(ArrayList<MutatedBooleanModel> generationModels, int generation) {
@@ -182,54 +178,68 @@ public class Evolution {
 			int parent1 = randInt(0, config.getSelection() - 1);
 			int parent2 = randInt(0, config.getSelection() - 1);
 
-			generationModels.add(new MutatedBooleanModel(bestModels.get(parent1), bestModels.get(parent2),
-					baseModelName + "_G" + generation + "_M" + i, logger, config));
+			generationModels.add(new MutatedBooleanModel(
+					bestModels.get(parent1), bestModels.get(parent2),
+					baseModelName + "_G" + generation + "_M" + i, logger, config)
+			);
 
-			logger.outputStringMessage(3, "Define new model " + baseModelName + "_G" + generation + "_M" + i + " from "
-					+ bestModels.get(parent1).getModelName() + " and " + bestModels.get(parent2).getModelName());
+			logger.outputStringMessage(3, "Define new model " + baseModelName + "_G"
+					+ generation + "_M" + i + " from " + bestModels.get(parent1).getModelName()
+					+ " and " + bestModels.get(parent2).getModelName());
 		}
 	}
 
 	private void mutateModels(ArrayList<MutatedBooleanModel> generationModels) {
 		for (int i = 0; i < config.getPopulation(); i++) {
-			int mutations_factor;
-			int shuffle_factor;
-			int topology_mutations_factor;
+			int mutationsFactor;
+			int shuffleFactor;
+			int topologyMutationsFactor;
 
 			if (initialPhase) {
-				mutations_factor = config.getBootstrapMutationsFactor();
-				shuffle_factor = config.getBootstrapShuffleFactor();
-				topology_mutations_factor = config.getBootstrapTopologyMutationsFactor();
+				mutationsFactor = config.getBootstrapMutationsFactor();
+				shuffleFactor = config.getBootstrapShuffleFactor();
+				topologyMutationsFactor = config.getBootstrapTopologyMutationsFactor();
 			} else {
-				mutations_factor = config.getMutationsFactor();
-				shuffle_factor = config.getShuffleFactor();
-				topology_mutations_factor = config.getTopologyMutationsFactor();
+				mutationsFactor = config.getMutationsFactor();
+				shuffleFactor = config.getShuffleFactor();
+				topologyMutationsFactor = config.getTopologyMutationsFactor();
 			}
 
-			if ((config.getBalanceMutations() * mutations_factor) > 0) {
-				logger.outputStringMessage(3, "Introducing " + (config.getBalanceMutations() * mutations_factor)
+			if ((config.getBalanceMutations() * mutationsFactor) > 0) {
+				logger.outputStringMessage(3, "Introducing "
+						+ (config.getBalanceMutations() * mutationsFactor)
 						+ " balance mutations to model " + generationModels.get(i).getModelName());
-				generationModels.get(i).introduceBalanceMutation(mutations_factor * config.getBalanceMutations());
+				generationModels.get(i).introduceBalanceMutation(
+						mutationsFactor * config.getBalanceMutations()
+				);
 			}
 
-			if ((config.getRandomMutations() * mutations_factor) > 0) {
-				logger.outputStringMessage(3, "Introducing " + (config.getRandomMutations() * mutations_factor)
+			if ((config.getRandomMutations() * mutationsFactor) > 0) {
+				logger.outputStringMessage(3, "Introducing "
+						+ (config.getRandomMutations() * mutationsFactor)
 						+ " random mutations to model " + generationModels.get(i).getModelName());
-				generationModels.get(i).introduceRandomMutation(mutations_factor * config.getRandomMutations());
+				generationModels.get(i).introduceRandomMutation(
+						mutationsFactor * config.getRandomMutations()
+				);
 			}
 
-			if ((config.getShuffleMutations() * shuffle_factor) > 0) {
-				logger.outputStringMessage(3, "Introducing " + (config.getShuffleMutations() * shuffle_factor)
-						+ " regulator priority shuffle mutations to model " + generationModels.get(i).getModelName());
-				generationModels.get(i).shuffleRandomRegulatorPriorities(shuffle_factor * config.getShuffleMutations());
+			if ((config.getShuffleMutations() * shuffleFactor) > 0) {
+				logger.outputStringMessage(3, "Introducing "
+						+ (config.getShuffleMutations() * shuffleFactor)
+						+ " regulator priority shuffle mutations to model "
+						+ generationModels.get(i).getModelName());
+				generationModels.get(i).shuffleRandomRegulatorPriorities(
+						shuffleFactor * config.getShuffleMutations()
+				);
 			}
 
-			if ((config.getTopologyMutations() * topology_mutations_factor) > 0) {
-				logger.outputStringMessage(3,
-						"Introducing " + (config.getTopologyMutations() * topology_mutations_factor)
-								+ " topology mutations to model " + generationModels.get(i).getModelName());
-
-				generationModels.get(i).topologyMutations(topology_mutations_factor * config.getTopologyMutations());
+			if ((config.getTopologyMutations() * topologyMutationsFactor) > 0) {
+				logger.outputStringMessage(3, "Introducing "
+						+ (config.getTopologyMutations() * topologyMutationsFactor)
+						+ " topology mutations to model " + generationModels.get(i).getModelName());
+				generationModels.get(i).topologyMutations(
+						topologyMutationsFactor * config.getTopologyMutations()
+				);
 			}
 		}
 	}
@@ -241,10 +251,10 @@ public class Evolution {
 		if (bestModels.get(0).getFitness() > 0) {
 			logger.outputStringMessage(2, "\n" + config.getSelection() + " best models:\n");
 
-			for (int k = 0; k < bestModels.size(); k++) {
-				if (bestModels.get(k).getFitness() > 0) {
+			for (MutatedBooleanModel bestModel : bestModels) {
+				if (bestModel.getFitness() > 0) {
 					logger.outputStringMessage(2,
-							"\t" + bestModels.get(k).getModelName() + "\tFitness: " + bestModels.get(k).getFitness());
+							"\t" + bestModel.getModelName() + "\tFitness: " + bestModel.getFitness());
 				}
 			}
 		} else {
@@ -266,8 +276,8 @@ public class Evolution {
 
 		numberToKeep = min(numberToKeep, config.getSelection());
 
-		logger.outputHeader(1,
-				"Saving up to " + numberToKeep + " best models to files (fitness threshold " + fitnessThreshold + "):");
+		logger.outputHeader(1, "Saving up to " + numberToKeep
+				+ " best models to files (fitness threshold " + fitnessThreshold + "):");
 
 		int numModelsSaved = 0;
 
@@ -276,7 +286,8 @@ public class Evolution {
 
 				// Set filename of model
 				bestModels.get(i).setFilename(bestModels.get(i).getModelName() + ".gitsbe");
-				logger.outputStringMessage(1, "\tFile: " + modelDirectory + bestModels.get(i).getFilename());
+				logger.outputStringMessage(1, "\tFile: " + modelDirectory
+						+ bestModels.get(i).getFilename());
 
 				// calculate stable states for saving as part of .gitsbe file
 				bestModels.get(i).calculateStableStatesVC(directoryOutput);
@@ -288,8 +299,8 @@ public class Evolution {
 			}
 		}
 
-		logger.outputStringMessage(1,
-				"Saved " + numModelsSaved + " models with sufficient fitness in directory:\n" + modelDirectory + "\n");
+		logger.outputStringMessage(1, "Saved " + numModelsSaved
+				+ " models with sufficient fitness in directory:\n" + modelDirectory + "\n");
 	}
 
 }

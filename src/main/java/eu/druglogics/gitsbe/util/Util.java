@@ -2,13 +2,10 @@ package eu.druglogics.gitsbe.util;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 
 /**
@@ -53,10 +50,9 @@ public class Util {
 	 */
 	public static ArrayList<String> readLinesFromFile(String filename, boolean skipEmptyLinesAndComments)
 			throws IOException {
-		ArrayList<String> lines = new ArrayList<String>();
-		BufferedReader reader = new BufferedReader(new FileReader(filename));
+		ArrayList<String> lines = new ArrayList<>();
 
-		try {
+		try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
 			while (true) {
 				String line = reader.readLine();
 				// no more lines to read
@@ -73,10 +69,6 @@ public class Util {
 					lines.add(line);
 				}
 			}
-		}
-
-		finally {
-			reader.close();
 		}
 
 		return lines;
@@ -144,28 +136,6 @@ public class Util {
 		}
 		return inputDirectory;
 	}
-	
-	/**
-	 * Returns true if file is completely empty
-	 * @param filename
-	 * @return
-	 */
-	public static boolean isFileEmpty(String filename) {
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(filename));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}     
-		try {
-			if (br.readLine() == null) {
-			    return true;
-			}
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-		return false;
-	}
 
 	/**
 	 * removes extension of string, author: coobird
@@ -181,7 +151,7 @@ public class Util {
 		String separator = System.getProperty("file.separator");
 		String filename;
 
-		// Remove the path up to the filename.
+		// Remove the path up to the filename
 		int lastSeparatorIndex = str.lastIndexOf(separator);
 		if (lastSeparatorIndex == -1) {
 			filename = str;
@@ -189,95 +159,12 @@ public class Util {
 			filename = str.substring(lastSeparatorIndex + 1);
 		}
 
-		// Remove the extension.
+		// Remove the extension
 		int extensionIndex = filename.lastIndexOf(".");
 		if (extensionIndex == -1)
 			return filename;
 
 		return filename.substring(0, extensionIndex);
-	}
-
-	public static void removeLineFromFile(String file, String lineToRemove) {
-		try {
-			File inFile = new File(file);
-
-			if (!inFile.isFile()) {
-				System.out.println("Parameter is not an existing file");
-				return;
-			}
-
-			// Construct the new file that will later be renamed to the original filename.
-			File tempFile = new File(inFile.getAbsolutePath() + ".tmp");
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
-
-			String line = null;
-
-			// Read from the original file and write to the new
-			// unless content matches data to be removed.
-			while ((line = br.readLine()) != null) {
-
-				if (!line.trim().equals(lineToRemove)) {
-
-					pw.println(line);
-					pw.flush();
-				}
-			}
-			pw.close();
-			br.close();
-
-			// Delete the original file
-			if (!inFile.delete()) {
-				System.out.println("Could not delete file");
-				return;
-			}
-
-			// Rename the new file to the filename the original file had.
-			if (!tempFile.renameTo(inFile))
-				System.out.println("Could not rename file");
-
-		} catch (FileNotFoundException ex) {
-			ex.printStackTrace();
-		} catch (IOException ex) {
-			ex.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Copies file to directory (both String variables should be the absolute pathnames)
-	 * @param file
-	 * @param directory
-	 * @throws IOException
-	 */
-	public static void copyFileToDirectory(String file, String directory) throws IOException {
-		String filename = new File(file).getName();
-		String outputFile = new File(directory, filename).getAbsolutePath();
-		
-		PrintWriter writerOutput = new PrintWriter(outputFile);
-		ArrayList<String> lines = readLinesFromFile(file, false);
-		
-		for (String line : lines) {
-			writerOutput.println(line);
-		}
-		writerOutput.flush();
-		writerOutput.close();
-	}
-	
-	/**
-	 * Duplicates file creating outputFile (both String variables should be the absolute pathnames)
-	 * @param file
-	 * @param outputFile
-	 * @throws IOException
-	 */
-	public static void duplicateFile(String file, String outputFile) throws IOException {
-		PrintWriter writerOutput = new PrintWriter(outputFile);
-		ArrayList<String> lines = readLinesFromFile(file, false);
-		
-		for (String line : lines) {
-			writerOutput.println(line);
-		}
-		writerOutput.flush();
-		writerOutput.close();
 	}
 
 	/**
@@ -296,7 +183,11 @@ public class Util {
 				writerOutput.println(line);
 			}
 			writerOutput.flush();
-			new File(file).delete();
+
+			File fileToDelete = new File(file);
+			if (!fileToDelete.delete()) {
+				throw new IOException("Couldn't delete file: " + file);
+			}
 		}
 		writerOutput.close();
 	}
@@ -308,7 +199,7 @@ public class Util {
 	 */
 	public static void sortFiles(ArrayList<String> files) {
 		try {
-			Collections.sort(files, new Comparator<String>() {
+			files.sort(new Comparator<String>() {
 				public int compare(String str1, String str2) {
 					return extractInt(str1) - extractInt(str2);
 				}
@@ -331,6 +222,14 @@ public class Util {
 			str = str.substring(0, str.length() - 1);
 		}
 		return str;
+	}
+
+	public static String getRepeatedString(String string, int repeats) {
+		StringBuilder result = new StringBuilder();
+		for (int i = 0; i < repeats; i++)
+			result.append(string);
+
+		return result.toString();
 	}
 
 	public static String getFileExtension(String filename) {

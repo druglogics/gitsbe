@@ -22,11 +22,11 @@ public class SingleInteraction {
 	 * @param interaction
 	 * @param secondNode
 	 */
-	public SingleInteraction(String firstNode, String interaction, String secondNode) {
+	SingleInteraction(String firstNode, String interaction, String secondNode) {
 		this.setInteraction(firstNode, interaction, secondNode);
 	}
 
-	public SingleInteraction(String interaction) {
+	SingleInteraction(String interaction) {
 		this.setInteraction(interaction);
 	}
 
@@ -35,13 +35,13 @@ public class SingleInteraction {
 	 * 
 	 * @param interaction
 	 */
-	public SingleInteraction(SingleInteraction interaction) {
+	SingleInteraction(SingleInteraction interaction) {
 		this.source = interaction.source;
 		this.target = interaction.target;
 		this.arc = interaction.arc;
 	}
 
-	public void setInteraction(String interaction) {
+	private void setInteraction(String interaction) {
 		String[] temp = interaction.split(" ");
 		if (temp.length != 3) {
 			System.err.println("ERROR: Wrongly formatted interaction: " + interaction);
@@ -50,7 +50,7 @@ public class SingleInteraction {
 		this.setInteraction(temp[0], temp[1], temp[2]);
 	}
 
-	public void setInteraction(String firstNode, String interaction, String secondNode) {
+	private void setInteraction(String firstNode, String interaction, String secondNode) {
 
 		switch (interaction) {
 			case "activate":
@@ -94,7 +94,7 @@ public class SingleInteraction {
 		return source + " " + arc + " " + target;
 	}
 
-	public String getInteraction() {
+	String getInteraction() {
 		String link;
 
 		if (arc == 1)
@@ -113,9 +113,8 @@ public class SingleInteraction {
 		return target;
 	}
 
-	public int getArc() {
+	int getArc() {
 		return arc;
-
 	}
 
 }

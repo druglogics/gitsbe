@@ -22,13 +22,13 @@ import java.util.ArrayList;
 public class BooleanModel {
 
 	protected ArrayList<BooleanEquation> booleanEquations;
-	protected ArrayList<String[]> mapAlternativeNames;
+	ArrayList<String[]> mapAlternativeNames;
 	protected ArrayList<String> stableStates;
 	protected String modelName;
 	protected int verbosity = 2;
 	protected String filename;
 	protected Logger logger;
-	public static String directoryBNET = System.getenv("BNET_HOME");
+	private static String directoryBNET = System.getenv("BNET_HOME");
 
 	public BooleanModel(Logger logger) {
 		this.logger = logger;
@@ -41,9 +41,9 @@ public class BooleanModel {
 		this.logger = logger;
 		this.verbosity = logger.getVerbosity();
 		this.modelName = generalModel.getModelName();
-		booleanEquations = new ArrayList<BooleanEquation>();
-		mapAlternativeNames = new ArrayList<String[]>();
-		stableStates = new ArrayList<String>();
+		booleanEquations = new ArrayList<>();
+		mapAlternativeNames = new ArrayList<>();
+		stableStates = new ArrayList<>();
 
 		for (int i = 0; i < generalModel.size(); i++) {
 			// Define Boolean equation from multiple interaction
@@ -88,37 +88,35 @@ public class BooleanModel {
 		String fileExtension = getFileExtension(filename);
 		if (fileExtension.equals(".gitsbe")) {
 			// Boolean equations
-			this.booleanEquations = new ArrayList<BooleanEquation>();
+			this.booleanEquations = new ArrayList<>();
 
 			// Alternative names
-			this.mapAlternativeNames = new ArrayList<String[]>();
+			this.mapAlternativeNames = new ArrayList<>();
 
 			// Load model
-			for (int i = 0; i < lines.size(); i++) {
-				String prefix = lines.get(i).substring(0, lines.get(i).indexOf(' '));
-				String line = lines.get(i).substring(lines.get(i).indexOf(' '));
+			for (String line : lines) {
+				String prefix = line.substring(0, line.indexOf(' '));
+				String value = line.substring(line.indexOf(' '));
 				switch (prefix) {
-				case "modelname:":
-					this.modelName = line.trim();
-					break;
-				case "equation:":
-					booleanEquations.add(new BooleanEquation(line));
-					break;
-				case "mapping:":
-
-					String[] temp = line.split(" = ");
-					mapAlternativeNames.add(new String[] { temp[0].trim(), temp[1].trim() });
-
-					break;
+					case "modelname:":
+						this.modelName = value.trim();
+						break;
+					case "equation:":
+						booleanEquations.add(new BooleanEquation(value));
+						break;
+					case "mapping:":
+						String[] temp = value.split(" = ");
+						mapAlternativeNames.add(new String[]{temp[0].trim(), temp[1].trim()});
+						break;
 				}
 			}
 
 		} else if (fileExtension.equals(".booleannet")) {
 			// Boolean equations
-			this.booleanEquations = new ArrayList<BooleanEquation>();
+			this.booleanEquations = new ArrayList<>();
 
 			// Alternative names
-			this.mapAlternativeNames = new ArrayList<String[]>();
+			this.mapAlternativeNames = new ArrayList<>();
 
 			this.modelName = filename.substring(0, filename.indexOf(".booleannet"));
 
@@ -126,7 +124,7 @@ public class BooleanModel {
 			for (int i = 0; i < lines.size(); i++) {
 				booleanEquations.add(new BooleanEquation(lines.get(i)));
 				String target = lines.get(i).substring(0, lines.get(i).indexOf(" *=")).trim();
-				mapAlternativeNames.add(new String[] { target, new String("x" + (i + 1)) });
+				mapAlternativeNames.add(new String[] { target, "x" + (i + 1) });
 			}
 		}
 	}
@@ -136,17 +134,17 @@ public class BooleanModel {
 		this.logger = logger;
 
 		// Copy Boolean equations
-		this.booleanEquations = new ArrayList<BooleanEquation>();
+		this.booleanEquations = new ArrayList<>();
 
 		booleanEquations.addAll(booleanModel.booleanEquations);
 
 		// Copy mapAlternativeNames
-		this.mapAlternativeNames = new ArrayList<String[]>();
+		this.mapAlternativeNames = new ArrayList<>();
 
 		this.mapAlternativeNames.addAll(booleanModel.mapAlternativeNames);
 
 		// Stable states (empty)
-		stableStates = new ArrayList<String>();
+		stableStates = new ArrayList<>();
 
 		// Copy modelName
 		this.modelName = booleanModel.modelName;
@@ -162,11 +160,13 @@ public class BooleanModel {
 	public void exportSifFile(String directoryOutput, String filename)
 			throws FileNotFoundException, UnsupportedEncodingException {
 
-		PrintWriter writer = new PrintWriter(new File(directoryOutput, filename).getAbsolutePath(), "UTF-8");
+		PrintWriter writer = new PrintWriter(
+				new File(directoryOutput, filename).getAbsolutePath(), "UTF-8"
+		);
 
-		for (int i = 0; i < booleanEquations.size(); i++)
-			for (int j = 0; j < booleanEquations.get(i).convertToSifLines().length; j++)
-				writer.println(booleanEquations.get(i).convertToSifLines()[j]);
+		for (BooleanEquation booleanEquation : booleanEquations)
+			for (int j = 0; j < booleanEquation.convertToSifLines().length; j++)
+				writer.println(booleanEquation.convertToSifLines()[j]);
 
 		writer.close();
 
@@ -186,7 +186,7 @@ public class BooleanModel {
 		writer.println("targets, factors \n # comment line: " + filename);
 		// Write expressions with correct symbols
 		for (int i = 0; i < expressions.length; i++) {
-			expressions[i] = expressions[i].replaceAll("  ", " ");
+			expressions[i] = expressions[i].replaceAll(" {2}", " ");
 			expressions[i] = expressions[i].replaceAll("and", "&");
 			expressions[i] = expressions[i].replaceAll("or", "|");
 			expressions[i] = expressions[i].replaceAll("not ", "!");
@@ -201,7 +201,9 @@ public class BooleanModel {
 	public void saveFileInGitsbeFormat(String directoryName) throws IOException {
 
 		String filename = removeExtension(this.modelName) + ".gitsbe";
-		PrintWriter writer = new PrintWriter(new File(directoryName, filename).getAbsolutePath(), "UTF-8");
+		PrintWriter writer = new PrintWriter(
+				new File(directoryName, filename).getAbsolutePath(), "UTF-8"
+		);
 
 		// Write header with '#'
 		writer.println("#Boolean model file in gitsbe format");
@@ -210,18 +212,18 @@ public class BooleanModel {
 		writer.println("modelname: " + this.modelName);
 
 		// Write stable state(s)
-		for (int i = 0; i < this.stableStates.size(); i++) {
-			writer.println("stablestate: " + this.stableStates.get(i));
+		for (String stableState : this.stableStates) {
+			writer.println("stablestate: " + stableState);
 		}
 
 		// Write Boolean equations
-		for (int i = 0; i < booleanEquations.size(); i++) {
-			writer.println("equation: " + booleanEquations.get(i).getBooleanEquation());
+		for (BooleanEquation booleanEquation : booleanEquations) {
+			writer.println("equation: " + booleanEquation.getBooleanEquation());
 		}
 
 		// Write alternative names for Veliz-Cuba
-		for (int i = 0; i < mapAlternativeNames.size(); i++) {
-			writer.println("mapping: " + mapAlternativeNames.get(i)[0] + " = " + mapAlternativeNames.get(i)[1]);
+		for (String[] names : mapAlternativeNames) {
+			writer.println("mapping: " + names[0] + " = " + names[1]);
 		}
 
 		writer.close();
@@ -229,19 +231,21 @@ public class BooleanModel {
 	}
 
 	public ArrayList<String> getNodeNames() {
-		ArrayList<String> nodeNames = new ArrayList<String>();
+		ArrayList<String> nodeNames = new ArrayList<>();
 
-		for (int i = 0; i < mapAlternativeNames.size(); i++) {
-			nodeNames.add(mapAlternativeNames.get(i)[0]);
+		for (String[] names : mapAlternativeNames) {
+			nodeNames.add(names[0]);
 		}
 
 		return nodeNames;
 	}
 
-	public void writeGinmlFile(String directoryOutput, String filename, ArrayList<SingleInteraction> singleInteractions)
-			throws IOException {
+	public void writeGinmlFile(String directoryOutput, String filename,
+							   ArrayList<SingleInteraction> singleInteractions) throws IOException {
 
-		PrintWriter writer = new PrintWriter(new File(directoryOutput, filename).getAbsolutePath(), "UTF-8");
+		PrintWriter writer = new PrintWriter(
+				new File(directoryOutput, filename).getAbsolutePath(), "UTF-8"
+		);
 		String[] expressions = this.printBooleanModelGinmlExpressions();
 
 		// write heading
@@ -253,8 +257,8 @@ public class BooleanModel {
 		// write nodeorder
 
 		writer.print("<graph class=\"regulatory\" id=\"" + modelName.replace(".", "_") + "\" nodeorder=\"");
-		for (int i = 0; i < mapAlternativeNames.size(); i++) {
-			writer.print(mapAlternativeNames.get(i)[0] + " ");
+		for (String[] names : mapAlternativeNames) {
+			writer.print(names[0] + " ");
 		}
 		writer.print("\">\n");
 
@@ -272,19 +276,19 @@ public class BooleanModel {
 		}
 
 		// write edges
-		for (int i = 0; i < singleInteractions.size(); i++) {
-			String source = singleInteractions.get(i).getSource();
-			String target = singleInteractions.get(i).getTarget();
+		for (SingleInteraction singleInteraction : singleInteractions) {
+			String source = singleInteraction.getSource();
+			String target = singleInteraction.getTarget();
 			String arc;
 
-			if (singleInteractions.get(i).getArc() == 1) {
+			if (singleInteraction.getArc() == 1) {
 				arc = "positive";
 			} else {
 				arc = "negative";
 			}
 
-			writer.print("<edge id=\"" + source + ":" + target + "\" from=\"" + source + "\" to=\"" + target
-					+ "\" minvalue=\"1\" sign=\"" + arc + "\">\n");
+			writer.print("<edge id=\"" + source + ":" + target + "\" from=\""
+					+ source + "\" to=\"" + target + "\" minvalue=\"1\" sign=\"" + arc + "\">\n");
 			writer.println("<edgevisualsetting style=\"\"/>");
 			writer.println("</edge>");
 
@@ -297,20 +301,19 @@ public class BooleanModel {
 
 	}
 
-	public String[] printBooleanModelGinmlExpressions() {
+	private String[] printBooleanModelGinmlExpressions() {
 
-		String temp = "";
-		String line = "";
+		StringBuilder temp = new StringBuilder();
+		String line;
 
-		for (int i = 0; i < booleanEquations.size(); i++) {
-			line = booleanEquations.get(i).getBooleanEquation() + "\n";
-			temp += line;
+		for (BooleanEquation booleanEquation : booleanEquations) {
+			line = booleanEquation.getBooleanEquation() + "\n";
+			temp.append(line);
 		}
 
-		temp = temp.replace("&", "&amp;");
-		String lines[] = temp.split("\n");
+		temp = new StringBuilder(temp.toString().replace("&", "&amp;"));
 
-		return lines;
+		return temp.toString().split("\n");
 	}
 
 	public String[] getModelBooleannet() {
@@ -327,21 +330,22 @@ public class BooleanModel {
 
 	public String[] getModelVelizCuba() {
 
-		String temp = "";
+		StringBuilder temp = new StringBuilder();
 
-		for (int i = 0; i < booleanEquations.size(); i++) {
-			temp = temp + booleanEquations.get(i).getBooleanEquationVC() + "\n";
-
+		for (BooleanEquation booleanEquation : booleanEquations) {
+			temp.append(booleanEquation.getBooleanEquationVC()).append("\n");
 		}
 
 		// Use alternate names (x1, x2, ..., xn)
 		for (int i = 0; i < booleanEquations.size(); i++) {
-			temp = temp.replace((" " + mapAlternativeNames.get(i)[0] + " "), " " + mapAlternativeNames.get(i)[1] + " ");
+			temp = new StringBuilder(temp.toString().replace(
+					(" " + mapAlternativeNames.get(i)[0] + " "),
+					 " " + mapAlternativeNames.get(i)[1] + " "));
 		}
 
-		String lines[] = temp.split("\n");
+		String[] lines = temp.toString().split("\n");
 
-		String result[] = new String[booleanEquations.size()];
+		String[] result = new String[booleanEquations.size()];
 
 		// Remove target node (line number indicates which variable is defined, i.e.
 		// 'x1' on line 1, 'x2' on line 2 etc.
@@ -353,12 +357,7 @@ public class BooleanModel {
 	}
 
 	public void calculateStableStatesVC(String directoryOutput)
-			throws FileNotFoundException, UnsupportedEncodingException, IOException {
-		this.calculateStableStatesVC(directoryBNET, directoryOutput);
-	}
-
-	public void calculateStableStatesVC(String directoryBNET, String directoryOutput)
-			throws FileNotFoundException, UnsupportedEncodingException, IOException {
+			throws IOException {
 
 		// Defined model in Veliz-Cuba terminology
 		String[] modelVC = this.getModelVelizCuba();
@@ -367,8 +366,8 @@ public class BooleanModel {
 		String modelDataFileVC = new File(directoryOutput, modelName + ".dat").getAbsolutePath();
 		PrintWriter writer = new PrintWriter(modelDataFileVC, "UTF-8");
 
-		for (int i = 0; i < modelVC.length; i++) {
-			writer.println(modelVC[i]);
+		for (String line : modelVC) {
+			writer.println(line);
 		}
 		writer.close();
 
@@ -384,7 +383,7 @@ public class BooleanModel {
 		stableStates.addAll(lines);
 
 		if (stableStates.size() > 0) {
-			if (stableStates.get(0).toString().length() > 0) {
+			if (stableStates.get(0).length() > 0) {
 
 				logger.outputStringMessage(1, "BNReduction found " + stableStates.size() + " stable states:");
 				for (int i = 0; i < stableStates.size(); i++) {
@@ -393,9 +392,9 @@ public class BooleanModel {
 
 				// Debug info
 				for (int i = 0; i < stableStates.get(0).length(); i++) {
-					String states = "";
-					for (int j = 0; j < stableStates.size(); j++) {
-						states += "\t" + stableStates.get(j).charAt(i);
+					StringBuilder states = new StringBuilder();
+					for (String stableState : stableStates) {
+						states.append("\t").append(stableState.charAt(i));
 					}
 					logger.debug(mapAlternativeNames.get(i)[0] + states);
 				}
@@ -411,7 +410,8 @@ public class BooleanModel {
 		String BNReductionScriptFile = new File(directoryBNET, "BNReduction.sh").getAbsolutePath();
 
 		try {
-			ProcessBuilder pb = new ProcessBuilder("timeout", "30", BNReductionScriptFile, modelDataFileVC);
+			ProcessBuilder pb = new ProcessBuilder("timeout", "30",
+					BNReductionScriptFile, modelDataFileVC);
 
 			if (logger.getVerbosity() >= 3) {
 				pb.redirectErrorStream(true);
@@ -443,26 +443,25 @@ public class BooleanModel {
 
 	public String[] printBooleanModelBooleannet() {
 
-		String temp = "";
-		String line = "";
+		StringBuilder temp = new StringBuilder();
+		String line;
 
-		for (int i = 0; i < booleanEquations.size(); i++) {
-			line = booleanEquations.get(i) + "\n";
-			temp += line;
+		for (BooleanEquation booleanEquation : booleanEquations) {
+			line = booleanEquation + "\n";
+			temp.append(line);
 		}
 
 		for (int i = mapAlternativeNames.size() - 1; i >= 0; i--) {
-			temp = temp.replace((mapAlternativeNames.get(i)[1]), mapAlternativeNames.get(i)[0] + " ");
+			temp = new StringBuilder(temp.toString().replace(
+					(mapAlternativeNames.get(i)[1]),
+					 mapAlternativeNames.get(i)[0] + " "));
 		}
 
-		temp = temp.replace("&", "and");
-		temp = temp.replace("|", " or");
-		temp = temp.replace("!", "not");
+		temp = new StringBuilder(temp.toString().replace("&", "and"));
+		temp = new StringBuilder(temp.toString().replace("|", " or"));
+		temp = new StringBuilder(temp.toString().replace("!", "not"));
 
-		String lines[] = temp.split("\n");
-
-		return lines;
-
+		return temp.toString().split("\n");
 	}
 
 	public String getModelName() {
@@ -500,7 +499,7 @@ public class BooleanModel {
 	 * 
 	 * @return
 	 */
-	public boolean hasStableStates() {
+	boolean hasStableStates() {
 		return (stableStates.size() > 0);
 	}
 
@@ -509,14 +508,13 @@ public class BooleanModel {
 	 * every other row contains the truth values (0 or 1) of the corresponding node
 	 * (column) in the stable state
 	 */
-	public String[][] getStableStates() {
+	String[][] getStableStates() {
 		String[][] result = new String[stableStates.size() + 1][getNodeNames().size()];
 
 		result[0] = getNodeNames().toArray(new String[0]);
 
 		for (int i = 0; i < stableStates.size(); i++) {
-			result[i + 1] = stableStates.get(i).split("(?!^)"); // if using "" to split this will return the correct
-																// list but empty first element, fixed in jdk8
+			result[i + 1] = stableStates.get(i).split("(?!^)");
 		}
 
 		return result;
@@ -528,7 +526,7 @@ public class BooleanModel {
 	 * 
 	 * @param equation
 	 */
-	protected void modifyEquation(String equation) {
+	void modifyEquation(String equation) {
 		// Get index of equation for specified target
 		String target = equation.split(" ")[0].trim();
 		int index = getIndexOfEquation(target);

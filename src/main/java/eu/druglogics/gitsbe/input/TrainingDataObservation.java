@@ -14,7 +14,7 @@ public class TrainingDataObservation {
 	private ArrayList<String> response;
 	private float weight;
 
-	public TrainingDataObservation(ArrayList<String> condition, ArrayList<String> response, float weight) {
+	TrainingDataObservation(ArrayList<String> condition, ArrayList<String> response, float weight) {
 		this.condition = condition;
 		this.response = response;
 		this.weight = weight;
@@ -45,8 +45,8 @@ public class TrainingDataObservation {
 	public int getResponseSize() {
 		int size = 0;
 
-		for (int i = 0; i < response.size(); i++) {
-			if (!response.get(i).split(":")[1].equals("-")) // skip specified unknown observations
+		for (String responseString : response) {
+			if (!responseString.split(":")[1].equals("-")) // skip specified unknown observations
 				size++;
 		}
 		return size;

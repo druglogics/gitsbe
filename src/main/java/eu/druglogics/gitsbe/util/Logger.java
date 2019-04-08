@@ -22,8 +22,6 @@ import java.util.Calendar;
 
 public class Logger {
 
-	private String filenameOutput;
-	private String directory;
 	private PrintWriter writerOutput;
 
 	private boolean consoleOutput;
@@ -42,20 +40,20 @@ public class Logger {
 	 *            info, 2 = less important, 3 = everything
 	 * @throws IOException
 	 */
-	public Logger(String filenameOutput, String directory, int verbosity, boolean consoleOutput) throws IOException {
+	public Logger(String filenameOutput, String directory, int verbosity, boolean consoleOutput)
+			throws IOException {
 
 		// Initialize variables
-		this.directory = directory;
-		this.filenameOutput = new File(directory, filenameOutput).getAbsolutePath();
+		String loggerFilename = new File(directory, filenameOutput).getAbsolutePath();
 
-		// Initialize (also create) file writers
-		this.writerOutput = new PrintWriter(this.filenameOutput);
+		// Initialize file writers
+		this.writerOutput = new PrintWriter(loggerFilename);
 
 		this.setVerbosity(verbosity);
 		this.consoleOutput = consoleOutput;
 		this.debugMode = false;
 
-		outputStringMessage(1, "Logger started, logging to directory: " + this.directory);
+		outputStringMessage(1, "Logger started, logging to directory: " + directory);
 	}
 
 	public void finish() {
@@ -106,10 +104,10 @@ public class Logger {
 	 */
 	public void outputLines(int verbosity, String[] msg) {
 		if (verbosity <= this.verbosity) {
-			for (int i = 0; i < msg.length; i++) {
-				writerOutput.println(msg[i]);
+			for (String line : msg) {
+				writerOutput.println(line);
 				if (consoleOutput)
-					System.out.println(msg[i]);
+					System.out.println(line);
 			}
 			writerOutput.flush();
 		}
@@ -128,10 +126,10 @@ public class Logger {
 			BufferedWriter bw = new BufferedWriter(fw);
 			PrintWriter writer = new PrintWriter(bw);
 
-			for (int i = 0; i < msg.length; i++) {
-				writer.println(msg[i]);
+			for (String line : msg) {
+				writer.println(line);
 				if (consoleOutput)
-					System.out.println(msg[i]);
+					System.out.println(line);
 			}
 
 			writer.flush();
@@ -261,8 +259,10 @@ public class Logger {
 		Calendar calendarData = Calendar.getInstance();
 
 		this.outputStringMessage(1, "End: " + dateFormat.format(calendarData.getTime()));
-		this.outputStringMessage(1, "Analysis completed in " + timer.getHoursOfDuration() + " hours, "
-				+ timer.getMinutesOfDuration() + " minutes, and " + timer.getSecondsOfDuration() + " seconds ");
+		this.outputStringMessage(1, "Analysis completed in "
+				+ timer.getHoursOfDuration() + " hours, "
+				+ timer.getMinutesOfDuration() + " minutes, and "
+				+ timer.getSecondsOfDuration() + " seconds ");
 		this.outputStringMessage(1, "\nWith that we say thank you and good bye!");
 		this.finish();
 	}

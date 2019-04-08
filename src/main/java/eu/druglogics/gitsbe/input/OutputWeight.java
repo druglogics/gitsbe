@@ -5,7 +5,7 @@ public class OutputWeight {
 	private String nodeName;
 	private int weight;
 
-	public OutputWeight(String nodeName, int weight) {
+	OutputWeight(String nodeName, int weight) {
 		this.nodeName = nodeName;
 		this.weight = weight;
 	}

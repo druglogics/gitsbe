@@ -19,13 +19,13 @@ public class MutatedBooleanModel extends BooleanModel {
 
 	private float fitness;
 
-	public MutatedBooleanModel(BooleanModel booleanModel, Logger logger) {
+	MutatedBooleanModel(BooleanModel booleanModel, Logger logger) {
 		super(booleanModel, logger);
 	}
 
 	// Constructor for creating a mutated model offspring from two parents, using
 	// crossover
-	public MutatedBooleanModel(MutatedBooleanModel parent1, MutatedBooleanModel parent2, String modelName,
+	MutatedBooleanModel(MutatedBooleanModel parent1, MutatedBooleanModel parent2, String modelName,
 			Logger logger, Config config) {
 
 		super(logger);
@@ -34,25 +34,24 @@ public class MutatedBooleanModel extends BooleanModel {
 		crossoverCopy(logger, config, parent1, parent2);
 
 		// Copy mapAlternativeNames
-		this.mapAlternativeNames = new ArrayList<String[]>();
-
-		for (int i = 0; i < parent1.mapAlternativeNames.size(); i++) {
-			this.mapAlternativeNames.add(parent1.mapAlternativeNames.get(i));
-		}
+		this.mapAlternativeNames = new ArrayList<>();
+		this.mapAlternativeNames.addAll(parent1.mapAlternativeNames);
 
 		// Define stable states
-		stableStates = new ArrayList<String>();
+		stableStates = new ArrayList<>();
 
 		// Assign modelName
 		this.modelName = modelName;
 	}
 
-	private void crossoverCopy(Logger logger, Config config, MutatedBooleanModel parent1, MutatedBooleanModel parent2) {
-		booleanEquations = new ArrayList<BooleanEquation>();
+	private void crossoverCopy(Logger logger, Config config, MutatedBooleanModel parent1,
+							   MutatedBooleanModel parent2) {
+		booleanEquations = new ArrayList<>();
 
 		int crossovers = config.getCrossovers();
 		int numberOfBooleanEquations = parent1.booleanEquations.size();
-		logger.debug("Crossovers: " + crossovers + "\nNumber of boolean equations: " + numberOfBooleanEquations);
+		logger.debug("Crossovers: " + crossovers + "\nNumber of boolean equations: "
+				+ numberOfBooleanEquations);
 
 		if (crossovers >= numberOfBooleanEquations - 1) {
 			// the offspring will take equations alternatively from the parents
@@ -101,7 +100,7 @@ public class MutatedBooleanModel extends BooleanModel {
 		}
 	}
 
-	public void introduceRandomMutation(int numberOfMutations) {
+	void introduceRandomMutation(int numberOfMutations) {
 		for (int i = 0; i < numberOfMutations; i++) {
 			// Find random equation to mutate.
 			int randomEquation = randInt(0, booleanEquations.size() - 1);
@@ -110,14 +109,14 @@ public class MutatedBooleanModel extends BooleanModel {
 		}
 	}
 
-	public void shuffleRandomRegulatorPriorities(int numberOfShuffles) {
+	void shuffleRandomRegulatorPriorities(int numberOfShuffles) {
 		for (int i = 0; i < numberOfShuffles; i++) {
 			this.shuffleRandomRegulatorPriority();
 		}
 	}
 
-	public void shuffleRandomRegulatorPriority() {
-		// Find random equation to mutate.
+	private void shuffleRandomRegulatorPriority() {
+		// Find random equation to mutate
 		int randomEquation = randInt(0, booleanEquations.size() - 1);
 
 		booleanEquations.get(randomEquation).shuffleRandomRegulatorPriority();
@@ -129,7 +128,7 @@ public class MutatedBooleanModel extends BooleanModel {
 	 * regulators for any node)
 	 *
 	 */
-	public void topologyMutations(int numberOfMutations) {
+	void topologyMutations(int numberOfMutations) {
 		for (int i = 0; i < numberOfMutations; i++) {
 			// Find random equation to mutate.
 			int randomEquationIndex = randInt(0, booleanEquations.size() - 1);
@@ -138,12 +137,13 @@ public class MutatedBooleanModel extends BooleanModel {
 			booleanEquations.get(randomEquationIndex).mutateRegulator();
 
 			if (!booleanEquations.get(randomEquationIndex).getBooleanEquation().equals(orig))
-				logger.outputStringMessage(2, "Exchanging equation " + randomEquationIndex + "\n\t" + orig + "\n\t" + ""
+				logger.outputStringMessage(2, "Exchanging equation " + randomEquationIndex
+						+ "\n\t" + orig + "\n\t"
 						+ booleanEquations.get(randomEquationIndex).getBooleanEquation() + "\n");
 		}
 	}
 
-	public void introduceBalanceMutation(int numberOfMutations) {
+	void introduceBalanceMutation(int numberOfMutations) {
 		for (int i = 0; i < numberOfMutations; i++) {
 
 			// Find random equation to mutate.
@@ -161,7 +161,7 @@ public class MutatedBooleanModel extends BooleanModel {
 	 * @throws UnsupportedEncodingException
 	 * @throws FileNotFoundException
 	 */
-	public void calculateFitness(TrainingData data, ModelOutputs modelOutputs, String directoryOutput)
+	void calculateFitness(TrainingData data, ModelOutputs modelOutputs, String directoryOutput)
 			throws FileNotFoundException, UnsupportedEncodingException, IOException {
 
 		// reset fitness
@@ -177,22 +177,18 @@ public class MutatedBooleanModel extends BooleanModel {
 			ArrayList<String> response = data.getObservations().get(conditionNumber).getResponse();
 
 			MutatedBooleanModel temp = new MutatedBooleanModel(this, logger);
-
-			temp.modelName += "_condition_" + "" + conditionNumber;
+			temp.modelName = this.modelName + "_condition_" + conditionNumber;
 
 			// Set up model compliant with condition
 			// go through each element (input) of a condition
-			for (int j = 0; j < condition.size(); j++) {
+			for (String conditionStr : condition) {
 
-				if (condition.get(j).equals("-")) // steady state condition
-				{
-					logger.outputStringMessage(3, "Defining condition: Unperturbed (weight: " + weight + ")");
-
-					// do nothing, empty condition
-				} else // specified state
-				{
-					String node = condition.get(j).split(":")[0];
-					String state = condition.get(j).split(":")[1];
+				if (conditionStr.equals("-")) { // empty condition, do nothing
+					logger.outputStringMessage(3, "Defining condition: Unperturbed (weight: "
+							+ weight + ")");
+				} else { // specified state
+					String node = conditionStr.split(":")[0];
+					String state = conditionStr.split(":")[1];
 
 					String equation = node + " *= ";
 
@@ -201,7 +197,7 @@ public class MutatedBooleanModel extends BooleanModel {
 					else if (state.equals("0"))
 						equation += "false";
 					else {
-						logger.error("Training data with incorrectly formatted response: " + condition.get(j));
+						logger.error("Training data with incorrectly formatted response: " + conditionStr);
 						continue;
 					}
 
@@ -223,7 +219,8 @@ public class MutatedBooleanModel extends BooleanModel {
 					// compute a global output of the model by using specified model outputs
 					// scaled output to value <0..1] (exclude 0 since ratios then are difficult)
 					float observedGlobalOutput = Float.parseFloat(response.get(0).split(":")[1]);
-					float predictedGlobalOutput = modelOutputs.calculateGlobalOutput(temp.stableStates, this);
+					float predictedGlobalOutput =
+							modelOutputs.calculateGlobalOutput(temp.stableStates, this);
 
 					logger.outputStringMessage(3, "Observed globalOutput: " + observedGlobalOutput);
 					logger.outputStringMessage(3, "Predicted globalOutput: " + predictedGlobalOutput);
@@ -239,7 +236,7 @@ public class MutatedBooleanModel extends BooleanModel {
 
 					float averageMatch = 0;
 					int foundObservations = 0;
-					ArrayList<Float> matches = new ArrayList<Float>();
+					ArrayList<Float> matches = new ArrayList<>();
 
 					for (int indexState = 1; indexState < stableStates.length; indexState++) {
 						logger.outputStringMessage(2, "Checking stable state no. " + indexState + ":");
@@ -247,31 +244,35 @@ public class MutatedBooleanModel extends BooleanModel {
 						float matchSum = 0;
 						foundObservations = 0;
 
-						for (int k = 0; k < response.size(); k++) {
-							String node = response.get(k).split(":")[0].trim();
-							String obs = response.get(k).split(":")[1].trim();
+						for (String responseStr : response) {
+							String node = responseStr.split(":")[0].trim();
+							String obs = responseStr.split(":")[1].trim();
 
 							int indexNode = getIndexOfEquation(node);
 
 							if (indexNode >= 0) {
 								foundObservations++;
 								float match = 1 - Math.abs(
-										Integer.parseInt(stableStates[indexState][indexNode]) - Float.parseFloat(obs));
-								logger.outputStringMessage(2, "Match for observation on node " + node + ": " + match
-										+ " (1 - |" + stableStates[indexState][indexNode] + "-" + obs + "|)");
+									Integer.parseInt(stableStates[indexState][indexNode]) -
+									Float.parseFloat(obs)
+								);
+								logger.outputStringMessage(2, "Match for observation on node "
+										+ node + ": " + match + " (1 - |"
+										+ stableStates[indexState][indexNode] + "-" + obs + "|)");
 								matchSum += match;
 							}
 						}
-						logger.outputStringMessage(2,
-								"From " + foundObservations + " observations, found " + matchSum + " matches");
+						logger.outputStringMessage(2, "From " + foundObservations
+								+ " observations, found " + matchSum + " matches");
 						matches.add(matchSum);
 					}
 
-					for (int index = 0; index < matches.size(); index++) {
-						averageMatch += matches.get(index);
+					for (Float match : matches) {
+						averageMatch += match;
 					}
 					averageMatch /= matches.size();
-					logger.outputStringMessage(2, "Average match value through all stable states: " + averageMatch);
+					logger.outputStringMessage(2, "Average match value through all stable states: "
+							+ averageMatch);
 					conditionfitness += averageMatch;
 
 					if (foundObservations > 0) {
@@ -286,15 +287,16 @@ public class MutatedBooleanModel extends BooleanModel {
 				}
 			}
 
-			logger.outputStringMessage(3, "Scaled fitness [0..1] for model [" + temp.modelName + "] condition "
-					+ conditionNumber + " " + "(weight: " + weight + "): " + conditionfitness);
+			logger.outputStringMessage(3, "Scaled fitness [0..1] for model [" + temp.modelName
+					+ "] condition " + conditionNumber + " " + "(weight: " + weight + "): "
+					+ conditionfitness);
 
 			// compute fitness and scale to ratio of weight to weights of all conditions
 			fitness += conditionfitness * weight / data.getWeightSum();
 		}
 
-		logger.outputStringMessage(3, "Scaled fitness [0..1] for model [" + modelName + "] across all (" + data.size()
-				+ ") conditions: " + fitness);
+		logger.outputStringMessage(3, "Scaled fitness [0..1] for model [" + modelName
+				+ "] across all (" + data.size() + ") conditions: " + fitness);
 	}
 
 	@Override
@@ -313,22 +315,21 @@ public class MutatedBooleanModel extends BooleanModel {
 		writer.println("fitness: " + this.fitness);
 
 		// Write stable state(s)
-		for (int i = 0; i < this.stableStates.size(); i++) {
-			writer.println("stablestate: " + this.stableStates.get(i));
+		for (String stableState : this.stableStates) {
+			writer.println("stablestate: " + stableState);
 		}
 
 		// Write Boolean equations
-		for (int i = 0; i < booleanEquations.size(); i++) {
-			writer.println("equation: " + booleanEquations.get(i).getBooleanEquation());
+		for (BooleanEquation booleanEquation : booleanEquations) {
+			writer.println("equation: " + booleanEquation.getBooleanEquation());
 		}
 
 		// Write alternative names for Veliz-Cuba
-		for (int i = 0; i < mapAlternativeNames.size(); i++) {
-			writer.println("mapping: " + mapAlternativeNames.get(i)[0] + " = " + mapAlternativeNames.get(i)[1]);
+		for (String[] names : mapAlternativeNames) {
+			writer.println("mapping: " + names[0] + " = " + names[1]);
 		}
 
 		writer.close();
-
 	}
 
 	/**

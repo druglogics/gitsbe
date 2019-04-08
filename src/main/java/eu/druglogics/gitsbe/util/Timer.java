@@ -9,7 +9,7 @@ public class Timer {
 		startTimer();
 	}
 	
-	public void startTimer() {
+	private void startTimer() {
 		startTime = System.nanoTime();
 	}
 	
@@ -18,19 +18,19 @@ public class Timer {
 		calculateDuration();
 	}
 	
-	public void calculateDuration() {
+	private void calculateDuration() {
 		duration = (endTime - startTime) / 1000000000;
 	}
 	
-	public int getSecondsOfDuration() {
+	int getSecondsOfDuration() {
 		return (int) (duration) % 60;
 	}
 	
-	public int getMinutesOfDuration() {
+	int getMinutesOfDuration() {
 		return (int) ((duration / 60) % 60);
 	}
 	
-	public int getHoursOfDuration() {
+	int getHoursOfDuration() {
 		return (int) ((duration / (60 * 60)));
 	}
 	

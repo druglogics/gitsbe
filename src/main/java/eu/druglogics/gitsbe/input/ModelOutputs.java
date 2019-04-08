@@ -18,7 +18,7 @@ public class ModelOutputs {
 
 	public ModelOutputs(String filename, Logger logger) throws IOException {
 		this.logger = logger;
-		this.modelOutputs = new ArrayList<OutputWeight>();
+		this.modelOutputs = new ArrayList<>();
 
 		loadModelOutputsFile(filename);
 	}
@@ -34,12 +34,12 @@ public class ModelOutputs {
 	public float calculateGlobalOutput(ArrayList<String> stableStates, BooleanModel model) {
 		float globaloutput = 0;
 
-		for (int i = 0; i < stableStates.size(); i++) {
-			for (int j = 0; j < modelOutputs.size(); j++) {
-				int indexStableState = model.getIndexOfEquation(modelOutputs.get(j).getName());
+		for (String stableState : stableStates) {
+			for (OutputWeight outputWeight : modelOutputs) {
+				int indexStableState = model.getIndexOfEquation(outputWeight.getName());
 				if (indexStableState >= 0) {
-					int temp = Character.getNumericValue(stableStates.get(i).charAt(indexStableState));
-					temp *= modelOutputs.get(j).getWeight();
+					int temp = Character.getNumericValue(stableState.charAt(indexStableState));
+					temp *= outputWeight.getWeight();
 					globaloutput += temp;
 				}
 			}
@@ -50,21 +50,21 @@ public class ModelOutputs {
 		return ((globaloutput - getMinOutput()) / (getMaxOutput() - getMinOutput()));
 	}
 
-	public float getMaxOutput() {
+	private float getMaxOutput() {
 		float maxOutput = 0;
 
-		for (int i = 0; i < modelOutputs.size(); i++) {
-			maxOutput += max(modelOutputs.get(i).getWeight(), 0);
+		for (OutputWeight outputWeight : modelOutputs) {
+			maxOutput += max(outputWeight.getWeight(), 0);
 		}
 
 		return maxOutput;
 	}
 
-	public float getMinOutput() {
+	private float getMinOutput() {
 		float minOutput = 0;
 
-		for (int i = 0; i < modelOutputs.size(); i++) {
-			minOutput += min(modelOutputs.get(i).getWeight(), 0);
+		for (OutputWeight outputWeight : modelOutputs) {
+			minOutput += min(outputWeight.getWeight(), 0);
 		}
 
 		return minOutput;
@@ -92,13 +92,14 @@ public class ModelOutputs {
 		writer.close();
 	}
 
-	public void loadModelOutputsFile(String filename) throws IOException {
-		logger.outputStringMessage(3, "Reading model outputs file: " + new File(filename).getAbsolutePath());
+	private void loadModelOutputsFile(String filename) throws IOException {
+		logger.outputStringMessage(3, "Reading model outputs file: "
+				+ new File(filename).getAbsolutePath());
 
 		ArrayList<String> lines = readLinesFromFile(filename, true);
 
-		for (int i = 0; i < lines.size(); i++) {
-			String temp[] = lines.get(i).split("\t");
+		for (String line : lines) {
+			String[] temp = line.split("\t");
 			modelOutputs.add(new OutputWeight(temp[0].trim(), Integer.parseInt(temp[1].trim())));
 		}
 	}
@@ -127,17 +128,17 @@ public class ModelOutputs {
 	 *
 	 */
 	public String[] getModelOutputs() {
-		ArrayList<String> lines = new ArrayList<String>();
+		ArrayList<String> lines = new ArrayList<>();
 
-		for (int index = 0; index < modelOutputs.size(); index++) {
-			lines.add(modelOutputs.get(index).getName() + " with weight: " + modelOutputs.get(index).getWeight());
+		for (OutputWeight outputWeight : modelOutputs) {
+			lines.add(outputWeight.getName() + " with weight: " + outputWeight.getWeight());
 		}
 
 		return lines.toArray(new String[0]);
 	}
 
-	public ArrayList<String> getNodeNames() {
-		ArrayList<String> nodeNames = new ArrayList<String>();
+	private ArrayList<String> getNodeNames() {
+		ArrayList<String> nodeNames = new ArrayList<>();
 
 		for (OutputWeight outputWeight : this.modelOutputs) {
 			nodeNames.add(outputWeight.getName());

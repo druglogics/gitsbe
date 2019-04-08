@@ -14,21 +14,21 @@ public class MultipleInteraction {
 	private ArrayList<String[]> activatingRegulatorComplexes;
 	private ArrayList<String[]> inhibitoryRegulatorComplexes;
 
-	public MultipleInteraction(String targetName) {
+	MultipleInteraction(String targetName) {
 		// Define target upon creation
 		target = targetName;
 
-		activatingRegulators = new ArrayList<String>();
-		inhibitoryRegulators = new ArrayList<String>();
-		activatingRegulatorComplexes = new ArrayList<String[]>();
-		inhibitoryRegulatorComplexes = new ArrayList<String[]>();
+		activatingRegulators = new ArrayList<>();
+		inhibitoryRegulators = new ArrayList<>();
+		activatingRegulatorComplexes = new ArrayList<>();
+		inhibitoryRegulatorComplexes = new ArrayList<>();
 	}
 
-	public void addActivatingRegulator(String regulator) {
+	void addActivatingRegulator(String regulator) {
 		activatingRegulators.add(regulator);
 	}
 
-	public void addInhibitoryRegulator(String regulator) {
+	void addInhibitoryRegulator(String regulator) {
 		inhibitoryRegulators.add(regulator);
 
 	}
@@ -45,11 +45,11 @@ public class MultipleInteraction {
 		return target;
 	}
 
-	public ArrayList<String> getActivatingRegulators() {
+	ArrayList<String> getActivatingRegulators() {
 		return activatingRegulators;
 	}
 
-	public ArrayList<String> getInhibitoryRegulators() {
+	ArrayList<String> getInhibitoryRegulators() {
 		return inhibitoryRegulators;
 	}
 
