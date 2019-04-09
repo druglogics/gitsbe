@@ -20,6 +20,11 @@ public class GeneralModel {
 		this.logger = logger;
 	}
 
+	GeneralModel(ArrayList<SingleInteraction> singleInteractions, Logger logger) {
+		this.singleInteractions = singleInteractions;
+		this.logger = logger;
+	}
+
 	public int size() {
 		return multipleInteractions.size();
 	}
@@ -142,7 +147,8 @@ public class GeneralModel {
 			interactionsBeforeTrim = singleInteractions.size();
 
 			for (int i = singleInteractions.size() - 1; i >= 0; i--) {
-				if (sourceIsNotAlsoTarget(i)) {
+				String source = singleInteractions.get(i).getSource();
+				if (isNotATarget(source)) {
 					logger.outputStringMessage(3, "Removing interaction (i = " + i + ")  (not target): "
 							+ singleInteractions.get(i).getInteraction());
 					singleInteractions.remove(i);
@@ -167,7 +173,8 @@ public class GeneralModel {
 			interactionsBeforeTrim = singleInteractions.size();
 
 			for (int i = singleInteractions.size() - 1; i >= 0; i--) {
-				if (this.targetIsNotAlsoSource(i)) {
+				String target = singleInteractions.get(i).getTarget();
+				if (isNotASource(target)) {
 					logger.outputStringMessage(3, "Removing interaction (not source): "
 							+ singleInteractions.get(i).getInteraction());
 					singleInteractions.remove(i);
@@ -192,7 +199,8 @@ public class GeneralModel {
 			interactionsBeforeTrim = singleInteractions.size();
 
 			for (int i = singleInteractions.size() - 1; i >= 0; i--) {
-				if (sourceIsNotAlsoTarget(i)) {
+				String source = singleInteractions.get(i).getSource();
+				if (isNotATarget(source)) {
 					logger.outputStringMessage(3,
 							"Removing interaction (not target): " + singleInteractions.get(i).toString());
 					singleInteractions.remove(i);
@@ -200,7 +208,8 @@ public class GeneralModel {
 			}
 
 			for (int i = singleInteractions.size() - 1; i >= 0; i--) {
-				if (targetIsNotAlsoSource(i)) {
+				String target = singleInteractions.get(i).getTarget();
+				if (isNotASource(target)) {
 					logger.outputStringMessage(3, "Removing interaction (not source): "
 							+ singleInteractions.get(i).toString());
 					singleInteractions.remove(i);
@@ -222,7 +231,8 @@ public class GeneralModel {
 	 */
 	public void removeNone() {
 		for (int i = 0; i < singleInteractions.size(); i++) {
-			if (sourceIsNotAlsoTarget(i)) {
+			String source = singleInteractions.get(i).getSource();
+			if (isNotATarget(source)) {
 				singleInteractions.add(new SingleInteraction("true", "->",
 						singleInteractions.get(i).getSource()));
 				logger.outputStringMessage(2, "Annotating " + singleInteractions.get(i).getSource()
@@ -321,12 +331,11 @@ public class GeneralModel {
 		return singleInteractions;
 	}
 
-	private boolean targetIsNotAlsoSource(int indexInteractions) {
+	boolean isNotASource(String nodeName) {
 		boolean result = true;
-		String targetName = singleInteractions.get(indexInteractions).getTarget();
 
 		for (SingleInteraction singleInteraction : singleInteractions) {
-			if (targetName.equals(singleInteraction.getSource())) {
+			if (nodeName.equals(singleInteraction.getSource())) {
 				result = false;
 			}
 		}
@@ -334,12 +343,11 @@ public class GeneralModel {
 		return result;
 	}
 
-	private boolean sourceIsNotAlsoTarget(int indexInteractions) {
+	boolean isNotATarget(String nodeName) {
 		boolean result = true;
-		String sourceName = singleInteractions.get(indexInteractions).getSource();
 
 		for (SingleInteraction singleInteraction : singleInteractions) {
-			if (sourceName.equals(singleInteraction.getTarget())) {
+			if (nodeName.equals(singleInteraction.getTarget())) {
 				result = false;
 			}
 		}
