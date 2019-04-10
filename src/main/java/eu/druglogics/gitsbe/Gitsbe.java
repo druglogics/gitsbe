@@ -292,7 +292,8 @@ public class Gitsbe implements Runnable {
 	private void exportTrimmedSifNetworkFile(Config config, BooleanModel generalBooleanModel) {
 		if (config.exportToSif()) {
 			try {
-				String filename = generalBooleanModel.getModelName() + "_trimmed.sif";
+				String filename = removeExtension(generalBooleanModel.getModelName())
+						+ "_trimmed.sif";
 				logger.outputStringMessage(2, "Exporting trimmed .sif file: " + filename);
 				generalBooleanModel.exportSifFile(directoryOutput, filename);
 			} catch (FileNotFoundException | UnsupportedEncodingException e) {

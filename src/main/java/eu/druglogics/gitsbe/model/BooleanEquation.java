@@ -48,7 +48,6 @@ public class BooleanEquation {
 	 * @param originalEquation
 	 */
 	BooleanEquation(BooleanEquation originalEquation) {
-
 		this();
 
 		this.operatorsActivatingRegulators.addAll(originalEquation.operatorsActivatingRegulators);
@@ -102,7 +101,8 @@ public class BooleanEquation {
 
 	/**
 	 * Build equation from Boolean expression. Currently expressions must be of the
-	 * following type: A *= (((B) or C) or D) and not (((E) or F) or G)
+	 * following type: A *= ( ( ( B ) or C ) or D ) and not ( ( ( E ) or F ) or G )
+	 * Spaces between parentheses and node names are essential
 	 * 
 	 * @param equation
 	 */
@@ -252,7 +252,6 @@ public class BooleanEquation {
 				mutateInhibitoryRegulator();
 			}
 		}
-
 	}
 	
 	private void mutateActivatingRegulator() {
@@ -329,48 +328,51 @@ public class BooleanEquation {
 		}
 	}
 
-	String[] convertToSifLines() {
-		String[] lines = new String[activatingRegulators.size() + inhibitoryRegulators.size()];
+	ArrayList<String> convertToSifLines(String seperator) {
+		ArrayList<String> lines = new ArrayList<>();
 
-		for (int i = 0; i < activatingRegulators.size(); i++)
-			lines[i] = activatingRegulators.get(i) + " -> " + target;
+		for (String activatingRegulator : activatingRegulators)
+			lines.add(activatingRegulator + seperator + "->" + seperator + target);
 
-		for (int i = 0; i < inhibitoryRegulators.size(); i++)
-			lines[i + activatingRegulators.size()] = inhibitoryRegulators.get(i) + " -| " + target;
+		for (String inhibitoryRegulator : inhibitoryRegulators)
+			lines.add(inhibitoryRegulator + seperator + "-|" + seperator + target);
 
 		return lines;
 	}
 
-	public SingleInteraction[] getSingleInteractions() {
-		int regulators = activatingRegulators.size() + inhibitoryRegulators.size();
+	ArrayList<SingleInteraction> getSingleInteractions() {
+		ArrayList<SingleInteraction> singleInteractions = new ArrayList<>();
 
-		SingleInteraction[] singleInteractions = new SingleInteraction[regulators];
-
-		for (int i = 0; i < activatingRegulators.size(); i++) {
-			singleInteractions[i] =
-					new SingleInteraction(activatingRegulators.get(i), "->", target);
+		for (String activatingRegulator : activatingRegulators) {
+			singleInteractions.add(new SingleInteraction(activatingRegulator, "->", target));
 		}
 
-		for (int i = 0; i < inhibitoryRegulators.size(); i++) {
-			singleInteractions[i + activatingRegulators.size()] =
-					new SingleInteraction(inhibitoryRegulators.get(i), "-|", target);
+		for (String inhibitoryRegulator : inhibitoryRegulators) {
+			singleInteractions.add(new SingleInteraction(inhibitoryRegulator, "-|", target));
 		}
 
 		return singleInteractions;
 	}
 
-	public int getNumWhitelistedRegulators() {
+	int getNumWhitelistedRegulators() {
 		return (Collections.frequency(whitelistActivatingRegulators, true)
 				+ Collections.frequency(whitelistInhibitoryRegulators, true));
 	}
 
-	public int getNumBlacklistedRegulators() {
+	int getNumBlacklistedRegulators() {
 		return (Collections.frequency(whitelistActivatingRegulators, false)
 				+ Collections.frequency(whitelistInhibitoryRegulators, false));
 	}
 
-	public int getNumRegulators() {
+	int getNumRegulators() {
 		return (activatingRegulators.size() + inhibitoryRegulators.size());
 	}
-	
+
+	ArrayList<String> getActivatingRegulators() {
+		return activatingRegulators;
+	}
+
+	ArrayList<String> getInhibitoryRegulators() {
+		return inhibitoryRegulators;
+	}
 }

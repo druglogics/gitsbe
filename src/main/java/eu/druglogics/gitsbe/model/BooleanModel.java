@@ -34,8 +34,10 @@ public class BooleanModel {
 		this.logger = logger;
 	}
 
-	// Constructor for defining Boolean model from a "general model" with
-	// interactions
+	/**
+	 * Constructor for defining Boolean model from a "general model"
+	 * made up of singleInteraction objects
+ 	 */
 	public BooleanModel(GeneralModel generalModel, Logger logger) {
 
 		this.logger = logger;
@@ -50,7 +52,7 @@ public class BooleanModel {
 			BooleanEquation booleanEquation = new BooleanEquation(generalModel.getMultipleInteraction(i));
 
 			// Build list of alternative names used for Veliz-Cuba bnet stable states
-			// compution (x1, x2, x3, ..., xn)
+			// computation (x1, x2, x3, ..., xn)
 
 			String[] temp = new String[2];
 			temp[0] = generalModel.getMultipleInteraction(i).getTarget();
@@ -150,7 +152,6 @@ public class BooleanModel {
 		this.modelName = booleanModel.modelName;
 
 		this.verbosity = logger.getVerbosity();
-
 	}
 
 	public int getNumberOfStableStates() {
@@ -165,11 +166,10 @@ public class BooleanModel {
 		);
 
 		for (BooleanEquation booleanEquation : booleanEquations)
-			for (int j = 0; j < booleanEquation.convertToSifLines().length; j++)
-				writer.println(booleanEquation.convertToSifLines()[j]);
+			for (String sifLine : booleanEquation.convertToSifLines("\t"))
+				writer.println(sifLine);
 
 		writer.close();
-
 	}
 
 	public void setVerbosity(int verbosity) {
@@ -505,8 +505,8 @@ public class BooleanModel {
 
 	/**
 	 * Returns an 2-dimensional Array where the first row has the node names and
-	 * every other row contains the truth values (0 or 1) of the corresponding node
-	 * (column) in the stable state
+	 * every other row contains the activity state values (0 or 1) of the corresponding
+	 * node (column) in the stable state
 	 */
 	String[][] getStableStates() {
 		String[][] result = new String[stableStates.size() + 1][getNodeNames().size()];
@@ -521,9 +521,8 @@ public class BooleanModel {
 	}
 
 	/**
-	 * Modify equation, the function will identify correct equation based on target
-	 * name
-	 * 
+	 * Modify equation based on correct identification of target's name
+	 *
 	 * @param equation
 	 */
 	void modifyEquation(String equation) {
@@ -532,9 +531,13 @@ public class BooleanModel {
 		int index = getIndexOfEquation(target);
 
 		if (index < 0) {
-			logger.outputStringMessage(1, "Target of equation [" + equation
-					+ "] not found, this will crash the program. Non-matching name in topology and query?");
+			logger.error("Target of equation [" + equation + "] not found, this " +
+					"will crash the program. Non-matching name in topology and query?");
 		}
 		booleanEquations.set(index, new BooleanEquation(equation));
+	}
+
+	ArrayList<BooleanEquation> getBooleanEquations() {
+		return booleanEquations;
 	}
 }
