@@ -96,7 +96,9 @@ public class BooleanEquation {
 			}
 		}
 
-		link = "and";
+		link = (tempInhibitoryRegulators.size() == 0 || tempActivatingRegulators.size() == 0)
+				? ""
+				: "and";
 	}
 
 	/**
@@ -128,6 +130,7 @@ public class BooleanEquation {
 		ArrayList<String> splitEquation = new ArrayList<>(Arrays.asList(equation.split(" ")));
 
 		target = splitEquation.get(0);
+		link = ""; // in case equation has only activating or inhibiting regulators
 		splitEquation.remove(0);
 		boolean beforeNot = true;
 
