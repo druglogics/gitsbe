@@ -241,8 +241,9 @@ public class GeneralModel {
 		for (int i = 0; i < singleInteractions.size(); i++) {
 			String source = singleInteractions.get(i).getSource();
 			if (isNotATarget(source)) {
-				singleInteractions.add(new SingleInteraction("true", "->",
-						singleInteractions.get(i).getSource()));
+				singleInteractions.add(new SingleInteraction(
+						"true", "->", singleInteractions.get(i).getSource())
+				);
 				logger.outputStringMessage(2, "Annotating " + singleInteractions.get(i).getSource()
 						+ " as input to model.");
 			}
