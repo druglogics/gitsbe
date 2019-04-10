@@ -282,7 +282,7 @@ public class Gitsbe implements Runnable {
 			try {
 				logger.outputStringMessage(2, "Exporting .sif file in .gitsbe format: "
 						+ removeExtension(generalBooleanModel.getModelName()) + ".gitsbe");
-				generalBooleanModel.saveFileInGitsbeFormat(directoryOutput);
+				generalBooleanModel.exportModelToGitsbeFile(directoryOutput);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -295,7 +295,7 @@ public class Gitsbe implements Runnable {
 				String filename = removeExtension(generalBooleanModel.getModelName())
 						+ "_trimmed.sif";
 				logger.outputStringMessage(2, "Exporting trimmed .sif file: " + filename);
-				generalBooleanModel.exportSifFile(directoryOutput, filename);
+				generalBooleanModel.exportModelToSifFile(directoryOutput, filename);
 			} catch (FileNotFoundException | UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
@@ -307,7 +307,7 @@ public class Gitsbe implements Runnable {
 			try {
 				String filename = generalBooleanModel.getModelName() + "_export.ginml";
 				logger.outputStringMessage(2, "Exporting .sif file in GINML format: " + filename);
-				generalBooleanModel.writeGinmlFile(directoryOutput, filename,
+				generalBooleanModel.exportModelToGinMLFile(directoryOutput, filename,
 						generalModel.getSingleInteractions());
 			} catch (IOException e) {
 				e.printStackTrace();

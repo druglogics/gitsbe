@@ -38,7 +38,7 @@ public class MutatedBooleanModel extends BooleanModel {
 		this.mapAlternativeNames.addAll(parent1.mapAlternativeNames);
 
 		// Define stable states
-		stableStates = new ArrayList<>();
+		this.stableStates = new ArrayList<>();
 
 		// Assign modelName
 		this.modelName = modelName;
@@ -162,7 +162,7 @@ public class MutatedBooleanModel extends BooleanModel {
 	 * @throws FileNotFoundException
 	 */
 	void calculateFitness(TrainingData data, ModelOutputs modelOutputs, String directoryOutput)
-			throws FileNotFoundException, UnsupportedEncodingException, IOException {
+			throws Exception {
 
 		// reset fitness
 		fitness = 0;
@@ -300,7 +300,7 @@ public class MutatedBooleanModel extends BooleanModel {
 	}
 
 	@Override
-	public void saveFileInGitsbeFormat(String directoryName) throws IOException {
+	public void exportModelToGitsbeFile(String directoryName) throws IOException {
 
 		String filename = this.modelName + ".gitsbe";
 		PrintWriter writer = new PrintWriter(

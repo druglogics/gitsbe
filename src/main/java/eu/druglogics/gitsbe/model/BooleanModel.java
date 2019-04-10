@@ -21,13 +21,12 @@ import java.util.ArrayList;
  */
 public class BooleanModel {
 
-	protected ArrayList<BooleanEquation> booleanEquations;
+	ArrayList<BooleanEquation> booleanEquations;
 	ArrayList<String[]> mapAlternativeNames;
-	protected ArrayList<String> stableStates;
-	protected String modelName;
-	protected int verbosity = 2;
-	protected String filename;
-	protected Logger logger;
+	ArrayList<String> stableStates;
+	String modelName;
+	private String filename;
+	Logger logger;
 	private static String directoryBNET = System.getenv("BNET_HOME");
 
 	public BooleanModel(Logger logger) {
@@ -44,11 +43,10 @@ public class BooleanModel {
 	public BooleanModel(GeneralModel generalModel, Logger logger) {
 
 		this.logger = logger;
-		this.verbosity = logger.getVerbosity();
 		this.modelName = generalModel.getModelName();
-		booleanEquations = new ArrayList<>();
-		mapAlternativeNames = new ArrayList<>();
-		stableStates = new ArrayList<>();
+		this.booleanEquations = new ArrayList<>();
+		this.mapAlternativeNames = new ArrayList<>();
+		this.stableStates = new ArrayList<>();
 
 		for (int i = 0; i < generalModel.size(); i++) {
 			// Define Boolean equation from multiple interaction
@@ -153,15 +151,9 @@ public class BooleanModel {
 
 		// Copy modelName
 		this.modelName = booleanModel.modelName;
-
-		this.verbosity = logger.getVerbosity();
 	}
 
-	public int getNumberOfStableStates() {
-		return stableStates.size();
-	}
-
-	public void exportSifFile(String directoryOutput, String filename)
+	public void exportModelToSifFile(String directoryOutput, String filename)
 			throws FileNotFoundException, UnsupportedEncodingException {
 
 		PrintWriter writer = new PrintWriter(
@@ -175,11 +167,7 @@ public class BooleanModel {
 		writer.close();
 	}
 
-	public void setVerbosity(int verbosity) {
-		this.verbosity = verbosity;
-	}
-
-	public void exportBoolNetFile(String outputDirectory, String filename)
+	public void exportModelToBoolNetFile(String outputDirectory, String filename)
 			throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter writer = new PrintWriter(new File(outputDirectory, filename), "UTF-8");
 
@@ -201,7 +189,7 @@ public class BooleanModel {
 		writer.close();
 	}
 
-	public void saveFileInGitsbeFormat(String directoryName) throws IOException {
+	public void exportModelToGitsbeFile(String directoryName) throws IOException {
 
 		String filename = removeExtension(this.modelName) + ".gitsbe";
 		PrintWriter writer = new PrintWriter(
@@ -232,18 +220,8 @@ public class BooleanModel {
 		writer.close();
 	}
 
-	public ArrayList<String> getNodeNames() {
-		ArrayList<String> nodeNames = new ArrayList<>();
-
-		for (String[] names : mapAlternativeNames) {
-			nodeNames.add(names[0]);
-		}
-
-		return nodeNames;
-	}
-
-	public void writeGinmlFile(String directoryOutput, String filename,
-							   ArrayList<SingleInteraction> singleInteractions) throws IOException {
+	public void exportModelToGinMLFile(String directoryOutput, String filename,
+									   ArrayList<SingleInteraction> singleInteractions) throws IOException {
 
 		PrintWriter writer = new PrintWriter(
 				new File(directoryOutput, filename).getAbsolutePath(), "UTF-8"
@@ -314,6 +292,29 @@ public class BooleanModel {
 		}
 
 		temp = new StringBuilder(temp.toString().replace("&", "&amp;"));
+
+		return temp.toString().split("\n");
+	}
+
+	public String[] printBooleanModelBooleannet() {
+
+		StringBuilder temp = new StringBuilder();
+		String line;
+
+		for (BooleanEquation booleanEquation : booleanEquations) {
+			line = booleanEquation + "\n";
+			temp.append(line);
+		}
+
+		for (int i = mapAlternativeNames.size() - 1; i >= 0; i--) {
+			temp = new StringBuilder(temp.toString().replace(
+					(mapAlternativeNames.get(i)[1]),
+					mapAlternativeNames.get(i)[0] + " "));
+		}
+
+		temp = new StringBuilder(temp.toString().replace("&", "and"));
+		temp = new StringBuilder(temp.toString().replace("|", " or"));
+		temp = new StringBuilder(temp.toString().replace("!", "not"));
 
 		return temp.toString().split("\n");
 	}
@@ -443,41 +444,6 @@ public class BooleanModel {
 		}
 	}
 
-	public String[] printBooleanModelBooleannet() {
-
-		StringBuilder temp = new StringBuilder();
-		String line;
-
-		for (BooleanEquation booleanEquation : booleanEquations) {
-			line = booleanEquation + "\n";
-			temp.append(line);
-		}
-
-		for (int i = mapAlternativeNames.size() - 1; i >= 0; i--) {
-			temp = new StringBuilder(temp.toString().replace(
-					(mapAlternativeNames.get(i)[1]),
-					 mapAlternativeNames.get(i)[0] + " "));
-		}
-
-		temp = new StringBuilder(temp.toString().replace("&", "and"));
-		temp = new StringBuilder(temp.toString().replace("|", " or"));
-		temp = new StringBuilder(temp.toString().replace("!", "not"));
-
-		return temp.toString().split("\n");
-	}
-
-	public String getModelName() {
-		return this.modelName;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-
-	public String getFilename() {
-		return filename;
-	}
-
 	/**
 	 * Get index of equation ascribed to specified target
 	 * 
@@ -494,6 +460,16 @@ public class BooleanModel {
 		}
 
 		return index;
+	}
+
+	public ArrayList<String> getNodeNames() {
+		ArrayList<String> nodeNames = new ArrayList<>();
+
+		for (String[] names : mapAlternativeNames) {
+			nodeNames.add(names[0]);
+		}
+
+		return nodeNames;
 	}
 
 	/**
@@ -527,19 +503,34 @@ public class BooleanModel {
 	 *
 	 * @param equation
 	 */
-	void modifyEquation(String equation) {
+	void modifyEquation(String equation) throws Exception {
 		// Get index of equation for specified target
 		String target = equation.split(" ")[0].trim();
 		int index = getIndexOfEquation(target);
 
 		if (index < 0) {
-			logger.error("Target of equation [" + equation + "] not found, this " +
-					"will crash the program. Non-matching name in topology and query?");
+			throw new Exception("Target of equation [" + equation + "] not found");
 		}
 		booleanEquations.set(index, new BooleanEquation(equation));
 	}
 
+	public String getModelName() {
+		return this.modelName;
+	}
+
 	ArrayList<BooleanEquation> getBooleanEquations() {
 		return booleanEquations;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	ArrayList<String[]> getMapAlternativeNames() {
+		return mapAlternativeNames;
 	}
 }

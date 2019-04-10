@@ -83,7 +83,7 @@ public class Evolution {
 
 				try {
 					generationModels.get(i).calculateFitness(data, modelOutputs, directoryOutput);
-				} catch (IOException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -292,7 +292,7 @@ public class Evolution {
 				// calculate stable states for saving as part of .gitsbe file
 				bestModels.get(i).calculateStableStatesVC(directoryOutput);
 
-				bestModels.get(i).saveFileInGitsbeFormat(modelDirectory);
+				bestModels.get(i).exportModelToGitsbeFile(modelDirectory);
 
 				numModelsSaved++;
 
