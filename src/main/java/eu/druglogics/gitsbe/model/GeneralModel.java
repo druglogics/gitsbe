@@ -107,30 +107,38 @@ public class GeneralModel {
 	 * regulators for every single target
 	 */
 	public void buildMultipleInteractions() {
-
 		for (int i = 0; i < singleInteractions.size(); i++) {
-			
-			if (getIndexOfTargetInListOfMultipleInteractions(
-					singleInteractions.get(i).getTarget()) < 0) {
-				MultipleInteraction multipleInteraction =
-						new MultipleInteraction(singleInteractions.get(i).getTarget());
+			String target = singleInteractions.get(i).getTarget();
+			if (getIndexOfTargetInListOfMultipleInteractions(target) < 0) {
+				MultipleInteraction multipleInteraction = new MultipleInteraction(target);
 				for (SingleInteraction singleInteraction : singleInteractions) {
-					if (singleInteraction.getTarget().equals(multipleInteraction.getTarget())) {
+					if (singleInteraction.getTarget().equals(target)) {
 						if (singleInteraction.getArc() == 1) {
 							multipleInteraction.addActivatingRegulator(singleInteraction.getSource());
 						} else if (singleInteraction.getArc() == -1) {
 							multipleInteraction.addInhibitoryRegulator(singleInteraction.getSource());
 						} else {
-							logger.error("Interaction without regulator found: \n");
+							logger.error("Interaction effect malformed");
 						}
 					}
 				}
 				multipleInteractions.add(multipleInteraction);
 			}
 		}
+
+		// add the input nodes as self activating regulators: (A *= A)
+		for (SingleInteraction singleInteraction : singleInteractions) {
+			String probableSourceNode = singleInteraction.getSource();
+			if (getIndexOfTargetInListOfMultipleInteractions(probableSourceNode) < 0
+					&& isNotATarget(probableSourceNode)) {
+				MultipleInteraction multipleInteraction = new MultipleInteraction(probableSourceNode);
+				multipleInteraction.addActivatingRegulator(probableSourceNode);
+				multipleInteractions.add(multipleInteraction);
+			}
+		}
 	}
 
-	public ArrayList<MultipleInteraction> getMultipleInteractions() {
+	ArrayList<MultipleInteraction> getMultipleInteractions() {
 		return multipleInteractions;
 	}
 
