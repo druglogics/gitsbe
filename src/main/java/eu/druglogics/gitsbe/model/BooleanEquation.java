@@ -254,7 +254,7 @@ public class BooleanEquation {
 		}
 	}
 	
-	private void mutateActivatingRegulator() {
+	void mutateActivatingRegulator() {
 		if (this.activatingRegulators.size() > 0) {
 			int index = randInt(0, activatingRegulators.size() - 1);
 			this.whitelistActivatingRegulators.set(index, !whitelistActivatingRegulators.get(index));
@@ -355,13 +355,29 @@ public class BooleanEquation {
 	}
 
 	int getNumWhitelistedRegulators() {
-		return (Collections.frequency(whitelistActivatingRegulators, true)
-				+ Collections.frequency(whitelistInhibitoryRegulators, true));
+		return (getNumWhitelistedActivatingRegulators()
+				+ getNumWhitelistedInhibitoryRegulators());
 	}
 
 	int getNumBlacklistedRegulators() {
-		return (Collections.frequency(whitelistActivatingRegulators, false)
-				+ Collections.frequency(whitelistInhibitoryRegulators, false));
+		return (getNumBlacklistedActivatingRegulators()
+				+ getNumBlacklistedInhibitoryRegulators());
+	}
+
+	int getNumWhitelistedActivatingRegulators() {
+		return Collections.frequency(whitelistActivatingRegulators, true);
+	}
+
+	int getNumWhitelistedInhibitoryRegulators() {
+		return Collections.frequency(whitelistInhibitoryRegulators, true);
+	}
+
+	int getNumBlacklistedActivatingRegulators() {
+		return Collections.frequency(whitelistActivatingRegulators, false);
+	}
+
+	int getNumBlacklistedInhibitoryRegulators() {
+		return Collections.frequency(whitelistInhibitoryRegulators, false);
 	}
 
 	int getNumRegulators() {
@@ -374,5 +390,13 @@ public class BooleanEquation {
 
 	ArrayList<String> getInhibitoryRegulators() {
 		return inhibitoryRegulators;
+	}
+
+	String getTarget() {
+		return target;
+	}
+
+	String getLink() {
+		return link;
 	}
 }

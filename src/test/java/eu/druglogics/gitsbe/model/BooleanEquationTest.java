@@ -34,7 +34,11 @@ class BooleanEquationTest {
 
         assertEquals(4, booleanEquation1.getNumRegulators());
         assertEquals(4, booleanEquation1.getNumWhitelistedRegulators());
+        assertEquals(2, booleanEquation1.getNumWhitelistedActivatingRegulators());
+        assertEquals(2, booleanEquation1.getNumWhitelistedInhibitoryRegulators());
         assertEquals(0, booleanEquation1.getNumBlacklistedRegulators());
+        assertEquals("A",booleanEquation1.getTarget());
+        assertEquals("and", booleanEquation1.getLink());
 
         ArrayList<String> activatingRegulatorsExpected = new ArrayList<>();
         activatingRegulatorsExpected.add("B");
@@ -55,6 +59,8 @@ class BooleanEquationTest {
         assertEquals(6, booleanEquation.getNumRegulators());
         assertEquals(6, booleanEquation.getNumWhitelistedRegulators());
         assertEquals(0, booleanEquation.getNumBlacklistedRegulators());
+        assertEquals("A",booleanEquation.getTarget());
+        assertEquals("and", booleanEquation.getLink());
 
         ArrayList<String> activatingRegulatorsExpected = new ArrayList<>();
         activatingRegulatorsExpected.add("B");
