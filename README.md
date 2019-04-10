@@ -6,7 +6,7 @@ the [BNReduction tool](https://github.com/alanavc/BNReduction) is used.
 
 ## Input
 
-- A network file (in `.sif` format, space-delimited).
+- A network file (in `.sif` format, tab-delimited).
 - A training data file (can include both the steady state and perturbation data)
 - A model outputs file (nodes with weights that affect the calculation of the 
 model simulation output)
@@ -49,3 +49,5 @@ mvn compile -P runExampleAGS
 example above. The output directory with all the generated result files when 
 running the `gitsbe.Launcher` will be in the same directory where the 
 configuration file is.
+- Running the `gitsbe.Launcher` with no parameters generates a usage/options 
+message.

@@ -21,27 +21,27 @@ class GeneralModelTest {
         Logger mockLogger = mock(Logger.class);
 
         ArrayList<SingleInteraction> testInteractions1 = new ArrayList<>();
-        testInteractions1.add(new SingleInteraction("A -> B"));
-        testInteractions1.add(new SingleInteraction("C -| B"));
-        testInteractions1.add(new SingleInteraction("C -> A"));
-        testInteractions1.add(new SingleInteraction("B -| D"));
-        testInteractions1.add(new SingleInteraction("D -> C"));
+        testInteractions1.add(new SingleInteraction("A\t->\tB"));
+        testInteractions1.add(new SingleInteraction("C\t-|\tB"));
+        testInteractions1.add(new SingleInteraction("C\t->\tA"));
+        testInteractions1.add(new SingleInteraction("B\t-|\tD"));
+        testInteractions1.add(new SingleInteraction("D\t->\tC"));
 
         generalModelSelfContained = new GeneralModel(testInteractions1, mockLogger);
 
         // I,J are input nodes, F,K are output nodes
         ArrayList<SingleInteraction> testInteractions2 = new ArrayList<>();
-        testInteractions2.add(new SingleInteraction("A -> B"));
-        testInteractions2.add(new SingleInteraction("C -| B"));
-        testInteractions2.add(new SingleInteraction("C -> A"));
-        testInteractions2.add(new SingleInteraction("B -| D"));
-        testInteractions2.add(new SingleInteraction("D -> C"));
-        testInteractions2.add(new SingleInteraction("D -| W"));
-        testInteractions2.add(new SingleInteraction("W -> F"));
-        testInteractions2.add(new SingleInteraction("W -> K"));
-        testInteractions2.add(new SingleInteraction("I -> W"));
-        testInteractions2.add(new SingleInteraction("E -> C"));
-        testInteractions2.add(new SingleInteraction("J -> E"));
+        testInteractions2.add(new SingleInteraction("A\t->\tB"));
+        testInteractions2.add(new SingleInteraction("C\t-|\tB"));
+        testInteractions2.add(new SingleInteraction("C\t->\tA"));
+        testInteractions2.add(new SingleInteraction("B\t-|\tD"));
+        testInteractions2.add(new SingleInteraction("D\t->\tC"));
+        testInteractions2.add(new SingleInteraction("D\t-|\tW"));
+        testInteractions2.add(new SingleInteraction("W\t->\tF"));
+        testInteractions2.add(new SingleInteraction("W\t->\tK"));
+        testInteractions2.add(new SingleInteraction("I\t->\tW"));
+        testInteractions2.add(new SingleInteraction("E\t->\tC"));
+        testInteractions2.add(new SingleInteraction("J\t->\tE"));
 
         generalModel = new GeneralModel(testInteractions2, mockLogger);
     }

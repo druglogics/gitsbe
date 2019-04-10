@@ -227,7 +227,6 @@ public class BooleanModel {
 		}
 
 		writer.close();
-
 	}
 
 	public ArrayList<String> getNodeNames() {

@@ -42,7 +42,7 @@ public class SingleInteraction {
 	}
 
 	private void setInteraction(String interaction) {
-		String[] temp = interaction.split(" ");
+		String[] temp = interaction.split("\t");
 		if (temp.length != 3) {
 			System.err.println("ERROR: Wrongly formatted interaction: " + interaction);
 			abort();
