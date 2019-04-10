@@ -302,8 +302,10 @@ public class MutatedBooleanModel extends BooleanModel {
 	@Override
 	public void saveFileInGitsbeFormat(String directoryName) throws IOException {
 
-		String filename = this.modelName.substring(this.modelName.lastIndexOf('/') + 1) + ".gitsbe";
-		PrintWriter writer = new PrintWriter(new File(directoryName, filename).getAbsolutePath(), "UTF-8");
+		String filename = this.modelName + ".gitsbe";
+		PrintWriter writer = new PrintWriter(
+				new File(directoryName, filename).getAbsolutePath(), "UTF-8"
+		);
 
 		// Write header with '#'
 		writer.println("#Boolean model file in gitsbe format");

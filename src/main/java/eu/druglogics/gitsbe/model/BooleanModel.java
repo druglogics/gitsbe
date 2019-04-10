@@ -37,6 +37,9 @@ public class BooleanModel {
 	/**
 	 * Constructor for defining Boolean model from a "general model"
 	 * made up of singleInteraction objects
+	 *
+	 * Note that generalModel.buildMultipleInteractions() must be
+	 * executed beforehand
  	 */
 	public BooleanModel(GeneralModel generalModel, Logger logger) {
 

@@ -101,7 +101,9 @@ public class BooleanEquation {
 
 	/**
 	 * Build equation from Boolean expression. Currently expressions must be of the
-	 * following type: A *= ( ( ( B ) or C ) or D ) and not ( ( ( E ) or F ) or G )
+	 * following type (the .booleannet format):
+	 * A *= ( ( ( B ) or C ) or D ) and not ( ( ( E ) or F ) or G )
+	 *
 	 * Spaces between parentheses and node names are essential
 	 * 
 	 * @param equation
