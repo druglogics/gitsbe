@@ -30,7 +30,6 @@ public class MultipleInteraction {
 
 	void addInhibitoryRegulator(String regulator) {
 		inhibitoryRegulators.add(regulator);
-
 	}
 
 	public void addActivatingRegulatorComplex(String[] regulators) {
@@ -59,14 +58,14 @@ public class MultipleInteraction {
 
 	public ArrayList<String[]> getInhibitoryRegulatorComplexes() {
 		return inhibitoryRegulatorComplexes;
-
 	}
 
 	@Override
 	public String toString() {
-		return target + " <- " + activatingRegulators.toString() + activatingRegulatorComplexes + " ! "
-				+ inhibitoryRegulators.toString() + inhibitoryRegulatorComplexes;
-
+		return target + " <- " + activatingRegulators.toString()
+				+ activatingRegulatorComplexes + " ! "
+				+ inhibitoryRegulators.toString()
+				+ inhibitoryRegulatorComplexes;
 	}
 
 }
