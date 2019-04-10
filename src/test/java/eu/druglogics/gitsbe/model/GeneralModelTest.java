@@ -6,9 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class GeneralModelTest {
@@ -60,6 +59,26 @@ class GeneralModelTest {
                 .extracting("target")
                 .contains("B", "A", "D", "C")
                 .doesNotContain("W", "F", "K", "E", "I", "J");
+    }
+
+    @Test
+    void test_size() {
+        generalModel.buildMultipleInteractions();
+        generalModelSelfContained.buildMultipleInteractions();
+
+        assertEquals(10, generalModel.size());
+        assertEquals(4, generalModelSelfContained.size());
+    }
+
+    @Test
+    void test_get_index_of_target() {
+        generalModel.buildMultipleInteractions();
+
+        assertEquals(0, generalModel.getIndexOfTargetInListOfMultipleInteractions("B"));
+        assertEquals(1, generalModel.getIndexOfTargetInListOfMultipleInteractions("A"));
+        assertEquals(2, generalModel.getIndexOfTargetInListOfMultipleInteractions("D"));
+        assertEquals(3, generalModel.getIndexOfTargetInListOfMultipleInteractions("C"));
+        assertEquals(-1, generalModel.getIndexOfTargetInListOfMultipleInteractions("NonExistentTarget"));
     }
 
     @Test

@@ -86,13 +86,7 @@ public class GeneralModel {
 		}
 	}
 
-	public void loadFromSingleInteractions(SingleInteraction[] interactions) {
-		for (SingleInteraction interaction : interactions) {
-			singleInteractions.add(new SingleInteraction(interaction));
-		}
-	}
-
-	private int getIndexOfTargetInListOfMultipleInteractions(String target) {
+	int getIndexOfTargetInListOfMultipleInteractions(String target) {
 		for (int i = 0; i < multipleInteractions.size(); i++) {
 			if (multipleInteractions.get(i).getTarget().equals(target)) {
 				return i;
@@ -233,23 +227,6 @@ public class GeneralModel {
 				+ " iterations): " + singleInteractions.size() + "\n");
 	}
 
-	/**
-	 * Required if no inputs or targets are removed, to annotate some nodes as
-	 * inputs to system. Inputs must be given a value in training data file (unperturbed steady state).
-	 */
-	public void removeNone() {
-		for (int i = 0; i < singleInteractions.size(); i++) {
-			String source = singleInteractions.get(i).getSource();
-			if (isNotATarget(source)) {
-				singleInteractions.add(new SingleInteraction(
-						"true", "->", singleInteractions.get(i).getSource())
-				);
-				logger.outputStringMessage(2, "Annotating " + singleInteractions.get(i).getSource()
-						+ " as input to model.");
-			}
-		}
-	}
-
 	public void removeSelfRegulation() {
 		for (int i = singleInteractions.size() - 1; i >= 0; i--) {
 			if (singleInteractions.get(i).getTarget().trim()
@@ -312,17 +289,6 @@ public class GeneralModel {
 
 	MultipleInteraction getMultipleInteraction(int index) {
 		return multipleInteractions.get(index);
-	}
-
-	private int getSingleInteractionFromTarget(String target) {
-		int index = -1;
-
-		for (int i = 0; i < singleInteractions.size(); i++) {
-			if (singleInteractions.get(i).getTarget().equals(target))
-				index = i;
-		}
-
-		return index;
 	}
 
 	private int getSingleInteractionFromSource(String source) {
