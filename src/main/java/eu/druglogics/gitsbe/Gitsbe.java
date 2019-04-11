@@ -269,18 +269,15 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void exportDifferentModelFormats(Config config, BooleanModel generalBooleanModel) {
-		// Export network file in gitsbe format
-		exportBooleanModelFileInGitsbeFormat(config, generalBooleanModel);
-		// Export trimmed network .sif file
-		exportTrimmedSifNetworkFile(config, generalBooleanModel);
-		// Export network file in ginml format
-		exportBooleanModelFileInGinmlFormat(config, generalBooleanModel);
+		exportModelToGitsbeFormat(config, generalBooleanModel);
+		exportModelToSifFormat(config, generalBooleanModel);
+		exportModelToGINMLFormat(config, generalBooleanModel);
 	}
 
-	private void exportBooleanModelFileInGitsbeFormat(Config config, BooleanModel generalBooleanModel) {
+	private void exportModelToGitsbeFormat(Config config, BooleanModel generalBooleanModel) {
 		if (config.exportToGitsbeFormat()) {
 			try {
-				logger.outputStringMessage(2, "Exporting .sif file in .gitsbe format: "
+				logger.outputStringMessage(2, "Exporting network file in .gitsbe format: "
 						+ removeExtension(generalBooleanModel.getModelName()) + ".gitsbe");
 				generalBooleanModel.exportModelToGitsbeFile(directoryOutput);
 			} catch (IOException e) {
@@ -289,12 +286,11 @@ public class Gitsbe implements Runnable {
 		}
 	}
 
-	private void exportTrimmedSifNetworkFile(Config config, BooleanModel generalBooleanModel) {
+	private void exportModelToSifFormat(Config config, BooleanModel generalBooleanModel) {
 		if (config.exportToSif()) {
 			try {
-				String filename = removeExtension(generalBooleanModel.getModelName())
-						+ "_trimmed.sif";
-				logger.outputStringMessage(2, "Exporting trimmed .sif file: " + filename);
+				String filename = removeExtension(generalBooleanModel.getModelName()) + "_export.sif";
+				logger.outputStringMessage(2, "Exporting (trimmed) network to .sif format: " + filename);
 				generalBooleanModel.exportModelToSifFile(directoryOutput, filename);
 			} catch (FileNotFoundException | UnsupportedEncodingException e) {
 				e.printStackTrace();
@@ -302,12 +298,12 @@ public class Gitsbe implements Runnable {
 		}
 	}
 
-	private void exportBooleanModelFileInGinmlFormat(Config config, BooleanModel generalBooleanModel) {
+	private void exportModelToGINMLFormat(Config config, BooleanModel generalBooleanModel) {
 		if (config.exportToGinML()) {
 			try {
 				String filename = generalBooleanModel.getModelName() + "_export.ginml";
-				logger.outputStringMessage(2, "Exporting .sif file in GINML format: " + filename);
-				generalBooleanModel.exportModelToGinMLFile(directoryOutput, filename,
+				logger.outputStringMessage(2, "Exporting network file to GINML format: " + filename);
+				generalBooleanModel.exportModelToGINMLFile(directoryOutput, filename,
 						generalModel.getSingleInteractions());
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -321,8 +317,7 @@ public class Gitsbe implements Runnable {
 	 * @param generalBooleanModel
 	 */
 	private void outputDifferentModelFormats(BooleanModel generalBooleanModel) {
-
-		logger.outputHeader(3, "General model in Booleannet format");
+		logger.outputHeader(3, "Model in Booleannet format");
 		logger.outputLines(3, generalBooleanModel.getModelBooleannet());
 
 		logger.outputHeader(3, "Model in Veliz-Cuba's format");

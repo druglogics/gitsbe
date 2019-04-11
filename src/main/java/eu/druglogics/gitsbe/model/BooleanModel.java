@@ -67,12 +67,14 @@ public class BooleanModel {
 		}
 	}
 
+	// Copy constructor for defining Boolean model from another Boolean model
+
 	/**
 	 * Constructor for defining Boolean model from a file with a set of Boolean
 	 * equations
-	 * 
+	 *
 	 * Currently two supported filetypes: .gitsbe and .booleannet files
-	 * 
+	 *
 	 * @param filename
 	 */
 	public BooleanModel(String filename, Logger logger) {
@@ -121,7 +123,7 @@ public class BooleanModel {
 			// Alternative names
 			this.mapAlternativeNames = new ArrayList<>();
 
-			this.modelName = filename.substring(0, filename.indexOf(".booleannet"));
+			this.modelName = removeExtension(filename);
 
 			// Load model
 			for (int i = 0; i < lines.size(); i++) {
@@ -129,10 +131,11 @@ public class BooleanModel {
 				String target = lines.get(i).substring(0, lines.get(i).indexOf(" *=")).trim();
 				mapAlternativeNames.add(new String[] { target, "x" + (i + 1) });
 			}
+		} else {
+			logger.error("File extension: " + fileExtension + " for loading Boolean " +
+					"model from file is not supported");
 		}
 	}
-
-	// Copy constructor for defining Boolean model from another Boolean model
 	protected BooleanModel(final BooleanModel booleanModel, Logger logger) {
 		this.logger = logger;
 
@@ -220,7 +223,7 @@ public class BooleanModel {
 		writer.close();
 	}
 
-	public void exportModelToGinMLFile(String directoryOutput, String filename,
+	public void exportModelToGINMLFile(String directoryOutput, String filename,
 									   ArrayList<SingleInteraction> singleInteractions) throws IOException {
 
 		PrintWriter writer = new PrintWriter(

@@ -42,7 +42,7 @@ public class GeneralModel {
 
 	void loadSifFile(String filename) throws IOException {
 
-		this.modelName = new File(filename).getName();
+		this.modelName = removeExtension(filename);
 
 		// Read given file
 		logger.outputStringMessage(1, "Reading .sif file: " + new File(filename).getAbsolutePath());
