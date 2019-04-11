@@ -29,16 +29,18 @@ public class GeneralModel {
 		return multipleInteractions.size();
 	}
 
-	public void loadInteractionFile(String filenameInteractions) throws IOException {
+	public void loadInteractionsFile(String filenameInteractions) throws IOException {
 		String fileExtension = getFileExtension(filenameInteractions);
-		if (fileExtension.equals(".sif"))
-			this.loadSifFile(filenameInteractions);
-		else
-			logger.error("New file extension used to load general model, " +
-					"currently not supported");
+		if (fileExtension.equals(".sif")) {
+			loadSifFile(filenameInteractions);
+		}
+		else {
+			logger.error("New file extension used to load general model, currently not supported");
+			throw new IOException("The extension needs to be .sif (other formats not yet supported)");
+		}
 	}
 
-	private void loadSifFile(String filename) throws IOException {
+	void loadSifFile(String filename) throws IOException {
 
 		this.modelName = new File(filename).getName();
 
@@ -227,7 +229,7 @@ public class GeneralModel {
 				+ " iterations): " + singleInteractions.size() + "\n");
 	}
 
-	public void removeSelfRegulation() {
+	void removeSelfRegulatedInteractions() {
 		for (int i = singleInteractions.size() - 1; i >= 0; i--) {
 			if (singleInteractions.get(i).getTarget().trim()
 					.equals(singleInteractions.get(i).getSource().trim())) {
@@ -238,68 +240,8 @@ public class GeneralModel {
 		}
 	}
 
-	public void removeSmallFeedbackLoops() {
-		logger.outputStringMessage(3, "\nRemoving small feedback loops (positive and negative)");
-		for (int i = singleInteractions.size() - 1; i >= 0; i--) {
-			int index = getSingleInteractionFromSource(singleInteractions.get(i).getTarget());
-
-			if (index >= 0) {
-				if (singleInteractions.get(index).getTarget()
-						.equals(singleInteractions.get(i).getSource())) {
-					logger.outputStringMessage(3, "Small feedback detected: "
-							+ singleInteractions.get(i).getInteraction() + " AND "
-							+ singleInteractions.get(index).getInteraction());
-					if (index > i) {
-						singleInteractions.remove(index);
-						singleInteractions.remove(i);
-					} else {
-						singleInteractions.remove(i);
-						singleInteractions.remove(index);
-					}
-				}
-			}
-		}
-	}
-
-	public void removeSmallNegativeFeedbackLoops() {
-		logger.outputStringMessage(3, "\nRemoving small negative feedback loops");
-		for (int i = singleInteractions.size() - 1; i >= 0; i--) {
-			int index = getSingleInteractionFromSource(singleInteractions.get(i).getTarget());
-
-			if (index >= 0) {
-				if (singleInteractions.get(index).getTarget()
-						.equals(singleInteractions.get(i).getSource())) {
-					// Check if arcs have opposite signs
-					if (singleInteractions.get(index).getArc() != singleInteractions.get(i).getArc()) {
-						logger.outputStringMessage(3, "Small negative feedback detected: "
-								+ singleInteractions.get(i).getInteraction()
-								+ " AND " + singleInteractions.get(index).getInteraction());
-						if (index > i) {
-							singleInteractions.remove(index);
-							singleInteractions.remove(i);
-						} else {
-							singleInteractions.remove(i);
-							singleInteractions.remove(index);
-						}
-					}
-				}
-			}
-		}
-	}
-
 	MultipleInteraction getMultipleInteraction(int index) {
 		return multipleInteractions.get(index);
-	}
-
-	private int getSingleInteractionFromSource(String source) {
-		int index = -1;
-
-		for (int i = 0; i < singleInteractions.size(); i++) {
-			if (singleInteractions.get(i).getSource().equals(source))
-				index = i;
-		}
-
-		return index;
 	}
 
 	public ArrayList<SingleInteraction> getSingleInteractions() {

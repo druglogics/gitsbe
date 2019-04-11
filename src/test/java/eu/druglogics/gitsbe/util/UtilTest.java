@@ -17,7 +17,7 @@ class UtilTest {
         assertThrows(Exception.class, () -> {
             assertNull(System.getenv("BNET_HOME"));
             Util.checkBNET();
-        }, "");
+        });
     }
 
     @Test

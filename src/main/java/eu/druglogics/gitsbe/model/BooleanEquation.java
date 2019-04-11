@@ -141,9 +141,7 @@ public class BooleanEquation {
 
 			switch (element) {
 			case "*=":
-				break;
 			case "(":
-				break;
 			case ")":
 				break;
 			case "andnot":

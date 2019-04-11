@@ -30,17 +30,6 @@ public class SingleInteraction {
 		this.setInteraction(interaction);
 	}
 
-	/**
-	 * Copy constructor
-	 * 
-	 * @param interaction
-	 */
-	SingleInteraction(SingleInteraction interaction) {
-		this.source = interaction.source;
-		this.target = interaction.target;
-		this.arc = interaction.arc;
-	}
-
 	private void setInteraction(String interaction) {
 		String[] temp = interaction.split("\t");
 		if (temp.length != 3) {

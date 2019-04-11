@@ -414,7 +414,7 @@ public class Gitsbe implements Runnable {
 			// Create generalModel from interactions file
 			logger.outputStringMessage(3, "Loading model from .sif file: " + filenameNetwork);
 			try {
-				generalModel.loadInteractionFile(filenameNetwork);
+				generalModel.loadInteractionsFile(filenameNetwork);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

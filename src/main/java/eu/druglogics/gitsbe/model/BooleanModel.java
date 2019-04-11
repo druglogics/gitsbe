@@ -271,7 +271,6 @@ public class BooleanModel {
 					+ source + "\" to=\"" + target + "\" minvalue=\"1\" sign=\"" + arc + "\">\n");
 			writer.println("<edgevisualsetting style=\"\"/>");
 			writer.println("</edge>");
-
 		}
 
 		// finalize

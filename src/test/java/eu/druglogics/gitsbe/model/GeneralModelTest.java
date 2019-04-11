@@ -4,6 +4,8 @@ import eu.druglogics.gitsbe.util.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.*;
@@ -43,6 +45,42 @@ class GeneralModelTest {
         testInteractions2.add(new SingleInteraction("J\t->\tE"));
 
         generalModel = new GeneralModel(testInteractions2, mockLogger);
+    }
+
+    @Test
+    void test_load_non_sif_interactions_file() {
+        assertThrows(IOException.class, () -> {
+            Logger mockLogger = mock(Logger.class);
+            GeneralModel generalModelTest = new GeneralModel(mockLogger);
+            String filename = "test.notASifExtension";
+            generalModelTest.loadInteractionsFile(filename);
+        });
+    }
+
+    @Test
+    void test_load_sif_file() throws IOException {
+        Logger mockLogger = mock(Logger.class);
+        GeneralModel generalModelFromSifFile = new GeneralModel(mockLogger);
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        String filename = new File(classLoader.getResource("example.sif").getFile()).getPath();
+
+        generalModelFromSifFile.loadSifFile(filename);
+
+        assertThat(generalModelFromSifFile.getSingleInteractions())
+                .hasSize(11)
+                .extracting("source", "arc", "target")
+                .contains(tuple("A", 1, "B"))
+                .contains(tuple("C", -1, "B"))
+                .contains(tuple("C", 1, "A"))
+                .contains(tuple("B", -1, "D"))
+                .contains(tuple("D", 1, "C"))
+                .contains(tuple("D", -1, "W"))
+                .contains(tuple("W", 1, "F"))
+                .contains(tuple("W", 1, "K"))
+                .contains(tuple("I", 1, "W"))
+                .contains(tuple("E", 1, "C"))
+                .contains(tuple("J", 1, "E"));
     }
 
     @Test
@@ -160,6 +198,26 @@ class GeneralModelTest {
                 .contains(tuple("C", "A", 1))
                 .contains(tuple("B", "D", -1))
                 .contains(tuple("D", "C", 1));
+    }
+
+    @Test
+    void test_remove_self_regulated_interactions() {
+        Logger mockLogger = mock(Logger.class);
+
+        ArrayList<SingleInteraction> testInteractions = new ArrayList<>();
+        testInteractions.add(new SingleInteraction("A\t->\tB"));
+        testInteractions.add(new SingleInteraction("A\t->\tA"));
+        testInteractions.add(new SingleInteraction("C\t-|\tB"));
+        testInteractions.add(new SingleInteraction("C\t-|\tC"));
+
+        GeneralModel generalModelTest = new GeneralModel(testInteractions, mockLogger);
+        generalModelTest.removeSelfRegulatedInteractions();
+
+        assertThat(generalModelTest.getSingleInteractions())
+                .hasSize(2)
+                .extracting("source", "arc", "target")
+                .contains(tuple("A", 1, "B"))
+                .contains(tuple("C", -1, "B"));
     }
 
     @Test
