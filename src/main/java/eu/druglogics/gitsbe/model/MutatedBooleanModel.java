@@ -26,12 +26,12 @@ public class MutatedBooleanModel extends BooleanModel {
 	// Constructor for creating a mutated model offspring from two parents, using
 	// crossover
 	MutatedBooleanModel(MutatedBooleanModel parent1, MutatedBooleanModel parent2, String modelName,
-			Logger logger, Config config) {
+			Logger logger) {
 
 		super(logger);
 
 		// Copy Boolean equations from parents
-		crossoverCopy(logger, config, parent1, parent2);
+		crossoverCopy(parent1, parent2, logger);
 
 		// Copy mapAlternativeNames
 		this.mapAlternativeNames = new ArrayList<>();
@@ -44,11 +44,10 @@ public class MutatedBooleanModel extends BooleanModel {
 		this.modelName = modelName;
 	}
 
-	private void crossoverCopy(Logger logger, Config config, MutatedBooleanModel parent1,
-							   MutatedBooleanModel parent2) {
+	private void crossoverCopy(MutatedBooleanModel parent1, MutatedBooleanModel parent2, Logger logger) {
 		booleanEquations = new ArrayList<>();
 
-		int crossovers = config.getCrossovers();
+		int crossovers = Config.getInstance().getCrossovers();
 		int numberOfBooleanEquations = parent1.booleanEquations.size();
 		logger.debug("Crossovers: " + crossovers + "\nNumber of boolean equations: "
 				+ numberOfBooleanEquations);

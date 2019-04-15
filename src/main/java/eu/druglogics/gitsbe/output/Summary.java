@@ -27,26 +27,14 @@ public class Summary {
 	private Logger logger;
 
 	@SuppressWarnings("unchecked")
-	public Summary(String filename, Logger logger, Config config) {
+	public Summary(String filename, Logger logger) {
+		int simulations = Config.getInstance().getSimulations();
 		this.bestModels = Arrays.asList (Stream.generate (ArrayList::new).limit
-				(config.getSimulations()).toArray (ArrayList[]::new));
+				(simulations).toArray (ArrayList[]::new));
 		this.fitness = Arrays.asList (Stream.generate (ArrayList::new).limit
-				(config.getSimulations()).toArray (ArrayList[]::new));
+				(simulations).toArray (ArrayList[]::new));
 		this.setSummaryFilename(filename);
 		this.logger = logger;
-	}
-
-	public void getSummary() {
-		
-		logger.outputHeaderToFile(summaryFilename, "Summary");
-
-		// Write columns with model-defined node names for Veliz-Cuba's algorithm
-		for (ArrayList<MutatedBooleanModel> bestModel : bestModels) {
-			for (MutatedBooleanModel mutatedBooleanModel : bestModel) {
-				logger.outputStringMessageToFile(summaryFilename, mutatedBooleanModel.getFilename());
-			}
-		}
-
 	}
 
 	public void generateFitnessesReport() {
@@ -79,9 +67,9 @@ public class Summary {
 		bestModels.get(simulation).add(model);
 	}
 
-	public void saveBestModelsToFile(String filename, Config config) throws IOException {
+	public void saveBestModelsToFile(String filename) throws IOException {
 
-		int maxNumOfModelsToSave = config.getNumOfModelsToSave();
+		int maxNumOfModelsToSave = Config.getInstance().getNumOfModelsToSave();
 		PrintWriter writer = new PrintWriter(filename, "UTF-8");
 
 		// Write header with '#'

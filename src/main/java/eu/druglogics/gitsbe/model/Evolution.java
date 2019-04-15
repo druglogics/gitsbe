@@ -23,14 +23,13 @@ public class Evolution {
 	private String modelDirectory;
 	private Summary summary;
 	private String directoryOutput;
-	private Config config;
 	private Logger logger;
 	private ModelOutputs modelOutputs;
 	private boolean initialPhase;
 
 	public Evolution(Summary summary, BooleanModel generalBooleanModel, String baseModelName,
 					 TrainingData data, ModelOutputs modelOutputs, String modelDirectory,
-					 String directoryOutput, Config config, Logger logger) {
+					 String directoryOutput, Logger logger) {
 
 		// Initialize
 		this.summary = summary;
@@ -40,11 +39,12 @@ public class Evolution {
 		this.modelDirectory = modelDirectory;
 		this.directoryOutput = directoryOutput;
 		this.modelOutputs = modelOutputs;
-		this.config = config;
 		this.logger = logger;
 	}
 
 	public void evolve(int run) {
+
+		Config config = Config.getInstance();
 
 		logger.outputStringMessage(1, "Model optimization over " + config.getGenerations()
 				+ " generations with " + config.getPopulation() + " models per generation.");
@@ -125,7 +125,7 @@ public class Evolution {
 		float currentMaxFitness = 0;
 
 		// Choose the new bestModels based on the highest fitness score
-		for (int i = 0; i < config.getSelection(); i++) {
+		for (int i = 0; i < Config.getInstance().getSelection(); i++) {
 			int indexBest = 0;
 			currentMaxFitness = 0; // reset currentMaxFitness
 
@@ -163,9 +163,10 @@ public class Evolution {
 
 	private void addSummaryFitnessValues(ArrayList<MutatedBooleanModel> generationModels,
 			ArrayList<float[]> fitnesses) {
-		float[] generationFitness = new float[config.getPopulation()];
+		int modelsPerGeneration = Config.getInstance().getPopulation();
+		float[] generationFitness = new float[modelsPerGeneration];
 
-		for (int i = 0; i < config.getPopulation(); i++) {
+		for (int i = 0; i < modelsPerGeneration; i++) {
 			generationFitness[i] = generationModels.get(i).getFitness();
 		}
 
@@ -173,14 +174,16 @@ public class Evolution {
 	}
 
 	private void crossover(ArrayList<MutatedBooleanModel> generationModels, int generation) {
+		Config config = Config.getInstance();
+
 		// Get indexes for parents randomly pointing to bestModels
 		for (int i = 0; i < config.getPopulation(); i++) {
 			int parent1 = randInt(0, config.getSelection() - 1);
 			int parent2 = randInt(0, config.getSelection() - 1);
 
+			String modelName = baseModelName + "_G" + generation + "_M" + i;
 			generationModels.add(new MutatedBooleanModel(
-					bestModels.get(parent1), bestModels.get(parent2),
-					baseModelName + "_G" + generation + "_M" + i, logger, config)
+					bestModels.get(parent1), bestModels.get(parent2), modelName, logger)
 			);
 
 			logger.outputStringMessage(3, "Define new model " + baseModelName + "_G"
@@ -190,6 +193,8 @@ public class Evolution {
 	}
 
 	private void mutateModels(ArrayList<MutatedBooleanModel> generationModels) {
+		Config config = Config.getInstance();
+
 		for (int i = 0; i < config.getPopulation(); i++) {
 			int mutationsFactor;
 			int shuffleFactor;
@@ -249,7 +254,7 @@ public class Evolution {
 	 */
 	public void outputBestModels() {
 		if (bestModels.get(0).getFitness() > 0) {
-			logger.outputStringMessage(2, "\n" + config.getSelection() + " best models:\n");
+			logger.outputStringMessage(2, "\n" + Config.getInstance().getSelection() + " best models:\n");
 
 			for (MutatedBooleanModel bestModel : bestModels) {
 				if (bestModel.getFitness() > 0) {
@@ -274,25 +279,27 @@ public class Evolution {
 	 */
 	public void saveBestModels(int numberToKeep, float fitnessThreshold) throws IOException {
 
-		numberToKeep = min(numberToKeep, config.getSelection());
+		numberToKeep = min(numberToKeep, Config.getInstance().getSelection());
 
 		logger.outputHeader(1, "Saving up to " + numberToKeep
 				+ " best models to files (fitness threshold " + fitnessThreshold + "):");
 
 		int numModelsSaved = 0;
 
-		for (int i = 0; i < numberToKeep; i++) {
-			if (bestModels.get(i).getFitness() > fitnessThreshold) {
+		for (int modelIndex = 0; modelIndex < numberToKeep; modelIndex++) {
+			MutatedBooleanModel bestModel = bestModels.get(modelIndex);
+			if (bestModel.getFitness() > fitnessThreshold) {
 
 				// Set filename of model
-				bestModels.get(i).setFilename(bestModels.get(i).getModelName() + ".gitsbe");
-				logger.outputStringMessage(1, "\tFile: " + modelDirectory
-						+ bestModels.get(i).getFilename());
+				bestModel.setFilename(bestModel.getModelName() + ".gitsbe");
+				logger.outputStringMessage(1, "\tFile: " + modelDirectory + bestModel.getFilename());
 
 				// calculate stable states for saving as part of .gitsbe file
-				bestModels.get(i).calculateStableStatesVC(directoryOutput);
+				bestModel.calculateStableStatesVC(directoryOutput);
 
-				bestModels.get(i).exportModelToGitsbeFile(modelDirectory);
+				bestModel.exportModelToGitsbeFile(modelDirectory);
+				String f = bestModel.getModelName() + ".bnet";
+				bestModel.exportModelToBoolNetFile(modelDirectory, f);
 
 				numModelsSaved++;
 
