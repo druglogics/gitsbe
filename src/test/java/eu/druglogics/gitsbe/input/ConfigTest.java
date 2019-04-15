@@ -38,6 +38,8 @@ class ConfigTest {
 
         assertEquals(3, Config.getInstance().getVerbosity());
         assertTrue(Config.getInstance().useParallelSimulations());
+        assertEquals(10, Config.getInstance().getGenerations());
+        assertEquals(5, Config.getInstance().getCrossovers());
     }
 
     @Test

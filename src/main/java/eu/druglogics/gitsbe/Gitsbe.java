@@ -446,25 +446,13 @@ public class Gitsbe implements Runnable {
 			Config.init(filenameConfig, logger);
 		} catch (IOException e) {
 			e.printStackTrace();
-			File file = new File(directoryOutput);
-			filenameConfig = file.getParent() + "/" + "config.tab";
-			logger.outputStringMessage(1, "Cannot find config " +
-					"file, generating template file: " + filenameConfig);
-			try {
-				Config.writeConfigFileTemplate(filenameConfig);
-				//config = new Config(filenameConfig, logger);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-				abort();
-			}
+			abort();
 		}
 
-		Config config = Config.getInstance();
-		int verbosity = config.getVerbosity();
-		// Now that we got the verbosity from the config, we can re-set it in the logger
-		logger.setVerbosity(verbosity);
+		// Now that we have the verbosity from the config, we can re-set it in the logger
+		logger.setVerbosity(Config.getInstance().getVerbosity());
 		logger.outputHeader(1, "Config options");
-		logger.outputLines(1, config.getConfig());
+		logger.outputLines(1, Config.getInstance().getConfig());
 	}
 
 	private void initializeGitsbeLogger(String directory) {

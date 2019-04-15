@@ -193,25 +193,4 @@ public class Config extends ConfigParametersGitsbe {
 		lines.add(parameterMap.size(), "");
 		return lines.toArray(new String[0]);
 	}
-
-	public static void writeConfigFileTemplate(String filename) throws IOException {
-		PrintWriter writer = new PrintWriter(filename, "UTF-8");
-
-		// Write header with '#'
-		writer.println("# Gitsbe config file");
-		writer.println("# Each line is a parameter name and value");
-		writer.println("# Default parameters are given below");
-		writer.println("#");
-		writer.println("# Parameter:\tValue");
-		writer.println("#");
-
-		// Write parameters
-		writer.println("# Output verbosity level");
-		writer.println("verbosity:\t3");
-		writer.println();
-		writer.println("Check the run_example_ags/toy_ags_config.tab for a full configuration file");
-
-		writer.flush();
-		writer.close();
-	}
 }
