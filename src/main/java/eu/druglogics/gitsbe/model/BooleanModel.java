@@ -174,19 +174,15 @@ public class BooleanModel {
 			throws FileNotFoundException, UnsupportedEncodingException {
 		PrintWriter writer = new PrintWriter(new File(outputDirectory, filename), "UTF-8");
 
-		String[] expressions = this.printBooleanModelGinmlExpressions();
+		ArrayList<String> equations = getModelBoolNet();
 
 		// Write header
-		writer.println("targets, factors \n # comment line: " + filename);
-		// Write expressions with correct symbols
-		for (int i = 0; i < expressions.length; i++) {
-			expressions[i] = expressions[i].replaceAll(" {2}", " ");
-			expressions[i] = expressions[i].replaceAll("and", "&");
-			expressions[i] = expressions[i].replaceAll("or", "|");
-			expressions[i] = expressions[i].replaceAll("not ", "!");
-			expressions[i] = expressions[i].replaceAll(" \\*=", ",");
+		writer.println("targets, factors");
+		writer.println("filename: " + filename);
 
-			writer.println(expressions[i]);
+		// Write equations
+		for (String equation : equations) {
+			writer.println(equation);
 		}
 
 		writer.close();
@@ -229,7 +225,7 @@ public class BooleanModel {
 		PrintWriter writer = new PrintWriter(
 				new File(directoryOutput, filename).getAbsolutePath(), "UTF-8"
 		);
-		String[] expressions = this.printBooleanModelGinmlExpressions();
+		ArrayList<String> equations = this.getModelBooleannet();
 
 		// write heading
 
@@ -248,14 +244,15 @@ public class BooleanModel {
 		// node style edge style
 
 		// write nodes with Boolean expression
-		for (int i = 0; i < mapAlternativeNames.size(); i++) {
-			writer.println("<node id=\"" + mapAlternativeNames.get(i)[0] + "\" maxvalue=\"1\">");
+		int index = 0;
+		for (String equation : equations) {
+			writer.println("<node id=\"" + mapAlternativeNames.get(index)[0] + "\" maxvalue=\"1\">");
 			writer.println("\t<value val=\"1\">");
-			writer.println("\t\t<exp str=\"" + expressions[i] + "\"/>");
+			writer.println("\t\t<exp str=\"" + equation + "\"/>");
 			writer.println("\t</value>");
 			writer.println("\t<nodevisualsetting x=\"10\" y=\"10\" style=\"\"/>");
 			writer.println("</node>");
-
+			index++;
 		}
 
 		// write edges
@@ -280,99 +277,72 @@ public class BooleanModel {
 		writer.println("</graph>");
 		writer.println("</gxl>");
 		writer.close();
-
 	}
 
-	private String[] printBooleanModelGinmlExpressions() {
-
-		StringBuilder temp = new StringBuilder();
-		String line;
+	/**
+	 * @return an ArrayList of Strings (the model equations in Booleannet format)
+	 */
+	ArrayList<String> getModelBooleannet() {
+		ArrayList<String> equations = new ArrayList<>();
 
 		for (BooleanEquation booleanEquation : booleanEquations) {
-			line = booleanEquation.getBooleanEquation() + "\n";
-			temp.append(line);
+			equations.add(booleanEquation.getBooleanEquation().replaceAll(" {2}", " ").trim());
 		}
 
-		temp = new StringBuilder(temp.toString().replace("&", "&amp;"));
-
-		return temp.toString().split("\n");
+		return equations;
 	}
 
-	public String[] printBooleanModelBooleannet() {
+	/**
+	 * @return an ArrayList of Strings (the model equations in Veliz-Cuba's format)
+	 */
+	ArrayList<String> getModelVelizCuba() {
 
-		StringBuilder temp = new StringBuilder();
-		String line;
+		ArrayList<String> equations = this.getModelBooleannet();
+		ArrayList<String> modifiedEquations = new ArrayList<>();
 
-		for (BooleanEquation booleanEquation : booleanEquations) {
-			line = booleanEquation + "\n";
-			temp.append(line);
+		for (String equation : equations) {
+			// Remove target node (line number indicates which variable
+			// is defined, i.e. 'x1' on line 1, 'x2' on line 2 etc.)
+			String modifiedEquation =
+					replaceOperators(equation)
+					.substring(equation.indexOf('=') + 1)
+					.trim();
+			// Use the alternate names (x1, x2, ..., xn)
+			for (String[] map: mapAlternativeNames) {
+				modifiedEquation = modifiedEquation.replace(" " + map[0] + " ", " " + map[1] + " ");
+			}
+			modifiedEquations.add(modifiedEquation);
 		}
 
-		for (int i = mapAlternativeNames.size() - 1; i >= 0; i--) {
-			temp = new StringBuilder(temp.toString().replace(
-					(mapAlternativeNames.get(i)[1]),
-					mapAlternativeNames.get(i)[0] + " "));
-		}
-
-		temp = new StringBuilder(temp.toString().replace("&", "and"));
-		temp = new StringBuilder(temp.toString().replace("|", " or"));
-		temp = new StringBuilder(temp.toString().replace("!", "not"));
-
-		return temp.toString().split("\n");
+		return modifiedEquations;
 	}
 
-	public String[] getModelBooleannet() {
+	/**
+	 * @return an ArrayList of Strings (the model equations in BoolNet format)
+	 */
+	ArrayList<String> getModelBoolNet() {
+		ArrayList<String> equations = this.getModelBooleannet();
+		ArrayList<String> modifiedEquations = new ArrayList<>();
 
-		String[] temp = new String[booleanEquations.size()];
-
-		for (int i = 0; i < booleanEquations.size(); i++) {
-			temp[i] = booleanEquations.get(i).getBooleanEquation();
+		for (String equation : equations) {
+			modifiedEquations.add(replaceOperators(equation).replaceAll(" \\*=", ","));
 		}
 
-		return temp;
-
-	}
-
-	public String[] getModelVelizCuba() {
-
-		StringBuilder temp = new StringBuilder();
-
-		for (BooleanEquation booleanEquation : booleanEquations) {
-			temp.append(booleanEquation.getBooleanEquationVC()).append("\n");
-		}
-
-		// Use alternate names (x1, x2, ..., xn)
-		for (int i = 0; i < booleanEquations.size(); i++) {
-			temp = new StringBuilder(temp.toString().replace(
-					(" " + mapAlternativeNames.get(i)[0] + " "),
-					 " " + mapAlternativeNames.get(i)[1] + " "));
-		}
-
-		String[] lines = temp.toString().split("\n");
-
-		String[] result = new String[booleanEquations.size()];
-
-		// Remove target node (line number indicates which variable is defined, i.e.
-		// 'x1' on line 1, 'x2' on line 2 etc.
-		for (int i = 0; i < lines.length; i++) {
-			result[i] = (lines[i].substring(lines[i].indexOf('=') + 1).trim());
-		}
-
-		return result;
+		return modifiedEquations;
 	}
 
 	public void calculateStableStatesVC(String directoryOutput)
 			throws IOException {
 
 		// Defined model in Veliz-Cuba terminology
-		String[] modelVC = this.getModelVelizCuba();
+		ArrayList<String> equationsVC = getModelVelizCuba();
 
 		// Write model to file for 'BNreduction.sh'
 		String modelDataFileVC = new File(directoryOutput, modelName + ".dat").getAbsolutePath();
 		PrintWriter writer = new PrintWriter(modelDataFileVC, "UTF-8");
 
-		for (String line : modelVC) {
-			writer.println(line);
+		for (String equation : equationsVC) {
+			writer.println(equation);
 		}
 		writer.close();
 
@@ -503,7 +473,7 @@ public class BooleanModel {
 	/**
 	 * Modify equation based on correct identification of target's name
 	 *
-	 * @param equation
+	 * @param equation Equation string to substitute
 	 */
 	void modifyEquation(String equation) throws Exception {
 		// Get index of equation for specified target
