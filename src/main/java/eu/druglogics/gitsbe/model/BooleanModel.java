@@ -89,49 +89,63 @@ public class BooleanModel {
 		}
 
 		String fileExtension = getFileExtension(filename);
-		if (fileExtension.equals(".gitsbe")) {
-			// Boolean equations
-			this.booleanEquations = new ArrayList<>();
 
-			// Alternative names
-			this.mapAlternativeNames = new ArrayList<>();
+		switch (fileExtension) {
+			case ".gitsbe":
+				this.booleanEquations = new ArrayList<>();
+				this.mapAlternativeNames = new ArrayList<>();
 
-			// Load model
-			for (String line : lines) {
-				String prefix = line.substring(0, line.indexOf(' '));
-				String value = line.substring(line.indexOf(' '));
-				switch (prefix) {
-					case "modelname:":
-						this.modelName = value.trim();
-						break;
-					case "equation:":
-						booleanEquations.add(new BooleanEquation(value));
-						break;
-					case "mapping:":
-						String[] temp = value.split(" = ");
-						mapAlternativeNames.add(new String[]{temp[0].trim(), temp[1].trim()});
-						break;
+				for (String line : lines) {
+					String prefix = line.substring(0, line.indexOf(' '));
+					String value = line.substring(line.indexOf(' '));
+					switch (prefix) {
+						case "modelname:":
+							this.modelName = value.trim();
+							break;
+						case "equation:":
+							booleanEquations.add(new BooleanEquation(value));
+							break;
+						case "mapping:":
+							String[] temp = value.split(" = ");
+							mapAlternativeNames.add(new String[]{temp[0].trim(), temp[1].trim()});
+							break;
+					}
 				}
-			}
+				break;
+			case ".booleannet":
+				this.booleanEquations = new ArrayList<>();
+				this.mapAlternativeNames = new ArrayList<>();
+				this.modelName = removeExtension(filename);
 
-		} else if (fileExtension.equals(".booleannet")) {
-			// Boolean equations
-			this.booleanEquations = new ArrayList<>();
+				for (int i = 0; i < lines.size(); i++) {
+					booleanEquations.add(new BooleanEquation(lines.get(i)));
+					String target = lines.get(i).substring(0, lines.get(i).indexOf(" *=")).trim();
+					mapAlternativeNames.add(new String[] { target, "x" + (i + 1) });
+				}
+				break;
+			case ".bnet":
+				this.booleanEquations = new ArrayList<>();
+				this.mapAlternativeNames = new ArrayList<>();
+				this.modelName = removeExtension(filename);
 
-			// Alternative names
-			this.mapAlternativeNames = new ArrayList<>();
-
-			this.modelName = removeExtension(filename);
-
-			// Load model
-			for (int i = 0; i < lines.size(); i++) {
-				booleanEquations.add(new BooleanEquation(lines.get(i)));
-				String target = lines.get(i).substring(0, lines.get(i).indexOf(" *=")).trim();
-				mapAlternativeNames.add(new String[] { target, "x" + (i + 1) });
-			}
-		} else {
-			logger.error("File extension: " + fileExtension + " for loading Boolean " +
-					"model from file is not supported");
+				// ignore first line: targets, factors
+				for (int i = 1; i < lines.size(); i++) {
+					String equationBoolNet = lines.get(i);
+					String equationBooleanNet = equationBoolNet
+							.replace(",", " *=")
+							.replace(" & ", " and ")
+							.replace(" | ", " or ")
+							.replace(" ! ", " not ")
+							.replace(" 1 ", " true ")
+							.replace(" 0 ", " false ");
+					booleanEquations.add(new BooleanEquation(equationBooleanNet));
+					String target = equationBoolNet.split(",")[0].trim();
+					mapAlternativeNames.add(new String[] { target, "x" + i });
+				}
+				break;
+			default:
+				logger.error("File extension: " + fileExtension + " for loading Boolean " +
+						"model from file is not supported");
 		}
 	}
 

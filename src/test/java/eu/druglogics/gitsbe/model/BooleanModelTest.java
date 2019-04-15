@@ -127,6 +127,43 @@ class BooleanModelTest {
     }
 
     @Test
+    void test_init_boolean_model_from_bnet_file() {
+        Logger mockLogger = mock(Logger.class);
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        String filename = new File(classLoader.getResource("example.bnet").getFile()).getPath();
+
+        BooleanModel booleanModel = new BooleanModel(filename, mockLogger);
+
+        assertEquals("example", booleanModel.getModelName());
+        assertThat(booleanModel.getBooleanEquations())
+                .hasSize(6)
+                .extracting("target", "activatingRegulators", "inhibitoryRegulators", "link")
+                .contains(tuple("A", newArrayList("B", "C"), newArrayList("D"), "and"))
+                .contains(tuple("B", newArrayList(), newArrayList("A"), ""))
+                .contains(tuple("C", newArrayList("B"), newArrayList(), ""))
+                .contains(tuple("D", newArrayList(), newArrayList("D"), ""))
+                .contains(tuple("E", newArrayList("D"), newArrayList("A", "B", "C"), "and"))
+                .contains(tuple("F", newArrayList("C"), newArrayList("A"), "or"));
+
+        ArrayList<String[]> altNames = booleanModel.getMapAlternativeNames();
+
+        assertEquals(6, altNames.size());
+        assertEquals("A", altNames.get(0)[0]);
+        assertEquals("x1", altNames.get(0)[1]);
+        assertEquals("B", altNames.get(1)[0]);
+        assertEquals("x2", altNames.get(1)[1]);
+        assertEquals("C", altNames.get(2)[0]);
+        assertEquals("x3", altNames.get(2)[1]);
+        assertEquals("D", altNames.get(3)[0]);
+        assertEquals("x4", altNames.get(3)[1]);
+        assertEquals("E", altNames.get(4)[0]);
+        assertEquals("x5", altNames.get(4)[1]);
+        assertEquals("F", altNames.get(5)[0]);
+        assertEquals("x6", altNames.get(5)[1]);
+    }
+
+    @Test
     void test_get_index_of_equation() {
         assertEquals(0, booleanModelSelfContained.getIndexOfEquation("B"));
         assertEquals(1, booleanModelSelfContained.getIndexOfEquation("A"));
