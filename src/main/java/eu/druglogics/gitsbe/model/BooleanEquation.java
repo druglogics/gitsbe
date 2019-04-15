@@ -175,6 +175,12 @@ public class BooleanEquation {
 
 	}
 
+	/**
+	 * Returns the string of the equation represented in
+	 * the Booleannet format: A *=  (  (  B )  or C ) and not  (  ( E )  or F )
+	 *
+	 * @return
+	 */
 	String getBooleanEquation() {
 		StringBuilder equation = new StringBuilder(target + " *= ");
 
@@ -221,19 +227,6 @@ public class BooleanEquation {
 		}
 
 		return " " + equation.toString().trim() + " ";
-	}
-
-	String getBooleanEquationVC() {
-		String equation = getBooleanEquation();
-
-		// Replace operators
-		equation = equation.replace(" and ", " & ");
-		equation = equation.replace(" or ", " | ");
-		equation = equation.replace(" not ", " ! ");
-		equation = equation.replace(" true ", " 1 ");
-		equation = equation.replace(" false ", " 0 ");
-
-		return equation;
 	}
 
 	void mutateRandomOperator() {

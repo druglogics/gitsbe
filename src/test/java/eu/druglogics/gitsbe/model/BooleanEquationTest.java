@@ -125,16 +125,6 @@ class BooleanEquationTest {
     }
 
     @Test
-    void test_get_equation_in_VC_format() {
-        String expectedEquationString1 = " A *=  (  (  (  B )  | C )  | D ) " +
-                "& !  (  (  ( E )  | F )  | G ) ";
-        assertEquals(expectedEquationString1, booleanEquationWithLink.getBooleanEquationVC());
-
-        String expectedEquationString2 = " A *=  !  ( B ) ";
-        assertEquals(expectedEquationString2, booleanEquationNoLink.getBooleanEquationVC());
-    }
-
-    @Test
     void test_convert_to_sif_lines() {
         ArrayList<String> sifLines1 = booleanEquationWithLink.convertToSifLines(" ");
         ArrayList<String> expectedSifLines1 = new ArrayList<>(
