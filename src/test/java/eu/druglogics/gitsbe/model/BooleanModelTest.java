@@ -208,7 +208,7 @@ class BooleanModelTest {
 
     @Test
     void test_get_model_booleannet() throws Exception {
-        assertThat(booleanModel.getModelBooleannet())
+        assertThat(booleanModel.getModelBooleanNet())
                 .hasSize(10)
                 .contains("B *= ( A ) and not ( C )",
                         "A *= ( C )",
@@ -223,7 +223,7 @@ class BooleanModelTest {
 
         booleanModel.modifyEquation("A *= true");
         booleanModel.modifyEquation("J *= false");
-        assertThat(booleanModel.getModelBooleannet())
+        assertThat(booleanModel.getModelBooleanNet())
                 .hasSize(10)
                 .contains("B *= ( A ) and not ( C )",
                         "A *= ( true )",

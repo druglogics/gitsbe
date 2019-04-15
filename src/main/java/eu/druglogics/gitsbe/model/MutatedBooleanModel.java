@@ -300,11 +300,11 @@ public class MutatedBooleanModel extends BooleanModel {
 	}
 
 	@Override
-	public void exportModelToGitsbeFile(String directoryName) throws IOException {
+	public void exportModelToGitsbeFile(String directoryOutput) throws IOException {
 
 		String filename = this.modelName + ".gitsbe";
 		PrintWriter writer = new PrintWriter(
-				new File(directoryName, filename).getAbsolutePath(), "UTF-8"
+				new File(directoryOutput, filename).getAbsolutePath(), "UTF-8"
 		);
 
 		// Write header with '#'

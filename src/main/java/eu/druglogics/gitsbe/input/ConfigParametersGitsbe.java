@@ -13,6 +13,7 @@ public class ConfigParametersGitsbe extends ConfigParametersGlobal{
     public boolean export_to_gitsbe;
     public boolean export_to_sif;
     public boolean export_to_ginml;
+    public boolean export_to_boolnet;
 
     // Parameters for the simulations
     public int population;
@@ -44,6 +45,10 @@ public class ConfigParametersGitsbe extends ConfigParametersGlobal{
 
     public boolean exportToGinML() {
         return export_to_ginml;
+    }
+
+    public boolean exportToBoolNet() {
+        return export_to_boolnet;
     }
 
     public boolean removeOutputNodes() {

@@ -85,6 +85,10 @@ public class Config extends ConfigParametersGitsbe {
 					export_to_ginml = Boolean.parseBoolean(value);
 					break;
 
+				case "export_to_boolnet":
+					export_to_boolnet = Boolean.parseBoolean(value);
+					break;
+
 				case "population":
 					population = Integer.parseInt(value);
 					break;

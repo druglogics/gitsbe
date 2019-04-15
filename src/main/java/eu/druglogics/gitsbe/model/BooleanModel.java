@@ -7,11 +7,9 @@ import static eu.druglogics.gitsbe.util.FileDeleter.*;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 /**
@@ -21,10 +19,10 @@ import java.util.ArrayList;
  */
 public class BooleanModel {
 
-	ArrayList<BooleanEquation> booleanEquations;
+	protected ArrayList<BooleanEquation> booleanEquations;
 	ArrayList<String[]> mapAlternativeNames;
-	ArrayList<String> stableStates;
-	String modelName;
+	protected ArrayList<String> stableStates;
+	protected String modelName;
 	private String filename;
 	Logger logger;
 	private static String directoryBNET = System.getenv("BNET_HOME");
@@ -136,6 +134,7 @@ public class BooleanModel {
 					"model from file is not supported");
 		}
 	}
+
 	protected BooleanModel(final BooleanModel booleanModel, Logger logger) {
 		this.logger = logger;
 
@@ -156,43 +155,11 @@ public class BooleanModel {
 		this.modelName = booleanModel.modelName;
 	}
 
-	public void exportModelToSifFile(String directoryOutput, String filename)
-			throws FileNotFoundException, UnsupportedEncodingException {
-
-		PrintWriter writer = new PrintWriter(
-				new File(directoryOutput, filename).getAbsolutePath(), "UTF-8"
-		);
-
-		for (BooleanEquation booleanEquation : booleanEquations)
-			for (String sifLine : booleanEquation.convertToSifLines("\t"))
-				writer.println(sifLine);
-
-		writer.close();
-	}
-
-	public void exportModelToBoolNetFile(String outputDirectory, String filename)
-			throws FileNotFoundException, UnsupportedEncodingException {
-		PrintWriter writer = new PrintWriter(new File(outputDirectory, filename), "UTF-8");
-
-		ArrayList<String> equations = getModelBoolNet();
-
-		// Write header
-		writer.println("targets, factors");
-		writer.println("filename: " + filename);
-
-		// Write equations
-		for (String equation : equations) {
-			writer.println(equation);
-		}
-
-		writer.close();
-	}
-
-	public void exportModelToGitsbeFile(String directoryName) throws IOException {
+	public void exportModelToGitsbeFile(String directoryOutput) throws IOException {
 
 		String filename = removeExtension(this.modelName) + ".gitsbe";
 		PrintWriter writer = new PrintWriter(
-				new File(directoryName, filename).getAbsolutePath(), "UTF-8"
+				new File(directoryOutput, filename).getAbsolutePath(), "UTF-8"
 		);
 
 		// Write header with '#'
@@ -219,13 +186,26 @@ public class BooleanModel {
 		writer.close();
 	}
 
+	public void exportModelToSifFile(String directoryOutput, String filename) throws IOException {
+
+		PrintWriter writer = new PrintWriter(
+				new File(directoryOutput, filename).getAbsolutePath(), "UTF-8"
+		);
+
+		for (BooleanEquation booleanEquation : booleanEquations)
+			for (String sifLine : booleanEquation.convertToSifLines("\t"))
+				writer.println(sifLine);
+
+		writer.close();
+	}
+
 	public void exportModelToGINMLFile(String directoryOutput, String filename,
 									   ArrayList<SingleInteraction> singleInteractions) throws IOException {
 
 		PrintWriter writer = new PrintWriter(
 				new File(directoryOutput, filename).getAbsolutePath(), "UTF-8"
 		);
-		ArrayList<String> equations = this.getModelBooleannet();
+		ArrayList<String> equations = this.getModelBooleanNet();
 
 		// write heading
 
@@ -279,10 +259,44 @@ public class BooleanModel {
 		writer.close();
 	}
 
+	public void exportModelToBoolNetFile(String directoryOutput, String filename) throws IOException {
+
+		PrintWriter writer = new PrintWriter(
+				new File(directoryOutput, filename).getAbsoluteFile(), "UTF-8"
+		);
+
+		ArrayList<String> equations = getModelBoolNet();
+
+		// Write header
+		writer.println("targets, factors");
+
+		// Write equations
+		for (String equation : equations) {
+			writer.println(equation);
+		}
+
+		writer.close();
+	}
+
+	private void exportModelToVelizCubaFile(String directoryOutput, String filename) throws IOException {
+		PrintWriter writer = new PrintWriter(
+				new File(directoryOutput, filename).getAbsoluteFile(), "UTF-8"
+		);
+
+		// Defined model in Veliz-Cuba terminology
+		ArrayList<String> equationsVC = getModelVelizCuba();
+
+		for (String equation : equationsVC) {
+			writer.println(equation);
+		}
+
+		writer.close();
+	}
+
 	/**
 	 * @return an ArrayList of Strings (the model equations in Booleannet format)
 	 */
-	ArrayList<String> getModelBooleannet() {
+	ArrayList<String> getModelBooleanNet() {
 		ArrayList<String> equations = new ArrayList<>();
 
 		for (BooleanEquation booleanEquation : booleanEquations) {
@@ -297,7 +311,7 @@ public class BooleanModel {
 	 */
 	ArrayList<String> getModelVelizCuba() {
 
-		ArrayList<String> equations = this.getModelBooleannet();
+		ArrayList<String> equations = this.getModelBooleanNet();
 		ArrayList<String> modifiedEquations = new ArrayList<>();
 
 		for (String equation : equations) {
@@ -321,7 +335,7 @@ public class BooleanModel {
 	 * @return an ArrayList of Strings (the model equations in BoolNet format)
 	 */
 	ArrayList<String> getModelBoolNet() {
-		ArrayList<String> equations = this.getModelBooleannet();
+		ArrayList<String> equations = this.getModelBooleanNet();
 		ArrayList<String> modifiedEquations = new ArrayList<>();
 
 		for (String equation : equations) {
@@ -331,23 +345,13 @@ public class BooleanModel {
 		return modifiedEquations;
 	}
 
-	public void calculateStableStatesVC(String directoryOutput)
-			throws IOException {
-
-		// Defined model in Veliz-Cuba terminology
-		ArrayList<String> equationsVC = getModelVelizCuba();
-
-		// Write model to file for 'BNreduction.sh'
-		String modelDataFileVC = new File(directoryOutput, modelName + ".dat").getAbsolutePath();
-		PrintWriter writer = new PrintWriter(modelDataFileVC, "UTF-8");
-
-		for (String equation : equationsVC) {
-			writer.println(equation);
-		}
-		writer.close();
+	public void calculateStableStatesVC(String directoryOutput) throws IOException {
+		String filenameVC = this.modelName + ".dat";
+		exportModelToVelizCubaFile(directoryOutput, filenameVC);
 
 		// Run the BNReduction script
-		runBNReduction(modelDataFileVC);
+		String filenameVCFullPath = new File(directoryOutput, filenameVC).getAbsolutePath();
+		runBNReduction(filenameVCFullPath);
 
 		// Read stable states from BNReduction.sh output file
 		String fixedPointsFile = new File(directoryOutput, modelName + ".dat.fp").getAbsolutePath();
@@ -381,12 +385,12 @@ public class BooleanModel {
 		deleteFilesMatchingPattern(logger, modelName);
 	}
 
-	private void runBNReduction(String modelDataFileVC) {
+	private void runBNReduction(String filenameVC) {
 		String BNReductionScriptFile = new File(directoryBNET, "BNReduction.sh").getAbsolutePath();
 
 		try {
 			ProcessBuilder pb = new ProcessBuilder("timeout", "30",
-					BNReductionScriptFile, modelDataFileVC);
+					BNReductionScriptFile, filenameVC);
 
 			if (logger.getVerbosity() >= 3) {
 				pb.redirectErrorStream(true);
