@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * 
@@ -20,7 +22,7 @@ import java.util.ArrayList;
 public class BooleanModel {
 
 	protected ArrayList<BooleanEquation> booleanEquations;
-	ArrayList<String[]> mapAlternativeNames;
+	LinkedHashMap<String, String> nodeNameToVariableMap;
 	protected ArrayList<String> stableStates;
 	protected String modelName;
 	private String filename;
@@ -43,24 +45,21 @@ public class BooleanModel {
 		this.logger = logger;
 		this.modelName = generalModel.getModelName();
 		this.booleanEquations = new ArrayList<>();
-		this.mapAlternativeNames = new ArrayList<>();
+		this.nodeNameToVariableMap = new LinkedHashMap<>();
 		this.stableStates = new ArrayList<>();
 
 		for (int i = 0; i < generalModel.size(); i++) {
 			// Define Boolean equation from multiple interaction
 			BooleanEquation booleanEquation = new BooleanEquation(generalModel.getMultipleInteraction(i));
 
-			// Build list of alternative names used for Veliz-Cuba bnet stable states
-			// computation (x1, x2, x3, ..., xn)
-
-			String[] temp = new String[2];
-			temp[0] = generalModel.getMultipleInteraction(i).getTarget();
-			temp[1] = "x" + (i + 1);
-
-			mapAlternativeNames.add(temp);
+			// Build mapping between the node names and the variables used for Veliz-Cuba
+			// bnet stable states computation (x1, x2, x3, ..., xn)
+			String target = generalModel.getMultipleInteraction(i).getTarget();
+			String var    = "x" + (i + 1);
+			nodeNameToVariableMap.put(target, var);
 
 			// Add Boolean equation to ArrayList, with index corresponding to
-			// mapAlternativeNames
+			// nodeNameToVariableMap
 			booleanEquations.add(booleanEquation);
 		}
 	}
@@ -93,7 +92,7 @@ public class BooleanModel {
 		switch (fileExtension) {
 			case ".gitsbe":
 				this.booleanEquations = new ArrayList<>();
-				this.mapAlternativeNames = new ArrayList<>();
+				this.nodeNameToVariableMap = new LinkedHashMap<>();
 
 				for (String line : lines) {
 					String prefix = line.substring(0, line.indexOf(' '));
@@ -107,25 +106,26 @@ public class BooleanModel {
 							break;
 						case "mapping:":
 							String[] temp = value.split(" = ");
-							mapAlternativeNames.add(new String[]{temp[0].trim(), temp[1].trim()});
+							nodeNameToVariableMap.put(temp[0].trim(), temp[1].trim());
 							break;
 					}
 				}
 				break;
 			case ".booleannet":
 				this.booleanEquations = new ArrayList<>();
-				this.mapAlternativeNames = new ArrayList<>();
+				this.nodeNameToVariableMap = new LinkedHashMap<>();
 				this.modelName = removeExtension(filename);
 
 				for (int i = 0; i < lines.size(); i++) {
 					booleanEquations.add(new BooleanEquation(lines.get(i)));
 					String target = lines.get(i).substring(0, lines.get(i).indexOf(" *=")).trim();
-					mapAlternativeNames.add(new String[] { target, "x" + (i + 1) });
+					String var    = "x" + (i + 1);
+					nodeNameToVariableMap.put(target, var);
 				}
 				break;
 			case ".bnet":
 				this.booleanEquations = new ArrayList<>();
-				this.mapAlternativeNames = new ArrayList<>();
+				this.nodeNameToVariableMap = new LinkedHashMap<>();
 				this.modelName = removeExtension(filename);
 
 				// ignore first line: targets, factors
@@ -140,7 +140,8 @@ public class BooleanModel {
 							.replace(" 0 ", " false ");
 					booleanEquations.add(new BooleanEquation(equationBooleanNet));
 					String target = equationBoolNet.split(",")[0].trim();
-					mapAlternativeNames.add(new String[] { target, "x" + i });
+					String var    = "x" + i;
+					nodeNameToVariableMap.put(target, var);
 				}
 				break;
 			default:
@@ -157,10 +158,9 @@ public class BooleanModel {
 
 		booleanEquations.addAll(booleanModel.booleanEquations);
 
-		// Copy mapAlternativeNames
-		this.mapAlternativeNames = new ArrayList<>();
-
-		this.mapAlternativeNames.addAll(booleanModel.mapAlternativeNames);
+		// Copy nodeNameToVariableMap
+		this.nodeNameToVariableMap = new LinkedHashMap<>();
+		this.nodeNameToVariableMap.putAll(booleanModel.nodeNameToVariableMap);
 
 		// Stable states (empty)
 		stableStates = new ArrayList<>();
@@ -193,8 +193,8 @@ public class BooleanModel {
 		}
 
 		// Write alternative names for Veliz-Cuba
-		for (String[] names : mapAlternativeNames) {
-			writer.println("mapping: " + names[0] + " = " + names[1]);
+		for (Map.Entry<String, String> entry : nodeNameToVariableMap.entrySet()) {
+			writer.println("mapping: " + entry.getKey() + " = " + entry.getValue());
 		}
 
 		writer.close();
@@ -230,23 +230,22 @@ public class BooleanModel {
 		// write nodeorder
 
 		writer.print("<graph class=\"regulatory\" id=\"" + modelName.replace(".", "_") + "\" nodeorder=\"");
-		for (String[] names : mapAlternativeNames) {
-			writer.print(names[0] + " ");
+		for (String nodeName : nodeNameToVariableMap.keySet()) {
+			writer.print(nodeName + " ");
 		}
 		writer.print("\">\n");
 
 		// node style edge style
 
 		// write nodes with Boolean expression
-		int index = 0;
 		for (String equation : equations) {
-			writer.println("<node id=\"" + mapAlternativeNames.get(index)[0] + "\" maxvalue=\"1\">");
+			String target = equation.split("\\*=")[0].trim();
+			writer.println("<node id=\"" + target + "\" maxvalue=\"1\">");
 			writer.println("\t<value val=\"1\">");
 			writer.println("\t\t<exp str=\"" + equation + "\"/>");
 			writer.println("\t</value>");
 			writer.println("\t<nodevisualsetting x=\"10\" y=\"10\" style=\"\"/>");
 			writer.println("</node>");
-			index++;
 		}
 
 		// write edges
@@ -336,8 +335,9 @@ public class BooleanModel {
 					.substring(equation.indexOf('=') + 1)
 					.trim();
 			// Use the alternate names (x1, x2, ..., xn)
-			for (String[] map: mapAlternativeNames) {
-				modifiedEquation = modifiedEquation.replace(" " + map[0] + " ", " " + map[1] + " ");
+			for (Map.Entry<String, String> entry : nodeNameToVariableMap.entrySet()) {
+				modifiedEquation = modifiedEquation
+						.replace(" " + entry.getKey() + " ", " " + entry.getValue() + " ");
 			}
 			modifiedEquations.add(modifiedEquation);
 		}
@@ -381,15 +381,6 @@ public class BooleanModel {
 				logger.outputStringMessage(1, "BNReduction found " + stableStates.size() + " stable states:");
 				for (int i = 0; i < stableStates.size(); i++) {
 					logger.outputStringMessage(2, "Stable state " + (i + 1) + ": " + stableStates.get(i));
-				}
-
-				// Debug info
-				for (int i = 0; i < stableStates.get(0).length(); i++) {
-					StringBuilder states = new StringBuilder();
-					for (String stableState : stableStates) {
-						states.append("\t").append(stableState.charAt(i));
-					}
-					logger.debug(mapAlternativeNames.get(i)[0] + states);
 				}
 			}
 		} else {
@@ -441,25 +432,11 @@ public class BooleanModel {
 	 * @return
 	 */
 	public int getIndexOfEquation(String target) {
-		int index = -1;
-
-		for (int i = 0; i < mapAlternativeNames.size(); i++) {
-			if (target.trim().equals(mapAlternativeNames.get(i)[0].trim())) {
-				index = i;
-			}
-		}
-
-		return index;
+		return new ArrayList<>(nodeNameToVariableMap.keySet()).indexOf(target.trim());
 	}
 
 	public ArrayList<String> getNodeNames() {
-		ArrayList<String> nodeNames = new ArrayList<>();
-
-		for (String[] names : mapAlternativeNames) {
-			nodeNames.add(names[0]);
-		}
-
-		return nodeNames;
+		return new ArrayList<>(nodeNameToVariableMap.keySet());
 	}
 
 	/**
@@ -520,7 +497,7 @@ public class BooleanModel {
 		return filename;
 	}
 
-	ArrayList<String[]> getMapAlternativeNames() {
-		return mapAlternativeNames;
+	LinkedHashMap<String, String> getNodeNameToVariableMap() {
+		return nodeNameToVariableMap;
 	}
 }

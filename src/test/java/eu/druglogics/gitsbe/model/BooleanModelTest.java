@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeEach;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.util.Lists.newArrayList;
@@ -72,21 +74,18 @@ class BooleanModelTest {
                 .contains(tuple("E", newArrayList("D"), newArrayList("A", "B", "C"), "and"))
                 .contains(tuple("F", newArrayList("C"), newArrayList("A"), "or"));
 
-        ArrayList<String[]> altNames = booleanModel.getMapAlternativeNames();
+        LinkedHashMap<String, String> map = booleanModel.getNodeNameToVariableMap();
 
-        assertEquals(6, altNames.size());
-        assertEquals("A", altNames.get(0)[0]);
-        assertEquals("x1", altNames.get(0)[1]);
-        assertEquals("B", altNames.get(1)[0]);
-        assertEquals("x2", altNames.get(1)[1]);
-        assertEquals("C", altNames.get(2)[0]);
-        assertEquals("x3", altNames.get(2)[1]);
-        assertEquals("D", altNames.get(3)[0]);
-        assertEquals("x4", altNames.get(3)[1]);
-        assertEquals("E", altNames.get(4)[0]);
-        assertEquals("x5", altNames.get(4)[1]);
-        assertEquals("F", altNames.get(5)[0]);
-        assertEquals("x6", altNames.get(5)[1]);
+        ArrayList<String> expectedNodes = new ArrayList<>(
+                Arrays.asList("A", "B", "C", "D", "E", "F")
+        );
+        ArrayList<String> expectedVars = new ArrayList<>(
+                Arrays.asList("x1", "x2", "x3", "x4", "x5", "x6")
+        );
+
+        assertEquals(6, map.size());
+        assertEquals(expectedNodes, new ArrayList<>(map.keySet()));
+        assertEquals(expectedVars, new ArrayList<>(map.values()));
     }
 
     @Test
@@ -109,21 +108,18 @@ class BooleanModelTest {
                 .contains(tuple("E", newArrayList("D"), newArrayList("A", "B", "C"), "and"))
                 .contains(tuple("F", newArrayList("C"), newArrayList("A"), "or"));
 
-        ArrayList<String[]> altNames = booleanModel.getMapAlternativeNames();
+        LinkedHashMap<String, String> map = booleanModel.getNodeNameToVariableMap();
 
-        assertEquals(6, altNames.size());
-        assertEquals("A", altNames.get(0)[0]);
-        assertEquals("x1", altNames.get(0)[1]);
-        assertEquals("B", altNames.get(1)[0]);
-        assertEquals("x2", altNames.get(1)[1]);
-        assertEquals("C", altNames.get(2)[0]);
-        assertEquals("x3", altNames.get(2)[1]);
-        assertEquals("D", altNames.get(3)[0]);
-        assertEquals("x4", altNames.get(3)[1]);
-        assertEquals("E", altNames.get(4)[0]);
-        assertEquals("x5", altNames.get(4)[1]);
-        assertEquals("F", altNames.get(5)[0]);
-        assertEquals("x6", altNames.get(5)[1]);
+        ArrayList<String> expectedNodes = new ArrayList<>(
+                Arrays.asList("A", "B", "C", "D", "E", "F")
+        );
+        ArrayList<String> expectedVars = new ArrayList<>(
+                Arrays.asList("x1", "x2", "x3", "x4", "x5", "x6")
+        );
+
+        assertEquals(6, map.size());
+        assertEquals(expectedNodes, new ArrayList<>(map.keySet()));
+        assertEquals(expectedVars, new ArrayList<>(map.values()));
     }
 
     @Test
@@ -146,26 +142,24 @@ class BooleanModelTest {
                 .contains(tuple("E", newArrayList("D"), newArrayList("A", "B", "C"), "and"))
                 .contains(tuple("F", newArrayList("C"), newArrayList("A"), "or"));
 
-        ArrayList<String[]> altNames = booleanModel.getMapAlternativeNames();
+        LinkedHashMap<String, String> map = booleanModel.getNodeNameToVariableMap();
 
-        assertEquals(6, altNames.size());
-        assertEquals("A", altNames.get(0)[0]);
-        assertEquals("x1", altNames.get(0)[1]);
-        assertEquals("B", altNames.get(1)[0]);
-        assertEquals("x2", altNames.get(1)[1]);
-        assertEquals("C", altNames.get(2)[0]);
-        assertEquals("x3", altNames.get(2)[1]);
-        assertEquals("D", altNames.get(3)[0]);
-        assertEquals("x4", altNames.get(3)[1]);
-        assertEquals("E", altNames.get(4)[0]);
-        assertEquals("x5", altNames.get(4)[1]);
-        assertEquals("F", altNames.get(5)[0]);
-        assertEquals("x6", altNames.get(5)[1]);
+        ArrayList<String> expectedNodes = new ArrayList<>(
+                Arrays.asList("A", "B", "C", "D", "E", "F")
+        );
+        ArrayList<String> expectedVars = new ArrayList<>(
+                Arrays.asList("x1", "x2", "x3", "x4", "x5", "x6")
+        );
+
+        assertEquals(6, map.size());
+        assertEquals(expectedNodes, new ArrayList<>(map.keySet()));
+        assertEquals(expectedVars, new ArrayList<>(map.values()));
     }
 
     @Test
     void test_get_index_of_equation() {
         assertEquals(0, booleanModelSelfContained.getIndexOfEquation("B"));
+        assertEquals(0, booleanModelSelfContained.getIndexOfEquation("  B "));
         assertEquals(1, booleanModelSelfContained.getIndexOfEquation("A"));
         assertEquals(2, booleanModelSelfContained.getIndexOfEquation("D"));
         assertEquals(3, booleanModelSelfContained.getIndexOfEquation("C"));
@@ -230,17 +224,18 @@ class BooleanModelTest {
 
     @Test
     void test_get_alternative_names() {
-        ArrayList<String[]> altNames = booleanModel.getMapAlternativeNames();
+        LinkedHashMap<String, String> map = booleanModel.getNodeNameToVariableMap();
 
-        assertEquals(10, altNames.size());
-        assertEquals("B", altNames.get(0)[0]);
-        assertEquals("x1", altNames.get(0)[1]);
-        assertEquals("A", altNames.get(1)[0]);
-        assertEquals("x2", altNames.get(1)[1]);
-        assertEquals("D", altNames.get(2)[0]);
-        assertEquals("x3", altNames.get(2)[1]);
-        assertEquals("J", altNames.get(9)[0]);
-        assertEquals("x10", altNames.get(9)[1]);
+        ArrayList<String> expectedNodes = new ArrayList<>(
+                Arrays.asList("B", "A", "D", "C", "W", "F", "K", "E", "I", "J")
+        );
+        ArrayList<String> expectedVars = new ArrayList<>(
+                Arrays.asList("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10")
+        );
+
+        assertEquals(10, map.size());
+        assertEquals(expectedNodes, new ArrayList<>(map.keySet()));
+        assertEquals(expectedVars, new ArrayList<>(map.values()));
     }
 
     @Test
@@ -335,8 +330,4 @@ class BooleanModelTest {
                         "I, ( I )",
                         "J, ( 0 )");
     }
-
-    //TODO
-    // exportModelToBoolNetFile -> put it in the code
-    // mapAlternativeNames refactoring
 }

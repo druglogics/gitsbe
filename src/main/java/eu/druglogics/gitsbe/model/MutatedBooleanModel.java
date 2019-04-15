@@ -14,6 +14,8 @@ import java.io.UnsupportedEncodingException;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class MutatedBooleanModel extends BooleanModel {
 
@@ -33,9 +35,9 @@ public class MutatedBooleanModel extends BooleanModel {
 		// Copy Boolean equations from parents
 		crossoverCopy(parent1, parent2, logger);
 
-		// Copy mapAlternativeNames
-		this.mapAlternativeNames = new ArrayList<>();
-		this.mapAlternativeNames.addAll(parent1.mapAlternativeNames);
+		// Copy nodeNameToVariableMap
+		this.nodeNameToVariableMap = new LinkedHashMap<>();
+		this.nodeNameToVariableMap.putAll(parent1.nodeNameToVariableMap);
 
 		// Define stable states
 		this.stableStates = new ArrayList<>();
@@ -326,8 +328,8 @@ public class MutatedBooleanModel extends BooleanModel {
 		}
 
 		// Write alternative names for Veliz-Cuba
-		for (String[] names : mapAlternativeNames) {
-			writer.println("mapping: " + names[0] + " = " + names[1]);
+		for (Map.Entry<String, String> entry : nodeNameToVariableMap.entrySet()) {
+			writer.println("mapping: " + entry.getKey() + " = " + entry.getValue());
 		}
 
 		writer.close();
