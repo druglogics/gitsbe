@@ -21,6 +21,27 @@ class UtilTest {
     }
 
     @Test
+    void test_replace_operators() {
+        String equation1 = " A *= B ";
+        String equation2 = " A *= false ";
+        String equation3 = " A *= not ( true ) ";
+        String equation4 = " A *=  (  (  B )  or C ) and not  (  ( E )  or F ) ";
+        String equation5 = " A *=  (  (  false )  or C ) or not  (  ( true )  and F ) ";
+
+        String expectedEquation1 = " A *= B ";
+        String expectedEquation2 = " A *= 0 ";
+        String expectedEquation3 = " A *= ! ( 1 ) ";
+        String expectedEquation4 = " A *=  (  (  B )  | C ) & !  (  ( E )  | F ) ";
+        String expectedEquation5 = " A *=  (  (  0 )  | C ) | !  (  ( 1 )  & F ) ";
+
+        assertEquals(expectedEquation1, Util.replaceOperators(equation1));
+        assertEquals(expectedEquation2, Util.replaceOperators(equation2));
+        assertEquals(expectedEquation3, Util.replaceOperators(equation3));
+        assertEquals(expectedEquation4, Util.replaceOperators(equation4));
+        assertEquals(expectedEquation5, Util.replaceOperators(equation5));
+    }
+
+    @Test
     void test_infer_input_dir() {
         String userWorkDir = System.getProperty("user.dir");
 

@@ -27,6 +27,15 @@ public class Util {
 		}
 	}
 
+	public static String replaceOperators(String equation) {
+		return (equation
+				.replace(" and ", " & ")
+				.replace(" or ", " | ")
+				.replace(" not ", " ! ")
+				.replace(" true ", " 1 ")
+				.replace(" false ", " 0 "));
+	}
+
 	/**
 	 * Makes the directory path absolute (if it is not already)
 	 * 
