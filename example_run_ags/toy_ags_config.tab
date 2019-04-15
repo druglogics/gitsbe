@@ -32,8 +32,8 @@ remove_input_nodes:	true
 
 ## Exporting input network file
 export_to_gitsbe:	true
-export_to_sif:	false
-export_to_ginml:	false
+export_to_sif:	true
+export_to_ginml:	true
 
 # Parameters for evolutionary algorithms
 # Number of simulations (evolutions) to run
