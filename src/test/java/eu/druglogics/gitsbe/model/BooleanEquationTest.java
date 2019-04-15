@@ -125,6 +125,25 @@ class BooleanEquationTest {
     }
 
     @Test
+    void test_init_mutated_equation_from_string() {
+        String equationStringMutated = "A *= (  false )";
+        BooleanEquation booleanEquationMutated = new BooleanEquation(equationStringMutated);
+
+        assertEquals(1, booleanEquationMutated.getNumRegulators());
+        assertEquals(1, booleanEquationMutated.getNumWhitelistedRegulators());
+        assertEquals(0, booleanEquationMutated.getNumBlacklistedRegulators());
+        assertEquals("A", booleanEquationMutated.getTarget());
+        assertTrue(booleanEquationMutated.getLink().isEmpty());
+
+        ArrayList<String> activatingRegulatorsExpected = new ArrayList<>();
+        activatingRegulatorsExpected.add("false");
+        assertEquals(activatingRegulatorsExpected, booleanEquationMutated.getActivatingRegulators());
+
+        String expectedEquationString = " A *=  (  false ) ";
+        assertEquals(expectedEquationString, booleanEquationMutated.getBooleanEquation());
+    }
+
+    @Test
     void test_convert_to_sif_lines() {
         ArrayList<String> sifLines1 = booleanEquationWithLink.convertToSifLines(" ");
         ArrayList<String> expectedSifLines1 = new ArrayList<>(
