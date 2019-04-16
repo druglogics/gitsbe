@@ -101,12 +101,36 @@
         </profile>
     </profiles>
 
+    <repositories>
+        <repository>
+            <id>ginsim_snapshot</id>
+            <name>GINsim snapshot repository</name>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
+            <url>http://ginsim.org/maven/snapshot</url>
+        </repository>
+        <repository>
+            <id>ginsim_stable</id>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+            <name>GINsim deps</name>
+            <url>http://ginsim.org/maven/stable</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <!-- Parser for command line parameters -->
         <dependency>
             <groupId>com.beust</groupId>
             <artifactId>jcommander</artifactId>
             <version>1.72</version>
+        </dependency>
+
+        <!-- BioLQM -->
+        <dependency>
+            <groupId>org.colomoto</groupId>
+            <artifactId>bioLQM</artifactId>
+            <version>0.7-SNAPSHOT</version>
         </dependency>
 
         <!-- Testing -->
