@@ -6,34 +6,35 @@ import java.util.Arrays;
 public class ConfigParametersGitsbe extends ConfigParametersGlobal{
 
     // Model trimming
-    public boolean remove_output_nodes;
-    public boolean remove_input_nodes;
+    boolean remove_output_nodes;
+    boolean remove_input_nodes;
 
     // Exporting initial network file
-    public boolean export_to_gitsbe;
-    public boolean export_to_sif;
-    public boolean export_to_ginml;
-    public boolean export_to_boolnet;
+    boolean export_to_gitsbe;
+    boolean export_to_sif;
+    boolean export_to_ginml;
+    boolean export_to_boolnet;
 
     // Parameters for the simulations
-    public int population;
-    public int generations;
-    public int selection;
-    public int crossovers;
-    public int balance_mutations;
-    public int random_mutations;
-    public int shuffle_mutations;
-    public int topology_mutations;
-    public float target_fitness;
-    public int bootstrap_mutations_factor;
-    public int mutations_factor;
-    public int bootstrap_shuffle_factor;
-    public int shuffle_factor;
-    public int bootstrap_topology_mutations_factor;
-    public int topology_mutations_factor;
-    public int simulations;
-    public int models_saved;
-    public float fitness_threshold;
+    int population;
+    int generations;
+    int selection;
+    int crossovers;
+    int balance_mutations;
+    int random_mutations;
+    int shuffle_mutations;
+    int topology_mutations;
+    float target_fitness;
+    int bootstrap_mutations_factor;
+    int mutations_factor;
+    int bootstrap_shuffle_factor;
+    int shuffle_factor;
+    int bootstrap_topology_mutations_factor;
+    int topology_mutations_factor;
+    int simulations;
+    int models_saved;
+    boolean best_models_export_to_boolnet;
+    float fitness_threshold;
 
     public boolean exportToGitsbeFormat() {
         return export_to_gitsbe;
@@ -128,6 +129,10 @@ public class ConfigParametersGitsbe extends ConfigParametersGlobal{
 
     public int getNumOfModelsToSave() {
         return models_saved;
+    }
+
+    public boolean exportBestModelsToBoolNet() {
+        return best_models_export_to_boolnet;
     }
 
     public float getFitnessThreshold() {

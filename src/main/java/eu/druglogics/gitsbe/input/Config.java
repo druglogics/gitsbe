@@ -173,6 +173,10 @@ public class Config extends ConfigParametersGitsbe {
 					models_saved = Integer.parseInt(value);
 					break;
 
+				case "best_models_export_to_boolnet":
+					best_models_export_to_boolnet = Boolean.parseBoolean(value);
+					break;
+
 				case "fitness_threshold":
 					fitness_threshold = Float.parseFloat(value);
 					break;

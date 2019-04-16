@@ -9,7 +9,7 @@ class ConfigParametersGitsbeTest {
     @Test
     void test_get_parameter_names() {
         ConfigParametersGitsbe parameters = new ConfigParametersGitsbe();
-        int expectedParNum = 24;
+        int expectedParNum = 25;
 
         String[] pars = parameters.getParameters();
 
@@ -38,6 +38,7 @@ class ConfigParametersGitsbeTest {
         assertEquals(pars[20], "topology_mutations_factor");
         assertEquals(pars[21], "simulations");
         assertEquals(pars[22], "models_saved");
-        assertEquals(pars[23], "fitness_threshold");
+        assertEquals(pars[23], "best_models_export_to_boolnet");
+        assertEquals(pars[24], "fitness_threshold");
     }
 }

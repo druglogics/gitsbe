@@ -280,6 +280,7 @@ public class Evolution {
 	public void saveBestModels(int numberToKeep, float fitnessThreshold) throws IOException {
 
 		numberToKeep = min(numberToKeep, Config.getInstance().getSelection());
+		boolean exportToBoolNet = Config.getInstance().exportBestModelsToBoolNet();
 
 		logger.outputHeader(1, "Saving up to " + numberToKeep
 				+ " best models to files (fitness threshold " + fitnessThreshold + "):");
@@ -296,13 +297,14 @@ public class Evolution {
 
 				// calculate stable states for saving as part of .gitsbe file
 				bestModel.calculateStableStatesVC(directoryOutput);
-
 				bestModel.exportModelToGitsbeFile(modelDirectory);
-				String f = bestModel.getModelName() + ".bnet";
-				bestModel.exportModelToBoolNetFile(modelDirectory, f);
+
+				if (exportToBoolNet) {
+					String filenameBoolNet = bestModel.getModelName() + ".bnet";
+					bestModel.exportModelToBoolNetFile(modelDirectory, filenameBoolNet);
+				}
 
 				numModelsSaved++;
-
 			}
 		}
 

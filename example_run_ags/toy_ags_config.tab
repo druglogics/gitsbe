@@ -84,6 +84,9 @@ topology_mutations_factor:	1
 # Number of models to save
 models_saved:	3
 
+# Additional formats to export best models (gitsbe format is enabled by default)
+best_models_export_to_boolnet:	false
+
 # Threshold for saving models
 fitness_threshold:	0.1
 
