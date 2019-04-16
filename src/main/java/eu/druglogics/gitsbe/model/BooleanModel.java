@@ -1,15 +1,16 @@
 package eu.druglogics.gitsbe.model;
 
 import eu.druglogics.gitsbe.util.Logger;
+import org.colomoto.biolqm.LogicalModel;
+import org.colomoto.biolqm.io.bnet.BNetFormat;
+import org.colomoto.biolqm.io.ginml.GINMLFormat;
+import org.colomoto.biolqm.io.sbml.SBMLFormat;
 
 import static eu.druglogics.gitsbe.util.Util.*;
 import static eu.druglogics.gitsbe.util.FileDeleter.*;
+import static org.colomoto.biolqm.service.LQMServiceManager.load;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -155,7 +156,6 @@ public class BooleanModel {
 
 		// Copy Boolean equations
 		this.booleanEquations = new ArrayList<>();
-
 		booleanEquations.addAll(booleanModel.booleanEquations);
 
 		// Copy nodeNameToVariableMap
@@ -166,12 +166,12 @@ public class BooleanModel {
 		stableStates = new ArrayList<>();
 
 		// Copy modelName
-		this.modelName = booleanModel.modelName;
+		this.modelName = booleanModel.getModelName();
 	}
 
 	public void exportModelToGitsbeFile(String directoryOutput) throws IOException {
 
-		String filename = removeExtension(this.modelName) + ".gitsbe";
+		String filename = removeExtension(modelName) + ".gitsbe";
 		PrintWriter writer = new PrintWriter(
 				new File(directoryOutput, filename).getAbsolutePath(), "UTF-8"
 		);
@@ -180,10 +180,10 @@ public class BooleanModel {
 		writer.println("#Boolean model file in gitsbe format");
 
 		// Write model name
-		writer.println("modelname: " + this.modelName);
+		writer.println("modelname: " + modelName);
 
 		// Write stable state(s)
-		for (String stableState : this.stableStates) {
+		for (String stableState : stableStates) {
 			writer.println("stablestate: " + stableState);
 		}
 
@@ -200,10 +200,10 @@ public class BooleanModel {
 		writer.close();
 	}
 
-	public void exportModelToSifFile(String directoryOutput, String filename) throws IOException {
+	public void exportModelToSifFile(String directoryOutput) throws IOException {
 
 		PrintWriter writer = new PrintWriter(
-				new File(directoryOutput, filename).getAbsolutePath(), "UTF-8"
+				new File(directoryOutput, modelName + ".sif").getAbsolutePath(), "UTF-8"
 		);
 
 		for (BooleanEquation booleanEquation : booleanEquations)
@@ -213,11 +213,11 @@ public class BooleanModel {
 		writer.close();
 	}
 
-	public void exportModelToGINMLFile(String directoryOutput, String filename,
+	public void exportModelToGINMLFile(String directoryOutput,
 									   ArrayList<SingleInteraction> singleInteractions) throws IOException {
 
 		PrintWriter writer = new PrintWriter(
-				new File(directoryOutput, filename).getAbsolutePath(), "UTF-8"
+				new File(directoryOutput, modelName + ".ginml").getAbsolutePath(), "UTF-8"
 		);
 		ArrayList<String> equations = this.getModelBooleanNet();
 
@@ -272,10 +272,10 @@ public class BooleanModel {
 		writer.close();
 	}
 
-	public void exportModelToBoolNetFile(String directoryOutput, String filename) throws IOException {
+	public void exportModelToBoolNetFile(String directoryOutput) throws IOException {
 
 		PrintWriter writer = new PrintWriter(
-				new File(directoryOutput, filename).getAbsoluteFile(), "UTF-8"
+				new File(directoryOutput, modelName + ".bnet").getAbsoluteFile(), "UTF-8"
 		);
 
 		ArrayList<String> equations = getModelBoolNet();
@@ -291,9 +291,43 @@ public class BooleanModel {
 		writer.close();
 	}
 
-	private void exportModelToVelizCubaFile(String directoryOutput, String filename) throws IOException {
+	void exportModelToGINMLFile(String directoryOutput) throws Exception {
+		File filenameBoolNet = new File(directoryOutput, modelName + ".bnet");
+
+		if (!filenameBoolNet.exists()) {
+			exportModelToBoolNetFile(directoryOutput);
+		}
+
+		LogicalModel boolNetModel = load(filenameBoolNet.getAbsolutePath(), BNetFormat.ID);
+		GINMLFormat ginml = new GINMLFormat();
+
+		try {
+			ginml.export(boolNetModel, new File(directoryOutput, modelName + ".ginml").getAbsoluteFile());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	void exportModelToSBMLFile(String directoryOutput) throws Exception {
+		File filenameBoolNet = new File(directoryOutput, modelName + ".bnet");
+
+		if (!filenameBoolNet.exists()) {
+			exportModelToBoolNetFile(directoryOutput);
+		}
+
+		LogicalModel boolNetModel = load(filenameBoolNet.getAbsolutePath(), BNetFormat.ID);
+		SBMLFormat sbml = new SBMLFormat();
+
+		try {
+			sbml.export(boolNetModel, new File(directoryOutput, modelName + ".xml").getAbsoluteFile());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void exportModelToVelizCubaDataFile(String directoryOutput) throws IOException {
 		PrintWriter writer = new PrintWriter(
-				new File(directoryOutput, filename).getAbsoluteFile(), "UTF-8"
+				new File(directoryOutput, modelName + ".dat").getAbsoluteFile(), "UTF-8"
 		);
 
 		// Defined model in Veliz-Cuba terminology
@@ -360,11 +394,10 @@ public class BooleanModel {
 	}
 
 	public void calculateStableStatesVC(String directoryOutput) throws IOException {
-		String filenameVC = this.modelName + ".dat";
-		exportModelToVelizCubaFile(directoryOutput, filenameVC);
+		exportModelToVelizCubaDataFile(directoryOutput);
 
 		// Run the BNReduction script
-		String filenameVCFullPath = new File(directoryOutput, filenameVC).getAbsolutePath();
+		String filenameVCFullPath = new File(directoryOutput, modelName + ".dat").getAbsolutePath();
 		runBNReduction(filenameVCFullPath);
 
 		// Read stable states from BNReduction.sh output file
@@ -482,7 +515,7 @@ public class BooleanModel {
 	}
 
 	public String getModelName() {
-		return this.modelName;
+		return modelName;
 	}
 
 	ArrayList<BooleanEquation> getBooleanEquations() {

@@ -277,7 +277,7 @@ public class Evolution {
 	 *            threshold of lowest fitness to keep
 	 * @throws IOException
 	 */
-	public void saveBestModels(int numberToKeep, float fitnessThreshold) throws IOException {
+	public void saveBestModels(int numberToKeep, float fitnessThreshold) throws Exception {
 
 		numberToKeep = min(numberToKeep, Config.getInstance().getSelection());
 		boolean exportToBoolNet = Config.getInstance().exportBestModelsToBoolNet();
@@ -300,8 +300,7 @@ public class Evolution {
 				bestModel.exportModelToGitsbeFile(modelDirectory);
 
 				if (exportToBoolNet) {
-					String filenameBoolNet = bestModel.getModelName() + ".bnet";
-					bestModel.exportModelToBoolNetFile(modelDirectory, filenameBoolNet);
+					bestModel.exportModelToBoolNetFile(modelDirectory);
 				}
 
 				numModelsSaved++;

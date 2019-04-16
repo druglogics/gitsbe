@@ -8,6 +8,8 @@ import eu.druglogics.gitsbe.model.Evolution;
 import eu.druglogics.gitsbe.model.BooleanModel;
 import eu.druglogics.gitsbe.model.GeneralModel;
 import eu.druglogics.gitsbe.util.*;
+import org.colomoto.biolqm.io.LogicalModelFormat;
+import org.colomoto.biolqm.service.LQMServiceManager;
 
 import static eu.druglogics.gitsbe.util.Util.*;
 import static eu.druglogics.gitsbe.util.FileDeleter.*;
@@ -256,7 +258,7 @@ public class Gitsbe implements Runnable {
 
 		try {
 			ga.saveBestModels(config.getNumOfModelsToSave(), config.getFitnessThreshold());
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -275,10 +277,9 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void exportModelToGitsbeFormat(BooleanModel generalBooleanModel) {
-		if (Config.getInstance().exportToGitsbeFormat()) {
+		if (Config.getInstance().exportToGitsbe()) {
 			try {
-				logger.outputStringMessage(2, "Exporting network file to gitsbe format: "
-						+ removeExtension(generalBooleanModel.getModelName()) + ".gitsbe");
+				logger.outputStringMessage(2, "Exporting network file to gitsbe format");
 				generalBooleanModel.exportModelToGitsbeFile(directoryOutput);
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -289,9 +290,8 @@ public class Gitsbe implements Runnable {
 	private void exportModelToSifFormat(BooleanModel generalBooleanModel) {
 		if (Config.getInstance().exportToSif()) {
 			try {
-				String filename = removeExtension(generalBooleanModel.getModelName()) + "_export.sif";
-				logger.outputStringMessage(2, "Exporting network file to sif format: " + filename);
-				generalBooleanModel.exportModelToSifFile(directoryOutput, filename);
+				logger.outputStringMessage(2, "Exporting network file to sif format");
+				generalBooleanModel.exportModelToSifFile(directoryOutput);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -299,11 +299,10 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void exportModelToGINMLFormat(BooleanModel generalBooleanModel) {
-		if (Config.getInstance().exportToGinML()) {
+		if (Config.getInstance().exportToGINML()) {
 			try {
-				String filename = generalBooleanModel.getModelName() + "_export.ginml";
-				logger.outputStringMessage(2, "Exporting network file to ginml format: " + filename);
-				generalBooleanModel.exportModelToGINMLFile(directoryOutput, filename,
+				logger.outputStringMessage(2, "Exporting network file to ginml format");
+				generalBooleanModel.exportModelToGINMLFile(directoryOutput,
 						generalModel.getSingleInteractions());
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -314,9 +313,8 @@ public class Gitsbe implements Runnable {
 	private void exportModelToBoolNetFormat(BooleanModel generalBooleanModel) {
 		if (Config.getInstance().exportToBoolNet()) {
 			try {
-				String filename = generalBooleanModel.getModelName() + "_export.bnet";
-				logger.outputStringMessage(2, "Exporting network file to boolnet format: " + filename);
-				generalBooleanModel.exportModelToBoolNetFile(directoryOutput, filename);
+				logger.outputStringMessage(2, "Exporting network file to boolnet format");
+				generalBooleanModel.exportModelToBoolNetFile(directoryOutput);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

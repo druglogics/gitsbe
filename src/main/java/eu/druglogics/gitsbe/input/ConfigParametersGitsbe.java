@@ -36,7 +36,7 @@ public class ConfigParametersGitsbe extends ConfigParametersGlobal{
     boolean best_models_export_to_boolnet;
     float fitness_threshold;
 
-    public boolean exportToGitsbeFormat() {
+    public boolean exportToGitsbe() {
         return export_to_gitsbe;
     }
 
@@ -44,7 +44,7 @@ public class ConfigParametersGitsbe extends ConfigParametersGlobal{
         return export_to_sif;
     }
 
-    public boolean exportToGinML() {
+    public boolean exportToGINML() {
         return export_to_ginml;
     }
 
