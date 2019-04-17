@@ -2,11 +2,11 @@ package eu.druglogics.gitsbe.model;
 
 import eu.druglogics.gitsbe.util.Logger;
 
-import static eu.druglogics.gitsbe.util.Util.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import static eu.druglogics.gitsbe.util.Util.*;
 
 public class GeneralModel {
 

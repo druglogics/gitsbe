@@ -2,12 +2,13 @@ package eu.druglogics.gitsbe.input;
 
 import eu.druglogics.gitsbe.util.Logger;
 
-import static eu.druglogics.gitsbe.util.Util.*;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static eu.druglogics.gitsbe.util.Util.readLinesFromFile;
+import static eu.druglogics.gitsbe.util.Util.removeLastChar;
 
 public class Config extends ConfigParametersGitsbe {
 

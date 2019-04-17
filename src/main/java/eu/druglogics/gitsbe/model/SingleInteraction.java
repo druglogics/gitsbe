@@ -1,6 +1,6 @@
 package eu.druglogics.gitsbe.model;
 
-import static eu.druglogics.gitsbe.util.Util.*;
+import static eu.druglogics.gitsbe.util.Util.abort;
 
 /**
  * 

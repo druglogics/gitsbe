@@ -1,15 +1,17 @@
 package eu.druglogics.gitsbe.input;
 
-import eu.druglogics.gitsbe.util.Logger;
 import eu.druglogics.gitsbe.model.BooleanModel;
-
-import static eu.druglogics.gitsbe.util.Util.*;
-import static java.lang.Math.*;
+import eu.druglogics.gitsbe.util.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+
+import static eu.druglogics.gitsbe.util.Util.abort;
+import static eu.druglogics.gitsbe.util.Util.readLinesFromFile;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 
 public class ModelOutputs {
 

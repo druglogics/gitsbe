@@ -1,15 +1,16 @@
 package eu.druglogics.gitsbe.input;
 
-import eu.druglogics.gitsbe.util.Logger;
 import eu.druglogics.gitsbe.model.BooleanModel;
-
-import static eu.druglogics.gitsbe.util.Util.*;
+import eu.druglogics.gitsbe.util.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import static eu.druglogics.gitsbe.util.Util.abort;
+import static eu.druglogics.gitsbe.util.Util.readLinesFromFile;
 
 public class TrainingData {
 

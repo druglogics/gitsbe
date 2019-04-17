@@ -3,22 +3,24 @@ package eu.druglogics.gitsbe;
 import eu.druglogics.gitsbe.input.Config;
 import eu.druglogics.gitsbe.input.ModelOutputs;
 import eu.druglogics.gitsbe.input.TrainingData;
-import eu.druglogics.gitsbe.output.Summary;
-import eu.druglogics.gitsbe.model.Evolution;
 import eu.druglogics.gitsbe.model.BooleanModel;
+import eu.druglogics.gitsbe.model.Evolution;
 import eu.druglogics.gitsbe.model.GeneralModel;
-import eu.druglogics.gitsbe.util.*;
-import org.colomoto.biolqm.io.LogicalModelFormat;
-import org.colomoto.biolqm.service.LQMServiceManager;
+import eu.druglogics.gitsbe.output.Summary;
+import eu.druglogics.gitsbe.util.FileDeleter;
+import eu.druglogics.gitsbe.util.Logger;
+import eu.druglogics.gitsbe.util.RandomManager;
+import eu.druglogics.gitsbe.util.Timer;
 
-import static eu.druglogics.gitsbe.util.Util.*;
-import static eu.druglogics.gitsbe.util.FileDeleter.*;
-
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
 import java.util.stream.IntStream;
+
+import static eu.druglogics.gitsbe.util.FileDeleter.cleanDirectory;
+import static eu.druglogics.gitsbe.util.Util.*;
 
 /**
  * Gitsbe - Generic Interactions To Specific Boolean Equations

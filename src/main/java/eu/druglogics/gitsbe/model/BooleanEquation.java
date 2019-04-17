@@ -1,11 +1,11 @@
 package eu.druglogics.gitsbe.model;
 
-import static eu.druglogics.gitsbe.util.RandomManager.*;
-import static eu.druglogics.gitsbe.util.Util.getRepeatedString;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+
+import static eu.druglogics.gitsbe.util.RandomManager.randInt;
+import static eu.druglogics.gitsbe.util.Util.getRepeatedString;
 
 public class BooleanEquation {
 

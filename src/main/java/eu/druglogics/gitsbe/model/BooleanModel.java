@@ -1,20 +1,19 @@
 package eu.druglogics.gitsbe.model;
 
-import eu.druglogics.gitsbe.input.Config;
 import eu.druglogics.gitsbe.util.Logger;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.io.bnet.BNetFormat;
 import org.colomoto.biolqm.io.ginml.GINMLFormat;
 import org.colomoto.biolqm.io.sbml.SBMLFormat;
 
-import static eu.druglogics.gitsbe.util.Util.*;
-import static eu.druglogics.gitsbe.util.FileDeleter.*;
-import static org.colomoto.biolqm.service.LQMServiceManager.load;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static eu.druglogics.gitsbe.util.FileDeleter.deleteFilesMatchingPattern;
+import static eu.druglogics.gitsbe.util.Util.*;
+import static org.colomoto.biolqm.service.LQMServiceManager.load;
 
 /**
  * 

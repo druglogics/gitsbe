@@ -5,17 +5,13 @@ import eu.druglogics.gitsbe.input.ModelOutputs;
 import eu.druglogics.gitsbe.input.TrainingData;
 import eu.druglogics.gitsbe.util.Logger;
 
-import static eu.druglogics.gitsbe.util.RandomManager.*;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static eu.druglogics.gitsbe.util.RandomManager.randInt;
 
 public class MutatedBooleanModel extends BooleanModel {
 

@@ -1,16 +1,16 @@
 package eu.druglogics.gitsbe.model;
 
-import eu.druglogics.gitsbe.output.Summary;
 import eu.druglogics.gitsbe.input.Config;
 import eu.druglogics.gitsbe.input.ModelOutputs;
 import eu.druglogics.gitsbe.input.TrainingData;
+import eu.druglogics.gitsbe.output.Summary;
 import eu.druglogics.gitsbe.util.Logger;
-
-import static eu.druglogics.gitsbe.util.RandomManager.*;
-import static java.lang.Math.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+
+import static eu.druglogics.gitsbe.util.RandomManager.randInt;
+import static java.lang.Math.min;
 
 public class Evolution {
 
