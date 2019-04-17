@@ -221,7 +221,7 @@ public class Gitsbe implements Runnable {
 		sortFiles(simulationFileList);
 
 		try {
-			mergeFiles(simulationFileList, mergedLogFilename);
+			mergeFiles(simulationFileList, mergedLogFilename, true);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

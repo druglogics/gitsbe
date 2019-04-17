@@ -162,29 +162,47 @@ public class Util {
 	}
 
 	/**
-	 * Merges all files to the mergedFile file and deletes them
-	 * 
-	 * @param files
-	 * @param mergedFile
+	 * Merges all files to the mergedFile file and
+	 * deletes them if deleteFiles is set to true
+	 *
 	 * @throws IOException
 	 */
-	public static void mergeFiles(ArrayList<String> files, String mergedFile) throws IOException {
-		PrintWriter writerOutput = new PrintWriter(mergedFile);
+    public static void mergeFiles(ArrayList<String> files, String mergedFile, boolean deleteFiles)
+            throws IOException {
 
-		for (String file : files) {
-			ArrayList<String> lines = readLinesFromFile(file, false);
-			for (String line : lines) {
-				writerOutput.println(line);
-			}
-			writerOutput.flush();
+	    ArrayList<File> files1 = new ArrayList<>();
+	    for (String file: files) {
+	        files1.add(new File(file));
+        }
 
-			File fileToDelete = new File(file);
-			if (!fileToDelete.delete()) {
-				throw new IOException("Couldn't delete file: " + file);
-			}
-		}
-		writerOutput.close();
-	}
+        FileWriter fileWriter;
+        BufferedWriter out;
+
+        fileWriter = new FileWriter(mergedFile, true);
+        out = new BufferedWriter(fileWriter);
+
+        for (File file : files1) {
+            FileInputStream fileInputStream;
+            fileInputStream = new FileInputStream(file);
+            BufferedReader in = new BufferedReader(new InputStreamReader(fileInputStream));
+
+            String line;
+            while ((line = in.readLine()) != null) {
+                out.write(line);
+                out.newLine();
+            }
+
+            in.close();
+
+            if (deleteFiles) {
+                if (!file.delete()) {
+                    throw new IOException("Couldn't delete file: " + file);
+                }
+            }
+        }
+
+        out.close();
+    }
 
 	/**
 	 * Sort files based on an arithmetic value they contain as strings

@@ -36,16 +36,16 @@ class UtilTest {
 
         assertEquals(userWorkDir, Util.inferInputDir("filename"));
         assertEquals(userWorkDir + "/example_run_ags", Util.inferInputDir("example_run_ags/filename"));
-        assertEquals("/home/user/test/directory",Util.inferInputDir("/home/user/test/directory/filename"));
+        assertEquals("/home/user/test/directory", Util.inferInputDir("/home/user/test/directory/filename"));
     }
 
     @Test
     void test_remove_last_char() {
-        String testchar1 = "test";
-        String testchar2 = "verbosity:";
+        String testChar1 = "test";
+        String testChar2 = "verbosity:";
 
-        assertEquals("tes", Util.removeLastChar(testchar1));
-        assertEquals("verbosity", Util.removeLastChar(testchar2));
+        assertEquals("tes", Util.removeLastChar(testChar1));
+        assertEquals("verbosity", Util.removeLastChar(testChar2));
     }
 
     @Test
