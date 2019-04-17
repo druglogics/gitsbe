@@ -14,6 +14,7 @@ public class ConfigParametersGitsbe extends ConfigParametersGlobal{
     boolean export_to_sif;
     boolean export_to_ginml;
     boolean export_to_boolnet;
+    boolean export_to_sbml_qual;
 
     // Parameters for the simulations
     int population;
@@ -34,6 +35,8 @@ public class ConfigParametersGitsbe extends ConfigParametersGlobal{
     int simulations;
     int models_saved;
     boolean best_models_export_to_boolnet;
+    boolean best_models_export_to_ginml;
+    boolean best_models_export_to_sbml_qual;
     float fitness_threshold;
 
     public boolean exportToGitsbe() {
@@ -50,6 +53,10 @@ public class ConfigParametersGitsbe extends ConfigParametersGlobal{
 
     public boolean exportToBoolNet() {
         return export_to_boolnet;
+    }
+
+    public boolean exportToSBMLQual() {
+        return export_to_sbml_qual;
     }
 
     public boolean removeOutputNodes() {
@@ -133,6 +140,14 @@ public class ConfigParametersGitsbe extends ConfigParametersGlobal{
 
     public boolean exportBestModelsToBoolNet() {
         return best_models_export_to_boolnet;
+    }
+
+    public boolean exportBestModelsToGINML() {
+        return best_models_export_to_ginml;
+    }
+
+    public boolean exportBestModelsToSBMLQual() {
+        return best_models_export_to_sbml_qual;
     }
 
     public float getFitnessThreshold() {

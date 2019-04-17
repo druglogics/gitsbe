@@ -104,6 +104,10 @@ public class Config extends ConfigParametersGitsbe {
 					export_to_boolnet = Boolean.parseBoolean(value);
 					break;
 
+				case "export_to_sbml_qual":
+					export_to_sbml_qual = Boolean.parseBoolean(value);
+					break;
+
 				case "population":
 					population = Integer.parseInt(value);
 					break;
@@ -174,6 +178,14 @@ public class Config extends ConfigParametersGitsbe {
 
 				case "best_models_export_to_boolnet":
 					best_models_export_to_boolnet = Boolean.parseBoolean(value);
+					break;
+
+				case "best_models_export_to_ginml":
+					best_models_export_to_ginml = Boolean.parseBoolean(value);
+					break;
+
+				case "best_models_export_to_sbml_qual":
+					best_models_export_to_sbml_qual = Boolean.parseBoolean(value);
 					break;
 
 				case "fitness_threshold":

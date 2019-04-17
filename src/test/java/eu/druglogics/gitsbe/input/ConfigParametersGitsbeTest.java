@@ -9,7 +9,7 @@ class ConfigParametersGitsbeTest {
     @Test
     void test_get_parameter_names() {
         ConfigParametersGitsbe parameters = new ConfigParametersGitsbe();
-        int expectedParNum = 25;
+        int expectedParNum = 28;
 
         String[] pars = parameters.getParameters();
 
@@ -21,24 +21,27 @@ class ConfigParametersGitsbeTest {
         assertEquals(pars[3], "export_to_sif");
         assertEquals(pars[4], "export_to_ginml");
         assertEquals(pars[5], "export_to_boolnet");
-        assertEquals(pars[6], "population");
-        assertEquals(pars[7], "generations");
-        assertEquals(pars[8], "selection");
-        assertEquals(pars[9], "crossovers");
-        assertEquals(pars[10], "balance_mutations");
-        assertEquals(pars[11], "random_mutations");
-        assertEquals(pars[12], "shuffle_mutations");
-        assertEquals(pars[13], "topology_mutations");
-        assertEquals(pars[14], "target_fitness");
-        assertEquals(pars[15], "bootstrap_mutations_factor");
-        assertEquals(pars[16], "mutations_factor");
-        assertEquals(pars[17], "bootstrap_shuffle_factor");
-        assertEquals(pars[18], "shuffle_factor");
-        assertEquals(pars[19], "bootstrap_topology_mutations_factor");
-        assertEquals(pars[20], "topology_mutations_factor");
-        assertEquals(pars[21], "simulations");
-        assertEquals(pars[22], "models_saved");
-        assertEquals(pars[23], "best_models_export_to_boolnet");
-        assertEquals(pars[24], "fitness_threshold");
+        assertEquals(pars[6], "export_to_sbml_qual");
+        assertEquals(pars[7], "population");
+        assertEquals(pars[8], "generations");
+        assertEquals(pars[9], "selection");
+        assertEquals(pars[10], "crossovers");
+        assertEquals(pars[11], "balance_mutations");
+        assertEquals(pars[12], "random_mutations");
+        assertEquals(pars[13], "shuffle_mutations");
+        assertEquals(pars[14], "topology_mutations");
+        assertEquals(pars[15], "target_fitness");
+        assertEquals(pars[16], "bootstrap_mutations_factor");
+        assertEquals(pars[17], "mutations_factor");
+        assertEquals(pars[18], "bootstrap_shuffle_factor");
+        assertEquals(pars[19], "shuffle_factor");
+        assertEquals(pars[20], "bootstrap_topology_mutations_factor");
+        assertEquals(pars[21], "topology_mutations_factor");
+        assertEquals(pars[22], "simulations");
+        assertEquals(pars[23], "models_saved");
+        assertEquals(pars[24], "best_models_export_to_boolnet");
+        assertEquals(pars[25], "best_models_export_to_ginml");
+        assertEquals(pars[26], "best_models_export_to_sbml_qual");
+        assertEquals(pars[27], "fitness_threshold");
     }
 }
