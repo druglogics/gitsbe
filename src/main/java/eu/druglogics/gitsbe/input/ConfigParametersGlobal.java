@@ -42,11 +42,29 @@ public class ConfigParametersGlobal {
         return attractor_tool;
     }
 
-    protected void checkAttractorTool() throws ConfigurationException {
+    protected void checkAttractorTool() throws Exception {
         if (!AttractorTools.contains(attractor_tool)) {
             throw new ConfigurationException("The attractor_tool value: " + attractor_tool
                     + " is not in the list of supported tools: " + AttractorTools.getTools());
         }
+        checkBNETHomeVar();
+    }
+
+    /**
+     * Checks if the BNET_HOME environment variable is set
+     *
+     * @throws Exception
+     */
+    private void checkBNETHomeVar() throws Exception {
+        if (useBNReductionScript() && System.getenv("BNET_HOME") == null) {
+            throw new Exception("Set environment variable BNET_HOME to point to location of " +
+                    "BNReduction.sh (see druglogics_dep installation guidelines)");
+        }
+    }
+
+    boolean useBNReductionScript() {
+        return attractor_tool.equals(AttractorTools.BNREDUCTION_FULL.getTool())
+                || attractor_tool.equals(AttractorTools.BNREDUCTION_REDUCED.getTool());
     }
 
     public String[] getParameters() {

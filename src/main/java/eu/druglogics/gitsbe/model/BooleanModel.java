@@ -429,12 +429,15 @@ public class BooleanModel {
 
 		try {
 			ProcessBuilder pb = null;
+			String timeoutSeconds = "30";
 			switch(tool) {
 				case "bnet_reduction":
-					pb = new ProcessBuilder("timeout", "30", BNReductionScriptFile, filenameVC);
+					pb = new ProcessBuilder("timeout", timeoutSeconds, BNReductionScriptFile,
+							filenameVC);
 					break;
 				case "bnet_reduction_reduced":
-					pb = new ProcessBuilder("timeout", "30", BNReductionScriptFile, filenameVC, "reduced");
+					pb = new ProcessBuilder("timeout", timeoutSeconds, BNReductionScriptFile,
+							filenameVC, "reduced");
 					break;
 			}
 

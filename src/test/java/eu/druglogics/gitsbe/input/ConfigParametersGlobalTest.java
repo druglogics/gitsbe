@@ -32,4 +32,18 @@ class ConfigParametersGlobalTest {
         assertNull(parameters.attractor_tool);
         assertThrows(ConfigurationException.class, parameters::checkAttractorTool);
     }
+
+    @Test
+    void test_use_bnr_reduction_script() {
+        ConfigParametersGlobal parameters = new ConfigParametersGlobal();
+
+        parameters.attractor_tool = AttractorTools.BNREDUCTION_FULL.getTool();
+        assertTrue(parameters.useBNReductionScript());
+
+        parameters.attractor_tool = AttractorTools.BNREDUCTION_REDUCED.getTool();
+        assertTrue(parameters.useBNReductionScript());
+
+        parameters.attractor_tool = "otherTool";
+        assertFalse(parameters.useBNReductionScript());
+    }
 }

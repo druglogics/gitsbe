@@ -15,17 +15,6 @@ import java.util.Comparator;
  */
 
 public class Util {
-	/**
-	 * Checks if the BNET_HOME environment variable is set
-	 *
-	 * @throws Exception
-	 */
-	public static void checkBNET() throws Exception {
-		if (System.getenv("BNET_HOME") == null) {
-			throw new Exception("Set environment variable BNET_HOME to point to location of " +
-					"BNReduction.sh (see druglogics_dep installation guidelines)");
-		}
-	}
 
 	public static String replaceOperators(String equation) {
 		return (equation

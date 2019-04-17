@@ -1,24 +1,13 @@
 package eu.druglogics.gitsbe.util;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.io.IOException;
 
-class UtilTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-    @Disabled("until System Lambda library is ready...")
-    @Test
-    void test_null_bnet_env_var() {
-        assertThrows(Exception.class, () -> {
-            assertNull(System.getenv("BNET_HOME"));
-            Util.checkBNET();
-        });
-    }
+class UtilTest {
 
     @Test
     void test_replace_operators() {

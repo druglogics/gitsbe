@@ -18,17 +18,7 @@ public class Launcher {
         gitsbeLauncher.start(args);
     }
 
-    public void start(String[] args) {
-        try {
-            checkBNET();
-        } catch (Exception e) {
-            e.printStackTrace();
-            abort();
-        }
-        setupInputAndRun(args);
-    }
-
-    private void setupInputAndRun(String[] args) {
+    private void start(String[] args) {
 
         try {
             CommandLineArgs arguments = new CommandLineArgs();
