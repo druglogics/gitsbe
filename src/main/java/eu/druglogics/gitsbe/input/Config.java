@@ -5,7 +5,6 @@ import eu.druglogics.gitsbe.util.Logger;
 import static eu.druglogics.gitsbe.util.Util.*;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -17,7 +16,7 @@ public class Config extends ConfigParametersGitsbe {
 	private Logger logger;
 	private LinkedHashMap<String, String> parameterMap;
 
-	private Config(String filename, Logger logger) throws IOException {
+	private Config(String filename, Logger logger) throws Exception {
 		this.logger = logger;
 		loadConfigFile(filename);
 	}
@@ -30,14 +29,14 @@ public class Config extends ConfigParametersGitsbe {
 		return config;
 	}
 
-	public synchronized static void init(String filename, Logger logger) throws IOException {
+	public synchronized static void init(String filename, Logger logger) throws Exception {
 		if (config != null) {
 			throw new AssertionError("You already initialized me");
 		}
 		config = new Config(filename, logger);
 	}
 
-	private void loadConfigFile(String filename) throws IOException {
+	private void loadConfigFile(String filename) throws Exception {
 
 		logger.outputStringMessage(3, "Reading config file: " + new File(filename).getAbsolutePath());
 		ArrayList<String> lines = readLinesFromFile(filename, true);
@@ -78,7 +77,7 @@ public class Config extends ConfigParametersGitsbe {
 
 				case "attractor_tool":
 					attractor_tool = value;
-					checkAttractorTool(logger);
+					checkAttractorTool();
 					break;
 
 				case "remove_output_nodes":

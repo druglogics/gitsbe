@@ -28,7 +28,7 @@ class ConfigTest {
     }
 
     @Test
-    void test_get_instance_with_first_calling_init() throws IOException {
+    void test_get_instance_with_first_calling_init() throws Exception {
         Logger mockLogger = mock(Logger.class);
 
         ClassLoader classLoader = getClass().getClassLoader();
@@ -43,7 +43,7 @@ class ConfigTest {
     }
 
     @Test
-    void test_init_twice() throws IOException {
+    void test_init_twice() throws Exception {
         Logger mockLogger = mock(Logger.class);
 
         ClassLoader classLoader = getClass().getClassLoader();

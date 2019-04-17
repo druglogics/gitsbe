@@ -442,7 +442,7 @@ public class Gitsbe implements Runnable {
 	private void loadConfigFile() {
 		try {
 			Config.init(filenameConfig, logger);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			abort();
 		}

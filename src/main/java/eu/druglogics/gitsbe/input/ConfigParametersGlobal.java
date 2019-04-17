@@ -1,12 +1,11 @@
 package eu.druglogics.gitsbe.input;
 
-import eu.druglogics.gitsbe.util.Logger;
-
+import javax.naming.ConfigurationException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
 /**
- * This class defines the global parameters, i.e.
+ * This class defines the global configuration parameters, i.e.
  * the ones used by both Drabme and Gitsbe modules
  */
 public class ConfigParametersGlobal {
@@ -43,14 +42,10 @@ public class ConfigParametersGlobal {
         return attractor_tool;
     }
 
-    protected void checkAttractorTool(Logger logger) {
+    protected void checkAttractorTool() throws ConfigurationException {
         if (!AttractorTools.contains(attractor_tool)) {
-            logger.outputStringMessage(0, "The attractor_tool value: " + attractor_tool
-                    + " is not in the list of supported tools");
-            logger.outputStringMessage(0, "The bnet_reduction_reduced value will be "
-                    + "used for the analysis.");
-
-            attractor_tool = AttractorTools.BNREDUCTION_REDUCED.getTool();
+            throw new ConfigurationException("The attractor_tool value: " + attractor_tool
+                    + " is not in the list of supported tools: " + AttractorTools.getTools());
         }
     }
 

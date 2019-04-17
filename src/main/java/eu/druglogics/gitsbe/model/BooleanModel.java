@@ -1,5 +1,6 @@
 package eu.druglogics.gitsbe.model;
 
+import eu.druglogics.gitsbe.input.Config;
 import eu.druglogics.gitsbe.util.Logger;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.io.bnet.BNetFormat;
@@ -393,12 +394,12 @@ public class BooleanModel {
 		return modifiedEquations;
 	}
 
-	public void calculateStableStatesVC(String directoryOutput) throws IOException {
+	public void calculateStableStatesVC(String directoryOutput, String tool) throws IOException {
 		exportModelToVelizCubaDataFile(directoryOutput);
 
 		// Run the BNReduction script
 		String filenameVCFullPath = new File(directoryOutput, modelName + ".dat").getAbsolutePath();
-		runBNReduction(filenameVCFullPath);
+		runBNReduction(filenameVCFullPath, tool);
 
 		// Read stable states from BNReduction.sh output file
 		String fixedPointsFile = new File(directoryOutput, modelName + ".dat.fp").getAbsolutePath();
@@ -423,12 +424,19 @@ public class BooleanModel {
 		deleteFilesMatchingPattern(logger, modelName);
 	}
 
-	private void runBNReduction(String filenameVC) {
+	private void runBNReduction(String filenameVC, String tool) {
 		String BNReductionScriptFile = new File(directoryBNET, "BNReduction.sh").getAbsolutePath();
 
 		try {
-			ProcessBuilder pb = new ProcessBuilder("timeout", "30",
-					BNReductionScriptFile, filenameVC);
+			ProcessBuilder pb = null;
+			switch(tool) {
+				case "bnet_reduction":
+					pb = new ProcessBuilder("timeout", "30", BNReductionScriptFile, filenameVC);
+					break;
+				case "bnet_reduction_reduced":
+					pb = new ProcessBuilder("timeout", "30", BNReductionScriptFile, filenameVC, "reduced");
+					break;
+			}
 
 			if (logger.getVerbosity() >= 3) {
 				pb.redirectErrorStream(true);

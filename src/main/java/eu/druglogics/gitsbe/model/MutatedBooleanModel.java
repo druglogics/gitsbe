@@ -208,7 +208,7 @@ public class MutatedBooleanModel extends BooleanModel {
 			}
 
 			// compute stable state(s) for condition
-			temp.calculateStableStatesVC(directoryOutput);
+			temp.calculateStableStatesVC(directoryOutput, Config.getInstance().getAttractorTool());
 
 			// check computed stable state(s) with training data observation
 			String[][] stableStates = temp.getStableStates();

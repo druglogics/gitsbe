@@ -296,7 +296,7 @@ public class Evolution {
 				logger.outputStringMessage(1, "\tFile: " + modelDirectory + bestModel.getFilename());
 
 				// calculate stable states for saving as part of .gitsbe file
-				bestModel.calculateStableStatesVC(directoryOutput);
+				bestModel.calculateStableStatesVC(directoryOutput, Config.getInstance().getAttractorTool());
 				bestModel.exportModelToGitsbeFile(modelDirectory);
 
 				if (exportToBoolNet) {

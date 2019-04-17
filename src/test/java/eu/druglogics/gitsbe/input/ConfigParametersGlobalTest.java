@@ -2,7 +2,9 @@ package eu.druglogics.gitsbe.input;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import javax.naming.ConfigurationException;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class ConfigParametersGlobalTest {
 
@@ -21,5 +23,13 @@ class ConfigParametersGlobalTest {
         assertEquals(pars[3], "use_parallel_sim");
         assertEquals(pars[4], "parallel_sim_num");
         assertEquals(pars[5], "attractor_tool");
+    }
+
+    @Test
+    void test_check_attractor_tool() {
+        ConfigParametersGlobal parameters = new ConfigParametersGlobal();
+
+        assertNull(parameters.attractor_tool);
+        assertThrows(ConfigurationException.class, parameters::checkAttractorTool);
     }
 }

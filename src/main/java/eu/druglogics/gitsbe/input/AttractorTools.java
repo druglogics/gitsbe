@@ -1,5 +1,7 @@
 package eu.druglogics.gitsbe.input;
 
+import java.util.ArrayList;
+
 public enum AttractorTools {
 
     BNREDUCTION_FULL("bnet_reduction"),
@@ -13,6 +15,13 @@ public enum AttractorTools {
 
     public String getTool() {
         return this.tool;
+    }
+
+    public static ArrayList<String> getTools() {
+        ArrayList<String> tools = new ArrayList<>();
+        for (AttractorTools attractorToolValue : AttractorTools.values())
+            tools.add(attractorToolValue.getTool());
+        return tools;
     }
 
     public static boolean contains(String tool) {
