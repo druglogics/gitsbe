@@ -219,7 +219,7 @@ public class BooleanModel {
 		PrintWriter writer = new PrintWriter(
 				new File(directoryOutput, modelName + ".ginml").getAbsolutePath(), "UTF-8"
 		);
-		ArrayList<String> equations = this.getModelBooleanNet();
+		ArrayList<String> equations = this.getModelBoolNet();
 
 		// write heading
 
@@ -239,10 +239,10 @@ public class BooleanModel {
 
 		// write nodes with Boolean expression
 		for (String equation : equations) {
-			String target = equation.split("\\*=")[0].trim();
+			String target = equation.split(",")[0].trim();
 			writer.println("<node id=\"" + target + "\" maxvalue=\"1\">");
 			writer.println("\t<value val=\"1\">");
-			writer.println("\t\t<exp str=\"" + equation + "\"/>");
+			writer.println("\t\t<exp str=\"" + equation.split(",")[1].trim() + "\"/>");
 			writer.println("\t</value>");
 			writer.println("\t<nodevisualsetting x=\"10\" y=\"10\" style=\"\"/>");
 			writer.println("</node>");

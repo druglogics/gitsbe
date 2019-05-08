@@ -21,6 +21,12 @@ public class ConfigParametersGlobal {
         return verbosity;
     }
 
+    protected void checkVerbosity() throws ConfigurationException {
+        if (verbosity < 0 || verbosity > 3)
+            throw new ConfigurationException("Parameter `verbosity` can only be 0 (no-logging), "
+                    + "1, 2 or 3 (everything)");
+    }
+
     public boolean deleteTmpDir() {
         return delete_tmp_files;
     }

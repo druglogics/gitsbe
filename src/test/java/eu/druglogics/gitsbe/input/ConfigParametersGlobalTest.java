@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import javax.naming.ConfigurationException;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConfigParametersGlobalTest {
@@ -26,7 +27,7 @@ class ConfigParametersGlobalTest {
     }
 
     @Test
-    void test_check_attractor_tool() {
+    void test_check_not_available_attractor_tool() {
         ConfigParametersGlobal parameters = new ConfigParametersGlobal();
 
         assertNull(parameters.attractor_tool);
@@ -45,5 +46,23 @@ class ConfigParametersGlobalTest {
 
         parameters.attractor_tool = "otherTool";
         assertFalse(parameters.useBNReductionScript());
+    }
+
+    @Test
+    void test_check_verbosity() {
+        ConfigParametersGlobal parameters = new ConfigParametersGlobal();
+
+        // Default value is 0
+        assertThat(parameters.getVerbosity()).isEqualTo(0);
+
+        parameters.verbosity = 1;
+        assertThat(parameters.getVerbosity()).isEqualTo(1);
+        parameters.verbosity = 2;
+        assertThat(parameters.getVerbosity()).isEqualTo(2);
+        parameters.verbosity = 3;
+        assertThat(parameters.getVerbosity()).isEqualTo(3);
+
+        parameters.verbosity = 4;
+        assertThrows(ConfigurationException.class, parameters::checkVerbosity);
     }
 }

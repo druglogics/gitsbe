@@ -142,9 +142,8 @@ public class Evolution {
 		}
 
 		// If all best models have a stableState with fitness > 0 then
-		// initial phase is over (currentMaxFitness holds the smallest highest fitness
-		// score among
-		// the best models)
+		// initial phase is over (currentMaxFitness holds the smallest
+		// highest fitness score among the best models)
 		if ((initialPhase) && (currentMaxFitness > 0)) {
 			initialPhase = false;
 			logger.outputStringMessage(3, "Setting initial phase to: " + initialPhase);
@@ -281,6 +280,8 @@ public class Evolution {
 
 		numberToKeep = min(numberToKeep, Config.getInstance().getSelection());
 		boolean exportToBoolNet = Config.getInstance().exportBestModelsToBoolNet();
+		boolean exportToGINML = Config.getInstance().exportBestModelsToGINML();
+		boolean exportToSBMLQual = Config.getInstance().exportBestModelsToSBMLQual();
 
 		logger.outputHeader(1, "Saving up to " + numberToKeep
 				+ " best models to files (fitness threshold " + fitnessThreshold + "):");

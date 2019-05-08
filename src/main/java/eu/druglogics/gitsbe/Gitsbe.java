@@ -351,17 +351,7 @@ public class Gitsbe implements Runnable {
 			outputs = new ModelOutputs(filenameModelOutputs, logger);
 		} catch (IOException e) {
 			e.printStackTrace();
-			File file = new File(directoryOutput);
-			filenameModelOutputs = file.getParent() + "/" + "modeloutputs.tab";
-			logger.outputStringMessage(1, "Cannot find model outputs file, "
-					+ "generating template file: " + filenameModelOutputs);
-			try {
-				ModelOutputs.saveModelOutputsFileTemplate(filenameModelOutputs);
-				outputs = new ModelOutputs(filenameModelOutputs, logger);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-				abort();
-			}
+			abort();
 		}
 
 		logger.outputHeader(1, "Model Outputs");
@@ -378,22 +368,11 @@ public class Gitsbe implements Runnable {
 			data = new TrainingData(filenameTrainingData, logger);
 		} catch (IOException e) {
 			e.printStackTrace();
-			File file = new File(directoryOutput);
-			filenameTrainingData = file.getParent() + "/" + "training_data.tab";
-			logger.outputStringMessage(1,
-					"Cannot find steady state file, generating template file: " + filenameTrainingData);
-			try {
-				TrainingData.writeTrainingDataTemplateFile(filenameTrainingData);
-				data = new TrainingData(filenameTrainingData, logger);
-			} catch (IOException e1) {
-				e1.printStackTrace();
-				abort();
-			}
+			abort();
 		}
 
 		logger.outputHeader(2, "Training Data");
 		logger.outputLines(2, data.getTrainingDataVerbose());
-		logger.outputStringMessage(2, "Max fitness: " + data.getMaxFitness() + "\n");
 
 		data.checkTrainingDataConsistency(generalBooleanModel);
 

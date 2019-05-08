@@ -1,7 +1,6 @@
 package eu.druglogics.gitsbe.input;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * @author asmund
@@ -20,16 +19,6 @@ public class TrainingDataObservation {
 		this.weight = weight;
 	}
 
-	public String getData() {
-		String result = "";
-
-		result += "Condition: " + Arrays.toString(this.condition.toArray(new String[0]));
-		result += "Response: " + Arrays.toString(this.response.toArray(new String[0]));
-		result += "Weight: " + weight;
-
-		return result;
-	}
-
 	public ArrayList<String> getCondition() {
 		return condition;
 	}
@@ -42,13 +31,4 @@ public class TrainingDataObservation {
 		return weight;
 	}
 
-	public int getResponseSize() {
-		int size = 0;
-
-		for (String responseString : response) {
-			if (!responseString.split(":")[1].equals("-")) // skip specified unknown observations
-				size++;
-		}
-		return size;
-	}
 }

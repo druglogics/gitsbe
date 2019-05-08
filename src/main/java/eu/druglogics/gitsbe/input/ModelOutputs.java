@@ -5,7 +5,6 @@ import eu.druglogics.gitsbe.util.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import static eu.druglogics.gitsbe.util.Util.abort;
@@ -16,6 +15,8 @@ import static java.lang.Math.min;
 public class ModelOutputs {
 
 	private ArrayList<OutputWeight> modelOutputs;
+	private float minOutput;
+	private float maxOutput;
 	private Logger logger;
 
 	public ModelOutputs(String filename, Logger logger) throws IOException {
@@ -23,6 +24,9 @@ public class ModelOutputs {
 		this.modelOutputs = new ArrayList<>();
 
 		loadModelOutputsFile(filename);
+
+		this.minOutput = getMinOutput();
+		this.maxOutput = getMaxOutput();
 	}
 
 	public int size() {
@@ -38,7 +42,7 @@ public class ModelOutputs {
 
 		for (String stableState : stableStates) {
 			for (OutputWeight outputWeight : modelOutputs) {
-				int indexStableState = model.getIndexOfEquation(outputWeight.getName());
+				int indexStableState = model.getIndexOfEquation(outputWeight.getNodeName());
 				if (indexStableState >= 0) {
 					int temp = Character.getNumericValue(stableState.charAt(indexStableState));
 					temp *= outputWeight.getWeight();
@@ -49,9 +53,13 @@ public class ModelOutputs {
 
 		globaloutput /= stableStates.size();
 
-		return ((globaloutput - getMinOutput()) / (getMaxOutput() - getMinOutput()));
+		return ((globaloutput - minOutput) / (maxOutput - minOutput));
 	}
 
+	/**
+	 *
+	 * @return the sum of all the positive weights
+	 */
 	private float getMaxOutput() {
 		float maxOutput = 0;
 
@@ -62,6 +70,10 @@ public class ModelOutputs {
 		return maxOutput;
 	}
 
+	/**
+	 *
+	 * @return the sum of all the negative weights
+	 */
 	private float getMinOutput() {
 		float minOutput = 0;
 
@@ -70,28 +82,6 @@ public class ModelOutputs {
 		}
 
 		return minOutput;
-	}
-
-	public static void saveModelOutputsFileTemplate(String filename) throws IOException {
-		PrintWriter writer = new PrintWriter(filename, "UTF-8");
-
-		writer.println("# File for defining model outputs");
-		writer.println("# Model outputs specified must match names used in model definition");
-		writer.println("# ");
-		writer.println("# Use tab-separated columns");
-		writer.println("# Name: Node name");
-		writer.println("# Weight: Signed integer used for calculating model simulation output.");
-		writer.println("# ");
-		writer.println("# Name\tWeight");
-		writer.println("RPS6KA1\t1");
-		writer.println("MYC\t1");
-		writer.println("TCF7\t1");
-		writer.println("CASP8\t-1");
-		writer.println("CASP9\t-1");
-		writer.println("FOXO3\t-1");
-
-		writer.flush();
-		writer.close();
 	}
 
 	private void loadModelOutputsFile(String filename) throws IOException {
@@ -133,7 +123,7 @@ public class ModelOutputs {
 		ArrayList<String> lines = new ArrayList<>();
 
 		for (OutputWeight outputWeight : modelOutputs) {
-			lines.add(outputWeight.getName() + " with weight: " + outputWeight.getWeight());
+			lines.add(outputWeight.getNodeName() + " with weight: " + outputWeight.getWeight());
 		}
 
 		return lines.toArray(new String[0]);
@@ -143,7 +133,7 @@ public class ModelOutputs {
 		ArrayList<String> nodeNames = new ArrayList<>();
 
 		for (OutputWeight outputWeight : this.modelOutputs) {
-			nodeNames.add(outputWeight.getName());
+			nodeNames.add(outputWeight.getNodeName());
 		}
 
 		return nodeNames;

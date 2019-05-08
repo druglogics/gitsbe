@@ -5,7 +5,6 @@ import eu.druglogics.gitsbe.util.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -15,15 +14,13 @@ import static eu.druglogics.gitsbe.util.Util.readLinesFromFile;
 public class TrainingData {
 
 	private ArrayList<TrainingDataObservation> observations;
-	private String filenameTrainingData;
 	private Logger logger;
 
-	public TrainingData(String filenameTrainingData, Logger logger) throws IOException {
-		this.setFilenameTrainingData(filenameTrainingData);
+	public TrainingData(String filename, Logger logger) throws IOException {
 		this.logger = logger;
 		this.observations = new ArrayList<>();
 
-		readData(filenameTrainingData);
+		loadTrainingDataFile(filename);
 	}
 
 	/**
@@ -32,18 +29,15 @@ public class TrainingData {
 	 * @param filename
 	 * @throws IOException
 	 */
-	private void readData(String filename) throws IOException {
+	private void loadTrainingDataFile(String filename) throws IOException {
 		logger.outputStringMessage(3,
 				"Reading training data observations file: " + new File(filename).getAbsolutePath());
 		ArrayList<String> lines = readLinesFromFile(filename, true);
-
-		// Define variables to be read from training data file
 
 		ArrayList<String> condition = new ArrayList<>();
 		ArrayList<String> observation = new ArrayList<>();
 		float weight;
 
-		// Process lines
 		for (int i = 0; i < lines.size(); i++) {
 			if (lines.get(i).toLowerCase().equals("condition")) {
 				condition = new ArrayList<>(Arrays.asList(lines.get(i + 1).split("\t")));
@@ -104,52 +98,13 @@ public class TrainingData {
 		}
 	}
 
-	public static void writeTrainingDataTemplateFile(String filename) throws IOException {
-		PrintWriter writer = new PrintWriter(filename, "UTF-8");
-
-		writer.println("# Gitsbe training data file");
-		writer.println("# Each condition specified contains a condition given by drug");
-		writer.println("# Each condition specified contains a set node states and/or a global output");
-		writer.println();
-		writer.println("Condition");
-		writer.println("-");
-		writer.println("Response");
-		writer.println("Antisurvival:0	CASP3:0	Prosurvival:1	CCND1:1	MYC:1	CF7_f:1	NFKB_f:1");
-		writer.println("Weight:1");
-		writer.println("# Steady state observation across many publications");
-		writer.println();
-		writer.println("Condition");
-		writer.println("CTNNB1:0");
-		writer.println("Response");
-		writer.println("globaloutput:0");
-		writer.println("Weight:0.1");
-
-		writer.flush();
-		writer.close();
-	}
-
-	/**
-	 * Returns maximum fitness determined by training data
-	 * 
-	 * @return maxFitness
-	 */
-	public float getMaxFitness() {
-		float maxFitness;
-
-		maxFitness = getWeightSum();
-		// a fitness of +1 is given for a model with a stable state
-		// per condition, thus max fitness must be increased
-		maxFitness += 1;
-		return maxFitness;
-	}
-
 	public float getWeightSum() {
-		float weightsum = 0;
+		float sum = 0;
 
 		for (TrainingDataObservation observation : observations) {
-			weightsum += observation.getWeight();
+			sum += observation.getWeight();
 		}
-		return weightsum;
+		return sum;
 	}
 
 	public int size() {
@@ -178,13 +133,5 @@ public class TrainingData {
 		}
 
 		return result;
-	}
-
-	public String getFilenameTrainingData() {
-		return filenameTrainingData;
-	}
-
-	private void setFilenameTrainingData(String filenameTrainingData) {
-		this.filenameTrainingData = filenameTrainingData;
 	}
 }

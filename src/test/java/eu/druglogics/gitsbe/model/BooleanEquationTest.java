@@ -186,4 +186,12 @@ class BooleanEquationTest {
                 .extracting("source", "target", "arc")
                 .contains(tuple("B", "A", -1));
     }
+
+    @Test
+    void test_mutate_link_operator() {
+        assertEquals("and", booleanEquationWithLink.getLink());
+
+        booleanEquationWithLink.mutateLinkOperator();
+        assertEquals("or", booleanEquationWithLink.getLink());
+    }
 }

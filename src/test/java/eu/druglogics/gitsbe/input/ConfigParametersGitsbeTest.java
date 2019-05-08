@@ -2,7 +2,11 @@ package eu.druglogics.gitsbe.input;
 
 import org.junit.jupiter.api.Test;
 
+import javax.naming.ConfigurationException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ConfigParametersGitsbeTest {
 
@@ -43,5 +47,27 @@ class ConfigParametersGitsbeTest {
         assertEquals(pars[25], "best_models_export_to_ginml");
         assertEquals(pars[26], "best_models_export_to_sbml_qual");
         assertEquals(pars[27], "fitness_threshold");
+    }
+
+    @Test
+    void test_check_fitness_threshold() {
+        ConfigParametersGitsbe parameters = new ConfigParametersGitsbe();
+
+        // Default value is float 0
+        assertThat(parameters.getFitnessThreshold()).isEqualTo((float) 0);
+
+        parameters.fitness_threshold = (float) 1.2;
+        assertThrows(ConfigurationException.class, parameters::checkFitnessThreshold);
+    }
+
+    @Test
+    void test_check_target_fitness() {
+        ConfigParametersGitsbe parameters = new ConfigParametersGitsbe();
+
+        // Default value is 0
+        assertThat(parameters.getTargetFitness()).isEqualTo((float) 0);
+
+        parameters.target_fitness = (float) 1.2;
+        assertThrows(ConfigurationException.class, parameters::checkTargetFitness);
     }
 }

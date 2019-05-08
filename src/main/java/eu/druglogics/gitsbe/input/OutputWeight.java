@@ -10,7 +10,7 @@ public class OutputWeight {
 		this.weight = weight;
 	}
 
-	public String getName() {
+	public String getNodeName() {
 		return nodeName;
 	}
 

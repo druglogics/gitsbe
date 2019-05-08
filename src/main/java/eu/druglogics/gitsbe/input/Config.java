@@ -58,6 +58,7 @@ public class Config extends ConfigParametersGitsbe {
 			switch (parameterName) {
 				case "verbosity":
 					verbosity = Integer.parseInt(value);
+					checkVerbosity();
 					break;
 
 				case "delete_tmp_files":
@@ -143,6 +144,7 @@ public class Config extends ConfigParametersGitsbe {
 
 				case "target_fitness":
 					target_fitness = Float.parseFloat(value);
+					checkTargetFitness();
 					break;
 
 				case "bootstrap_mutations_factor":
@@ -191,6 +193,7 @@ public class Config extends ConfigParametersGitsbe {
 
 				case "fitness_threshold":
 					fitness_threshold = Float.parseFloat(value);
+					checkFitnessThreshold();
 					break;
 			}
 		}

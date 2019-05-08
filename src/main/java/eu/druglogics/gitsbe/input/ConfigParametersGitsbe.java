@@ -1,5 +1,6 @@
 package eu.druglogics.gitsbe.input;
 
+import javax.naming.ConfigurationException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 
@@ -105,6 +106,12 @@ public class ConfigParametersGitsbe extends ConfigParametersGlobal{
         return target_fitness;
     }
 
+    void checkTargetFitness() throws ConfigurationException {
+        if (target_fitness < 0.0 || target_fitness > 1.0)
+            throw new ConfigurationException("Parameter `target_fitness` "
+                    + "should be between 0 and 1");
+    }
+
     public int getBootstrapMutationsFactor() {
         return bootstrap_mutations_factor;
     }
@@ -152,6 +159,12 @@ public class ConfigParametersGitsbe extends ConfigParametersGlobal{
 
     public float getFitnessThreshold() {
         return fitness_threshold;
+    }
+
+    void checkFitnessThreshold() throws ConfigurationException {
+        if (fitness_threshold < 0.0 || fitness_threshold > 1.0)
+            throw new ConfigurationException("Parameter `fitness_threshold` "
+                    + "should be between 0 and 1");
     }
 
     public String[] getParameters() {
