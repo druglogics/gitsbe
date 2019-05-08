@@ -213,70 +213,9 @@ public class BooleanModel {
 		writer.close();
 	}
 
-	public void exportModelToGINMLFile(String directoryOutput,
-									   ArrayList<SingleInteraction> singleInteractions) throws IOException {
-
-		PrintWriter writer = new PrintWriter(
-				new File(directoryOutput, modelName + ".ginml").getAbsolutePath(), "UTF-8"
-		);
-		ArrayList<String> equations = this.getModelBoolNet();
-
-		// write heading
-
-		writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		writer.println("<!DOCTYPE gxl SYSTEM \"http://ginsim.org/GINML_2_2.dtd\">");
-		writer.println("<gxl xmlns:xlink=\"http://www.w3.org/1999/xlink\">");
-
-		// write nodeorder
-
-		writer.print("<graph class=\"regulatory\" id=\"" + modelName.replace(".", "_") + "\" nodeorder=\"");
-		for (String nodeName : nodeNameToVariableMap.keySet()) {
-			writer.print(nodeName + " ");
-		}
-		writer.print("\">\n");
-
-		// node style edge style
-
-		// write nodes with Boolean expression
-		for (String equation : equations) {
-			String target = equation.split(",")[0].trim();
-			writer.println("<node id=\"" + target + "\" maxvalue=\"1\">");
-			writer.println("\t<value val=\"1\">");
-			writer.println("\t\t<exp str=\"" + equation.split(",")[1].trim() + "\"/>");
-			writer.println("\t</value>");
-			writer.println("\t<nodevisualsetting x=\"10\" y=\"10\" style=\"\"/>");
-			writer.println("</node>");
-		}
-
-		// write edges
-		for (SingleInteraction singleInteraction : singleInteractions) {
-			String source = singleInteraction.getSource();
-			String target = singleInteraction.getTarget();
-			String arc;
-
-			if (singleInteraction.getArc() == 1) {
-				arc = "positive";
-			} else {
-				arc = "negative";
-			}
-
-			writer.print("<edge id=\"" + source + ":" + target + "\" from=\""
-					+ source + "\" to=\"" + target + "\" minvalue=\"1\" sign=\"" + arc + "\">\n");
-			writer.println("<edgevisualsetting style=\"\"/>");
-			writer.println("</edge>");
-		}
-
-		// finalize
-		writer.println("</graph>");
-		writer.println("</gxl>");
-		writer.close();
-	}
-
 	public void exportModelToBoolNetFile(String directoryOutput) throws IOException {
-
-		PrintWriter writer = new PrintWriter(
-				new File(directoryOutput, modelName + ".bnet").getAbsoluteFile(), "UTF-8"
-		);
+		File boolNetFile = new File(directoryOutput, modelName + ".bnet").getAbsoluteFile();
+		PrintWriter writer = new PrintWriter(boolNetFile, "UTF-8");
 
 		ArrayList<String> equations = getModelBoolNet();
 
@@ -291,14 +230,22 @@ public class BooleanModel {
 		writer.close();
 	}
 
-	void exportModelToGINMLFile(String directoryOutput) throws Exception {
-		File filenameBoolNet = new File(directoryOutput, modelName + ".bnet");
+	/**
+	 * Exports Boolean Model to GINML format using BioLQM library. Firstly, the
+	 * model is converted to the BoolNet format and a .bnet file is written. After
+	 * the GINML file is created, the .bnet file is deleted.
+	 *
+	 * @param directoryOutput
+	 * @throws IOException
+	 */
+	public void exportModelToGINMLFile(String directoryOutput) throws IOException {
+		File boolNetFile = new File(directoryOutput, modelName + ".bnet");
 
-		if (!filenameBoolNet.exists()) {
+		if (!boolNetFile.exists()) {
 			exportModelToBoolNetFile(directoryOutput);
 		}
 
-		LogicalModel boolNetModel = load(filenameBoolNet.getAbsolutePath(), BNetFormat.ID);
+		LogicalModel boolNetModel = load(boolNetFile.getAbsolutePath(), BNetFormat.ID);
 		GINMLFormat ginml = new GINMLFormat();
 
 		try {
@@ -306,22 +253,38 @@ public class BooleanModel {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		if (!boolNetFile.delete()) {
+			throw new IOException("Couldn't delete file: " + boolNetFile);
+		}
 	}
 
-	void exportModelToSBMLFile(String directoryOutput) throws Exception {
-		File filenameBoolNet = new File(directoryOutput, modelName + ".bnet");
+	/**
+	 * Exports Boolean Model to SBML-Qual format using BioLQM library. Firstly, the
+	 * model is converted to the BoolNet format and a .bnet file is written. After
+	 * the SBML-Qual file is created, the .bnet file is deleted.
+	 *
+	 * @param directoryOutput
+	 * @throws IOException
+	 */
+	public void exportModelToSBMLFile(String directoryOutput) throws IOException {
+		File boolNetFile = new File(directoryOutput, modelName + ".bnet");
 
-		if (!filenameBoolNet.exists()) {
+		if (!boolNetFile.exists()) {
 			exportModelToBoolNetFile(directoryOutput);
 		}
 
-		LogicalModel boolNetModel = load(filenameBoolNet.getAbsolutePath(), BNetFormat.ID);
+		LogicalModel boolNetModel = load(boolNetFile.getAbsolutePath(), BNetFormat.ID);
 		SBMLFormat sbml = new SBMLFormat();
 
 		try {
 			sbml.export(boolNetModel, new File(directoryOutput, modelName + ".xml").getAbsoluteFile());
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+
+		if (!boolNetFile.delete()) {
+			throw new IOException("Couldn't delete file: " + boolNetFile);
 		}
 	}
 

@@ -34,8 +34,8 @@ remove_input_nodes:	true
 export_to_gitsbe:	true
 export_to_sif:	true
 export_to_ginml:	true
-export_to_boolnet:	true
 export_to_sbml_qual:	true
+export_to_boolnet:	true
 
 # Parameters for evolutionary algorithms
 # Number of simulations (evolutions) to run
@@ -86,9 +86,9 @@ topology_mutations_factor:	1
 models_saved:	3
 
 # Additional formats to export best models (gitsbe format is enabled by default)
-best_models_export_to_boolnet:	true
 best_models_export_to_ginml:	true
 best_models_export_to_sbml_qual:	true
+best_models_export_to_boolnet:	true
 
 # Threshold for saving models
 fitness_threshold:	0.1

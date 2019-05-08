@@ -275,6 +275,7 @@ public class Gitsbe implements Runnable {
 		exportModelToGitsbeFormat(generalBooleanModel);
 		exportModelToSifFormat(generalBooleanModel);
 		exportModelToGINMLFormat(generalBooleanModel);
+		exportModelToSBMLFormat(generalBooleanModel);
 		exportModelToBoolNetFormat(generalBooleanModel);
 	}
 
@@ -304,8 +305,18 @@ public class Gitsbe implements Runnable {
 		if (Config.getInstance().exportToGINML()) {
 			try {
 				logger.outputStringMessage(2, "Exporting network file to ginml format");
-				generalBooleanModel.exportModelToGINMLFile(directoryOutput,
-						generalModel.getSingleInteractions());
+				generalBooleanModel.exportModelToGINMLFile(directoryOutput);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void exportModelToSBMLFormat(BooleanModel generalBooleanModel) {
+		if (Config.getInstance().exportToSBMLQual()) {
+			try {
+				logger.outputStringMessage(2, "Exporting network file to sbml format");
+				generalBooleanModel.exportModelToSBMLFile(directoryOutput);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

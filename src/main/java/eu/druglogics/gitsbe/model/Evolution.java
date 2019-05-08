@@ -300,6 +300,14 @@ public class Evolution {
 				bestModel.calculateStableStatesVC(directoryOutput, Config.getInstance().getAttractorTool());
 				bestModel.exportModelToGitsbeFile(modelDirectory);
 
+				if (exportToGINML) {
+					bestModel.exportModelToGINMLFile(modelDirectory);
+				}
+
+				if (exportToSBMLQual) {
+					bestModel.exportModelToSBMLFile(modelDirectory);
+				}
+
 				if (exportToBoolNet) {
 					bestModel.exportModelToBoolNetFile(modelDirectory);
 				}
