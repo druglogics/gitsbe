@@ -24,8 +24,7 @@ of the genetic algorithm was based on.
 
 ## Install
 
-Install the `BNReduction` script:
-- [BNReduction dependencies](https://bitbucket.org/asmundf/druglogics_dep/src/develop/)
+Install the `BNReduction` script and its dependencies [here](https://bitbucket.org/asmundf/druglogics_dep/src/develop/)
 
 ```
 # tested with maven 3.5.2
