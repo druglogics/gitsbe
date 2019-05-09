@@ -72,11 +72,14 @@
                             <execution>
                                 <phase>compile</phase>
                                 <goals>
-                                    <goal>java</goal>
+                                    <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <mainClass>eu.druglogics.gitsbe.Launcher</mainClass>
+                                    <executable>java</executable>
                                     <arguments>
+                                        <argument>-cp</argument>
+                                        <argument>target/gitsbe-${project.version}-jar-with-dependencies.jar</argument>
+                                        <argument>eu.druglogics.gitsbe.Launcher</argument>
                                         <argument>--project</argument>
                                         <argument>example_run_ags</argument>
                                         <argument>--network</argument>
@@ -91,10 +94,6 @@
                                 </configuration>
                             </execution>
                         </executions>
-                        <configuration>
-                            <mainClass>com.test.Startup</mainClass>
-                            <cleanupDaemonThreads>false</cleanupDaemonThreads>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>

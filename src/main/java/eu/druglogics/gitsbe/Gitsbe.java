@@ -128,7 +128,7 @@ public class Gitsbe implements Runnable {
 								 data, outputs, modelDirectory, logDirectory)));
 			mergeLogFiles(logDirectory);
 		} else {
-			// Run evolution simulations in serial
+			logger.outputStringMessage(1, "\nRunning simulations serially");
 			IntStream.range(0, numberOfSimulations)
 				.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run),
 						 ()  -> runSimulation(run, summary, generalBooleanModel,
