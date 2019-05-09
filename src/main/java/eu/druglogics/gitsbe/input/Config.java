@@ -75,6 +75,7 @@ public class Config extends ConfigParametersGitsbe {
 
 				case "parallel_sim_num":
 					parallel_sim_num = Integer.parseInt(value);
+					checkParallelSimulationsNumber();
 					break;
 
 				case "attractor_tool":

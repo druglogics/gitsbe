@@ -32,6 +32,9 @@ class ConfigParametersGlobalTest {
 
         assertNull(parameters.attractor_tool);
         assertThrows(ConfigurationException.class, parameters::checkAttractorTool);
+
+        parameters.attractor_tool = "ANonValidAttractorTool";
+        assertThrows(ConfigurationException.class, parameters::checkAttractorTool);
     }
 
     @Test
@@ -54,15 +57,47 @@ class ConfigParametersGlobalTest {
 
         // Default value is 0
         assertThat(parameters.getVerbosity()).isEqualTo(0);
+        assertDoesNotThrow(parameters::checkVerbosity);
 
         parameters.verbosity = 1;
         assertThat(parameters.getVerbosity()).isEqualTo(1);
+        assertDoesNotThrow(parameters::checkVerbosity);
+
         parameters.verbosity = 2;
         assertThat(parameters.getVerbosity()).isEqualTo(2);
+        assertDoesNotThrow(parameters::checkVerbosity);
+
         parameters.verbosity = 3;
         assertThat(parameters.getVerbosity()).isEqualTo(3);
+        assertDoesNotThrow(parameters::checkVerbosity);
 
         parameters.verbosity = 4;
+        assertThat(parameters.getVerbosity()).isEqualTo(4);
         assertThrows(ConfigurationException.class, parameters::checkVerbosity);
+    }
+
+    @Test
+    void test_check_parallel_sim_num() {
+        ConfigParametersGlobal parameters = new ConfigParametersGlobal();
+
+        // Default value is 0
+        assertThat(parameters.parallelSimulationsNumber()).isEqualTo(0);
+        assertThrows(ConfigurationException.class, parameters::checkParallelSimulationsNumber);
+
+        parameters.parallel_sim_num = -2;
+        assertThat(parameters.parallelSimulationsNumber()).isEqualTo(-2);
+        assertThrows(ConfigurationException.class, parameters::checkParallelSimulationsNumber);
+
+        parameters.parallel_sim_num = 1;
+        assertThat(parameters.parallelSimulationsNumber()).isEqualTo(1);
+        assertThrows(ConfigurationException.class, parameters::checkParallelSimulationsNumber);
+
+        parameters.parallel_sim_num = 2;
+        assertThat(parameters.parallelSimulationsNumber()).isEqualTo(2);
+        assertDoesNotThrow(parameters::checkParallelSimulationsNumber);
+
+        parameters.parallel_sim_num = 10;
+        assertThat(parameters.parallelSimulationsNumber()).isEqualTo(10);
+        assertDoesNotThrow(parameters::checkParallelSimulationsNumber);
     }
 }

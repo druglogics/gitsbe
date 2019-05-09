@@ -44,6 +44,11 @@ public class ConfigParametersGlobal {
         return parallel_sim_num;
     }
 
+    protected void checkParallelSimulationsNumber() throws ConfigurationException {
+        if (parallel_sim_num < 2)
+            throw new ConfigurationException("Parameter `parallel_sim_num` can only be 2 or larger");
+    }
+
     public String getAttractorTool() {
         return attractor_tool;
     }
