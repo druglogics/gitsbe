@@ -31,7 +31,7 @@ public class ConfigParametersGlobal {
         return delete_tmp_files;
     }
 
-    public boolean compressLogsAndTmpFiles() {
+    public boolean compressLogAndTmpFiles() {
         return compress_log_and_tmp_files;
     }
 

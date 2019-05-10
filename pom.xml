@@ -125,6 +125,13 @@
             <version>1.72</version>
         </dependency>
 
+        <!-- Java Archiving Library -->
+        <dependency>
+            <groupId>org.rauschig</groupId>
+            <artifactId>jarchivelib</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <!-- BioLQM -->
         <dependency>
             <groupId>org.colomoto</groupId>

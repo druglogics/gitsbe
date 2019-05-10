@@ -76,14 +76,14 @@ public class Gitsbe implements Runnable {
         createOutputDirectory();
 
 		// Create models directory (subfolder to directoryOutput)
-		String modelDirectory = new File(directoryOutput, "models").getAbsolutePath();
-		createModelDirectory(modelDirectory);
+		String directoryModels = new File(directoryOutput, "models").getAbsolutePath();
+		createModelDirectory(directoryModels);
 
-        String logDirectory = new File(directoryOutput, "log").getAbsolutePath();
-        createLogDirectory(logDirectory);
+        String directoryLog = new File(directoryOutput, "log").getAbsolutePath();
+        createLogDirectory(directoryLog);
 
 		// Start logger
-		initializeGitsbeLogger(logDirectory);
+		initializeGitsbeLogger(directoryLog);
 
 		// Start timer
 		Timer timer = new Timer();
@@ -99,7 +99,7 @@ public class Gitsbe implements Runnable {
 		exportModelToDiffFormats(generalBooleanModel);
 
 		// Load training data
-		TrainingData data = loadTrainingData(generalBooleanModel);
+		TrainingData trainingData = loadTrainingData(generalBooleanModel);
 
 		// Load output weights
 		ModelOutputs outputs = loadModelOutputs(generalBooleanModel);
@@ -125,14 +125,14 @@ public class Gitsbe implements Runnable {
 			IntStream.range(0, numberOfSimulations).parallel()
 				.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run),
 						 ()  -> runSimulation(run, summary, generalBooleanModel,
-								 data, outputs, modelDirectory, logDirectory)));
-			mergeLogFiles(logDirectory);
+								 trainingData, outputs, directoryModels, directoryLog)));
+			mergeLogFiles(directoryLog);
 		} else {
 			logger.outputStringMessage(1, "\nRunning simulations serially");
 			IntStream.range(0, numberOfSimulations)
 				.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run),
 						 ()  -> runSimulation(run, summary, generalBooleanModel,
-								 data, outputs, modelDirectory, logDirectory)));
+								 trainingData, outputs, directoryModels, directoryLog)));
 		}
 
 		summary.generateFitnessesReport();
@@ -142,6 +142,11 @@ public class Gitsbe implements Runnable {
 
 		// Clean tmp directory
 		cleanDirectory(logger);
+
+		// Compress log and tmp dirs to preserve storage space
+		if (Config.getInstance().compressLogAndTmpFiles()) {
+			archive(directoryLog, directoryTmp);
+		}
 
 		// Stop timer
 		timer.stopTimer();

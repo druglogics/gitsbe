@@ -1,5 +1,10 @@
 package eu.druglogics.gitsbe.util;
 
+import org.rauschig.jarchivelib.ArchiveFormat;
+import org.rauschig.jarchivelib.Archiver;
+import org.rauschig.jarchivelib.ArchiverFactory;
+import org.rauschig.jarchivelib.CompressionType;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -261,6 +266,53 @@ public class Util {
 	public static String getFileName(String filename) {
 		File file = new File(filename);
 		return(file.getName());
+	}
+
+	private static void deleteDirectory(File directory) throws IOException {
+		for (File file : directory.listFiles()) {
+			if (file.isDirectory())
+				deleteDirectory(file);
+			if (!file.delete())
+				throw new IOException("Couldn't delete file: " + file);
+		}
+
+		if (!directory.delete())
+			throw new IOException("Couldn't delete directory: " + directory);
+	}
+
+	public static void archive(String directoryLog, String directoryTmp) {
+		File sourceLogDir = new File(directoryLog);
+		File sourceTmpDir = new File(directoryTmp);
+		Archiver archiver = ArchiverFactory.createArchiver(ArchiveFormat.TAR, CompressionType.GZIP);
+
+		// compress *_tmp dir and delete it afterwards
+		if (sourceTmpDir.exists()) {
+			String archiveNameTmp = getFileName(directoryTmp);
+			File destinationTmpDir = sourceTmpDir.getParentFile();
+
+			try {
+				archiver.create(archiveNameTmp, destinationTmpDir, sourceTmpDir);
+				deleteDirectory(sourceTmpDir);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		// compress *.log files in `log` dir
+		for (File logFile : sourceLogDir.listFiles()) {
+			String logFileFullPath = logFile.getAbsolutePath();
+
+			if (getFileExtension(logFileFullPath).equals(".log")) {
+				String archiveNameLog = removeExtension(logFileFullPath);
+				try {
+					archiver.create(archiveNameLog, sourceLogDir, logFile);
+					logFile.delete();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+
 	}
 
 	public static void abort() {
