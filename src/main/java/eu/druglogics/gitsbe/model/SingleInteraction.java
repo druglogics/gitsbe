@@ -26,7 +26,7 @@ public class SingleInteraction {
 		this.setInteraction(firstNode, interaction, secondNode);
 	}
 
-	SingleInteraction(String interaction) {
+	public SingleInteraction(String interaction) {
 		this.setInteraction(interaction);
 	}
 

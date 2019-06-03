@@ -60,7 +60,7 @@ public class ModelOutputs {
 	 *
 	 * @return the sum of all the positive weights
 	 */
-	private float getMaxOutput() {
+	float getMaxOutput() {
 		float maxOutput = 0;
 
 		for (OutputWeight outputWeight : modelOutputs) {
@@ -74,7 +74,7 @@ public class ModelOutputs {
 	 *
 	 * @return the sum of all the negative weights
 	 */
-	private float getMinOutput() {
+	float getMinOutput() {
 		float minOutput = 0;
 
 		for (OutputWeight outputWeight : modelOutputs) {
@@ -129,7 +129,7 @@ public class ModelOutputs {
 		return lines.toArray(new String[0]);
 	}
 
-	private ArrayList<String> getNodeNames() {
+	ArrayList<String> getNodeNames() {
 		ArrayList<String> nodeNames = new ArrayList<>();
 
 		for (OutputWeight outputWeight : this.modelOutputs) {

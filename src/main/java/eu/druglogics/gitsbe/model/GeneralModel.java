@@ -20,7 +20,7 @@ public class GeneralModel {
 		this.logger = logger;
 	}
 
-	GeneralModel(ArrayList<SingleInteraction> singleInteractions, Logger logger) {
+	public GeneralModel(ArrayList<SingleInteraction> singleInteractions, Logger logger) {
 		this.singleInteractions = singleInteractions;
 		this.logger = logger;
 	}

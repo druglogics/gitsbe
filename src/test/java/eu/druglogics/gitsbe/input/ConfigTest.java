@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 class ConfigTest {
 
     @AfterEach
-    void reset_singleton() throws Exception{
+    void reset_singleton() throws Exception {
         Field instance = Config.class.getDeclaredField("config");
         instance.setAccessible(true);
         instance.set(null, null);
