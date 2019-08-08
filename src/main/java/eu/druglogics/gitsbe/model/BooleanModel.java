@@ -71,7 +71,7 @@ public class BooleanModel {
 	 * Constructor for defining Boolean model from a file with a set of Boolean
 	 * equations
 	 *
-	 * Currently two supported filetypes: .gitsbe and .booleannet files
+	 * Currently 3 supported filetypes: .gitsbe, .bnet and .booleannet files
 	 *
 	 * @param filename
 	 */
