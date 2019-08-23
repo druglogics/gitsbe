@@ -408,7 +408,8 @@ public class BooleanModel {
 				pb.redirectOutput();
 			}
 
-			pb.directory(new File(directoryBNET));
+			File parentVCdir = new File(new File(filenameVC).getParent());
+			pb.directory(parentVCdir);
 			logger.outputStringMessage(3, "Running BNReduction.sh in directory " + pb.directory());
 
 			Process p;
