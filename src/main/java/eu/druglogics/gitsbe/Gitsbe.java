@@ -14,6 +14,8 @@ import eu.druglogics.gitsbe.util.Timer;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Properties;
 import java.util.Random;
@@ -194,6 +196,13 @@ public class Gitsbe implements Runnable {
     private void createTmpDirectory() {
         try {
             createDirectory(directoryTmp, logger);
+
+			// Hack: if full BNReduction is used, copy FPGB.m2 file in the gitsbe_tmp
+            if (Config.getInstance().getAttractorTool().equals("bnet_reduction")) {
+				String directoryBNET = System.getenv("BNET_HOME");
+				Files.copy(Paths.get(directoryBNET + "/FPGB.m2"),
+						Paths.get(directoryTmp + "/FPGB.m2"));
+			}
         } catch (Exception e) {
             e.printStackTrace();
         }
