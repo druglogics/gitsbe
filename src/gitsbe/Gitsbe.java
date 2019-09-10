@@ -121,6 +121,7 @@ public class Gitsbe implements Runnable {
 		ModelOutputs outputs = loadModelOutputs(generalBooleanModel);
 
 		// Create temp directory
+		logger.outputStringMessage(3, " Creating temp directory: " + directoryTmp);
 		if (!createDirectory(directoryTmp, logger))
 			return;
 		initializeFileDeleter(config);
