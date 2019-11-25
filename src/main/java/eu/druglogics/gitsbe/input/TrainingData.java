@@ -73,7 +73,7 @@ public class TrainingData {
 		}
 	}
 
-	private void checkResponses(ArrayList<String> nodes, ArrayList<String> responses) {
+	void checkResponses(ArrayList<String> nodes, ArrayList<String> responses) {
 		for (String response : responses) {
 			if (!response.split(":")[0].equals("globaloutput")) {
 				String nodeName = response.split(":")[0];
@@ -85,7 +85,7 @@ public class TrainingData {
 		}
 	}
 
-	private void checkConditions(ArrayList<String> nodes, ArrayList<String> conditions) {
+	void checkConditions(ArrayList<String> nodes, ArrayList<String> conditions) {
 		for (String condition : conditions) {
 			if (!condition.equals("-")) {
 				String nodeName = condition.split(":")[0];
