@@ -146,4 +146,16 @@ class TrainingDataTest {
 
         assertEquals(exception2.getMessage(), "Response has `globaloutput` outside the [0,1] range: -0.3");
     }
+
+    @Test
+    void test_response_value_out_of_range() {
+        ConfigurationException exception = assertThrows(ConfigurationException.class, () -> {
+            ClassLoader classLoader = getClass().getClassLoader();
+            String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_3").getFile()).getPath();
+            Logger mockLogger = mock(Logger.class);
+            new TrainingData(trainingWrongFormat, mockLogger);
+        });
+
+        assertEquals(exception.getMessage(), "Node C has value outside the [0,1] range: 1.1");
+    }
 }

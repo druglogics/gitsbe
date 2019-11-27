@@ -9,8 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static eu.druglogics.gitsbe.util.Util.abort;
-import static eu.druglogics.gitsbe.util.Util.readLinesFromFile;
+import static eu.druglogics.gitsbe.util.Util.*;
 
 public class TrainingData {
 
@@ -41,19 +40,33 @@ public class TrainingData {
 
 		for (int i = 0; i < lines.size(); i++) {
 			if (lines.get(i).toLowerCase().equals("condition")) {
-				condition = new ArrayList<>(Arrays.asList(lines.get(i + 1).split("\t")));
-				i++;
+				condition = new ArrayList<>(Arrays.asList(lines.get(++i).split("\t")));
 			}
+
 			if (lines.get(i).toLowerCase().equals("response")) {
-				response = new ArrayList<>(Arrays.asList(lines.get(i + 1).split("\t")));
+				response = new ArrayList<>(Arrays.asList(lines.get(++i).split("\t")));
 				if (response.get(0).contains("globaloutput")) {
 					float globaloutputValue = Float.parseFloat(response.get(0).split(":")[1]);
 					if (globaloutputValue < 0.0 || globaloutputValue > 1.0)
 						throw new ConfigurationException("Response has `globaloutput` "
 							+ "outside the [0,1] range: " + globaloutputValue);
+				} else {
+					for (String res : response) {
+						String[] responseStr = res.split(":");
+						String nodeName = responseStr[0];
+						String value = responseStr[1];
+						if (!isNumericString(value))
+							throw new ConfigurationException("Node " + nodeName
+								+ " has a non-numeric value: " + value);
+
+						float nodeValue = Float.parseFloat(value);
+						if (nodeValue < 0.0 || nodeValue > 1.0)
+							throw new ConfigurationException("Node " + nodeName
+								+ " has value outside the [0,1] range: " + nodeValue);
+					}
 				}
-				i++;
 			}
+
 			if (lines.get(i).toLowerCase().startsWith("weight")) {
 				weight = Float.parseFloat(lines.get(i).split(":")[1]);
 				observations.add(new TrainingDataObservation(condition, response, weight));
