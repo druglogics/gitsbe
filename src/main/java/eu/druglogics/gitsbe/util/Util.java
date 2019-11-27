@@ -315,6 +315,18 @@ public class Util {
 
 	}
 
+	public static boolean isNumericString(String strNum) {
+		if (strNum == null) {
+			return false;
+		}
+		try {
+			Double.parseDouble(strNum);
+		} catch (NumberFormatException e) {
+			return false;
+		}
+		return true;
+	}
+
 	public static void abort() {
 		System.exit(1);
 	}
