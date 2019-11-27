@@ -3,6 +3,7 @@ package eu.druglogics.gitsbe.input;
 import eu.druglogics.gitsbe.model.BooleanModel;
 import eu.druglogics.gitsbe.util.Logger;
 
+import javax.naming.ConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class TrainingData {
 	private ArrayList<TrainingDataObservation> observations;
 	private Logger logger;
 
-	public TrainingData(String filename, Logger logger) throws IOException {
+	public TrainingData(String filename, Logger logger) throws IOException, ConfigurationException {
 		this.logger = logger;
 		this.observations = new ArrayList<>();
 
@@ -29,13 +30,13 @@ public class TrainingData {
 	 * @param filename
 	 * @throws IOException
 	 */
-	private void loadTrainingDataFile(String filename) throws IOException {
+	private void loadTrainingDataFile(String filename) throws IOException, ConfigurationException {
 		logger.outputStringMessage(3,
 				"Reading training data observations file: " + new File(filename).getAbsolutePath());
 		ArrayList<String> lines = readLinesFromFile(filename, true);
 
 		ArrayList<String> condition = new ArrayList<>();
-		ArrayList<String> observation = new ArrayList<>();
+		ArrayList<String> response = new ArrayList<>();
 		float weight;
 
 		for (int i = 0; i < lines.size(); i++) {
@@ -44,12 +45,18 @@ public class TrainingData {
 				i++;
 			}
 			if (lines.get(i).toLowerCase().equals("response")) {
-				observation = new ArrayList<>(Arrays.asList(lines.get(i + 1).split("\t")));
+				response = new ArrayList<>(Arrays.asList(lines.get(i + 1).split("\t")));
+				if (response.get(0).contains("globaloutput")) {
+					float globaloutputValue = Float.parseFloat(response.get(0).split(":")[1]);
+					if (globaloutputValue < 0.0 || globaloutputValue > 1.0)
+						throw new ConfigurationException("Response has `globaloutput` "
+							+ "outside the [0,1] range: " + globaloutputValue);
+				}
 				i++;
 			}
 			if (lines.get(i).toLowerCase().startsWith("weight")) {
 				weight = Float.parseFloat(lines.get(i).split(":")[1]);
-				observations.add(new TrainingDataObservation(condition, observation, weight));
+				observations.add(new TrainingDataObservation(condition, response, weight));
 			}
 		}
 	}

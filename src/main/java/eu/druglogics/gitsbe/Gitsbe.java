@@ -12,6 +12,7 @@ import eu.druglogics.gitsbe.util.Logger;
 import eu.druglogics.gitsbe.util.RandomManager;
 import eu.druglogics.gitsbe.util.Timer;
 
+import javax.naming.ConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -391,7 +392,7 @@ public class Gitsbe implements Runnable {
 		TrainingData data = null;
 		try {
 			data = new TrainingData(filenameTrainingData, logger);
-		} catch (IOException e) {
+		} catch (IOException | ConfigurationException e) {
 			e.printStackTrace();
 			abort();
 		}

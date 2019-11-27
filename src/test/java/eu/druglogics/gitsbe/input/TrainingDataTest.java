@@ -8,6 +8,7 @@ import eu.druglogics.gitsbe.util.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.naming.ConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -16,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class TrainingDataTest {
@@ -44,7 +46,7 @@ class TrainingDataTest {
     }
 
     @Test
-    void test_constructor() throws IOException {
+    void test_constructor() throws IOException, ConfigurationException {
         Logger mockLogger = mock(Logger.class);
         TrainingData trainingData = new TrainingData(trainingDataFile, mockLogger);
 
@@ -87,7 +89,7 @@ class TrainingDataTest {
     }
 
     @Test
-    void test_warning_message_node_in_response_not_in_model() throws IOException {
+    void test_warning_message_node_in_response_not_in_model() throws IOException, ConfigurationException {
         Logger mockLogger = mock(Logger.class);
 
         TrainingData trainingData = new TrainingData(trainingDataFile, mockLogger);
@@ -113,7 +115,7 @@ class TrainingDataTest {
 
     @Test
     @ExpectSystemExitWithStatus(1)
-    void test_abort_node_in_condition_not_in_model() throws IOException {
+    void test_abort_node_in_condition_not_in_model() throws IOException, ConfigurationException {
         Logger mockLogger = mock(Logger.class);
         TrainingData trainingData = new TrainingData(trainingDataFile, mockLogger);
 
@@ -122,5 +124,26 @@ class TrainingDataTest {
 
         // B is not in the empty set of nodes
         trainingData.checkConditions(nodes_with_no_B, obs.get(2).getCondition());
+    }
+
+    @Test
+    void test_globaloutput_out_of_range() {
+        ConfigurationException exception = assertThrows(ConfigurationException.class, () -> {
+            ClassLoader classLoader = getClass().getClassLoader();
+            String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format").getFile()).getPath();
+            Logger mockLogger = mock(Logger.class);
+            new TrainingData(trainingWrongFormat, mockLogger);
+        });
+
+        assertEquals(exception.getMessage(), "Response has `globaloutput` outside the [0,1] range: 10.0");
+
+        ConfigurationException exception2 = assertThrows(ConfigurationException.class, () -> {
+            ClassLoader classLoader = getClass().getClassLoader();
+            String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_2").getFile()).getPath();
+            Logger mockLogger = mock(Logger.class);
+            new TrainingData(trainingWrongFormat, mockLogger);
+        });
+
+        assertEquals(exception2.getMessage(), "Response has `globaloutput` outside the [0,1] range: -0.3");
     }
 }
