@@ -400,7 +400,12 @@ public class Gitsbe implements Runnable {
 		logger.outputHeader(2, "Training Data");
 		logger.outputLines(2, data.getTrainingDataVerbose());
 
-		data.checkTrainingDataConsistency(generalBooleanModel);
+		try {
+			data.checkTrainingDataConsistency(generalBooleanModel);
+		} catch (ConfigurationException e) {
+			e.printStackTrace();
+			abort();
+		}
 
 		return data;
 	}
