@@ -4,8 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class UtilTest {
 
@@ -109,5 +108,15 @@ class UtilTest {
         });
     }
 
+    @Test
+    void test_is_numeric_string() {
+        assertTrue(Util.isNumericString("132"));
+        assertTrue(Util.isNumericString("-12"));
+        assertTrue(Util.isNumericString("-12.237482397"));
+        assertTrue(Util.isNumericString("+12.234787"));
 
+        assertFalse(Util.isNumericString("-d12"));
+        assertFalse(Util.isNumericString("e12"));
+        assertFalse(Util.isNumericString("jira"));
+    }
 }
