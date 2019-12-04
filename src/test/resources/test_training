@@ -23,7 +23,13 @@ globaloutput:0.3
 Weight:0.2
 
 Condition
-Drug(AA+BB) < min(Drug(AA), Drug(BB))
+Drug(AA+BB) < min(Drug(AA),Drug(BB))
 Response
 globaloutput:0.1
+Weight:0.2
+
+Condition
+Drug(CC+BB) < product(Drug(CC),Drug(BB))
+Response
+globaloutput:-0.2
 Weight:0.2
