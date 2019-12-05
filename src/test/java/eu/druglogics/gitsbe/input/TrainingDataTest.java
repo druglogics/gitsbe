@@ -1,6 +1,5 @@
 package eu.druglogics.gitsbe.input;
 
-import com.ginsberg.junit.exit.ExpectSystemExitWithStatus;
 import eu.druglogics.gitsbe.model.BooleanModel;
 import eu.druglogics.gitsbe.model.GeneralModel;
 import eu.druglogics.gitsbe.model.SingleInteraction;
