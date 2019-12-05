@@ -1,5 +1,6 @@
 package eu.druglogics.gitsbe.input;
 
+import eu.druglogics.gitsbe.drug.DrugPanel;
 import eu.druglogics.gitsbe.model.BooleanModel;
 import eu.druglogics.gitsbe.model.GeneralModel;
 import eu.druglogics.gitsbe.model.SingleInteraction;
@@ -21,10 +22,11 @@ import static org.mockito.Mockito.*;
 class TrainingDataTest {
 
     private BooleanModel booleanModel;
-    private String trainingDataFile;
+    private TrainingData trainingData;
+    private DrugPanel drugPanel;
 
     @BeforeEach
-    void init() {
+    void init() throws IOException, ConfigurationException {
         Logger mockLogger = mock(Logger.class);
 
         ArrayList<SingleInteraction> testInteractions = new ArrayList<>();
@@ -40,14 +42,15 @@ class TrainingDataTest {
         this.booleanModel = new BooleanModel(generalModel, mockLogger);
 
         ClassLoader classLoader = getClass().getClassLoader();
-        this.trainingDataFile = new File(classLoader.getResource("test_training").getFile()).getPath();
+        String trainingDataFile = new File(classLoader.getResource("test_training").getFile()).getPath();
+        this.trainingData = new TrainingData(trainingDataFile, mockLogger);
+
+        String drugPanelFile = new File(classLoader.getResource("test_drugpanel_2").getFile()).getPath();
+        this.drugPanel = new DrugPanel(drugPanelFile, mockLogger);
     }
 
     @Test
-    void test_constructor() throws IOException, ConfigurationException {
-        Logger mockLogger = mock(Logger.class);
-        TrainingData trainingData = new TrainingData(trainingDataFile, mockLogger);
-
+    void test_constructor() {
         // check size
         assertEquals(trainingData.size(), 6);
 
@@ -92,17 +95,13 @@ class TrainingDataTest {
     }
 
     @Test
-    void test_no_exception_on_correctly_formatted_training_file() throws IOException, ConfigurationException {
-        Logger mockLogger = mock(Logger.class);
-        TrainingData trainingData = new TrainingData(trainingDataFile, mockLogger);
-        assertDoesNotThrow(() -> trainingData.checkTrainingDataConsistency(booleanModel));
+    void test_no_exception_on_correctly_formatted_training_file() {
+        assertDoesNotThrow(() -> trainingData.checkTrainingDataConsistency(booleanModel, drugPanel));
     }
 
     @Test
-    void test_warning_message_node_in_response_not_in_model() throws IOException, ConfigurationException {
+    void test_warning_message_node_in_response_not_in_model() throws ConfigurationException {
         Logger mockLogger = mock(Logger.class);
-
-        TrainingData trainingData = new TrainingData(trainingDataFile, mockLogger);
 
         ArrayList<TrainingDataObservation> obs = trainingData.getObservations();
         ArrayList<String> nodes = booleanModel.getNodeNames();
@@ -126,14 +125,11 @@ class TrainingDataTest {
     @Test
     void test_check_conditions() {
         ConfigurationException exception1 = assertThrows(ConfigurationException.class, () -> {
-            Logger mockLogger = mock(Logger.class);
-            TrainingData trainingData = new TrainingData(trainingDataFile, mockLogger);
-
             ArrayList<TrainingDataObservation> obs = trainingData.getObservations();
             ArrayList<String> nodes_with_no_B = new ArrayList<>(Arrays.asList("A", "C"));
 
             // B is not in the set of nodes: {A,C}
-            trainingData.checkConditions(nodes_with_no_B, obs.get(2).getCondition());
+            trainingData.checkConditions(nodes_with_no_B, obs.get(2).getCondition(), drugPanel);
         });
 
         assertEquals(exception1.getMessage(), "Node `B` defined in condition `B:0` is not in network file.");
@@ -143,11 +139,11 @@ class TrainingDataTest {
             Logger mockLogger = mock(Logger.class);
             String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_4").getFile()).getPath();
 
-            TrainingData trainingData = new TrainingData(trainingWrongFormat, mockLogger);
+            TrainingData trainingDataWrongFormat = new TrainingData(trainingWrongFormat, mockLogger);
 
-            ArrayList<TrainingDataObservation> obs = trainingData.getObservations();
+            ArrayList<TrainingDataObservation> obs = trainingDataWrongFormat.getObservations();
 
-            trainingData.checkConditions(new ArrayList<>(), obs.get(0).getCondition());
+            trainingDataWrongFormat.checkConditions(new ArrayList<>(), obs.get(0).getCondition(), drugPanel);
         });
 
         assertEquals(exception2.getMessage(), "Only one condition defined: `xaxa` that has neither `-`, `:` or starts with `Drug`");
@@ -157,11 +153,11 @@ class TrainingDataTest {
 			Logger mockLogger = mock(Logger.class);
 			String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_5").getFile()).getPath();
 
-			TrainingData trainingData = new TrainingData(trainingWrongFormat, mockLogger);
+			TrainingData trainingDataWrongFormat = new TrainingData(trainingWrongFormat, mockLogger);
 
-			ArrayList<TrainingDataObservation> obs = trainingData.getObservations();
+			ArrayList<TrainingDataObservation> obs = trainingDataWrongFormat.getObservations();
 
-			trainingData.checkConditions(new ArrayList<>(), obs.get(0).getCondition());
+			trainingDataWrongFormat.checkConditions(new ArrayList<>(), obs.get(0).getCondition(), drugPanel);
 		});
 
 		assertEquals(exception3.getMessage(), "Only one condition defined: ` drug ` that has neither `-`, `:` or starts with `Drug`");
@@ -247,34 +243,81 @@ class TrainingDataTest {
         Logger mockLogger = mock(Logger.class);
         ClassLoader classLoader = getClass().getClassLoader();
         String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_10").getFile()).getPath();
-        TrainingData trainingData = new TrainingData(trainingWrongFormat, mockLogger);
+        TrainingData trainingDataWrongFormat = new TrainingData(trainingWrongFormat, mockLogger);
 
         ConfigurationException exception1 = assertThrows(ConfigurationException.class,
-            () -> trainingData.checkConditions(new ArrayList<>(), trainingData.getObservations().get(0).getCondition()));
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(0).getCondition(), drugPanel));
         assertEquals(exception1.getMessage(), "Wrong format: `Drug(AA)somethingThatShouldntBeHere`");
 
         ConfigurationException exception2 = assertThrows(ConfigurationException.class,
-            () -> trainingData.checkConditions(new ArrayList<>(), trainingData.getObservations().get(2).getCondition()));
-        assertEquals(exception2.getMessage(), "Neither 1 nor 3 `Drug` keywords in condition: `Drug(AA+BB+CC) < min(Drug(AA),Drug(BB),Drug(CC))`");
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(1).getCondition(), drugPanel));
+        assertEquals(exception2.getMessage(), "Drugpanel does not include drug: `PK`");
 
         ConfigurationException exception3 = assertThrows(ConfigurationException.class,
-            () -> trainingData.checkConditions(new ArrayList<>(), trainingData.getObservations().get(3).getCondition()));
-        assertEquals(exception3.getMessage(), "Condition: `Drug(AA+BB) < max(Drug(AA),Drug(BB))` has neither of the strings: `< min(Drug` or `< product(Drug`");
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(2).getCondition(), drugPanel));
+        assertEquals(exception3.getMessage(), "Neither 1 nor 3 `Drug` keywords in condition: `Drug(AA+BB+CC) < min(Drug(AA),Drug(BB),Drug(CC))`");
 
         ConfigurationException exception4 = assertThrows(ConfigurationException.class,
-            () -> trainingData.checkConditions(new ArrayList<>(), trainingData.getObservations().get(4).getCondition()));
-        assertEquals(exception4.getMessage(), "Wrong format: `Drug(AA-BB) < min(Drug(AA),Drug(BB))`");
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(3).getCondition(), drugPanel));
+        assertEquals(exception4.getMessage(), "Condition: `Drug(AA+BB) < max(Drug(AA),Drug(BB))` has neither of the strings: `< min(Drug` or `< product(Drug`");
 
         ConfigurationException exception5 = assertThrows(ConfigurationException.class,
-            () -> trainingData.checkConditions(new ArrayList<>(), trainingData.getObservations().get(5).getCondition()));
-        assertEquals(exception5.getMessage(), "Wrong format: `Drug(AA+BB) < product(Drug(AA)Drug(BB))`");
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(4).getCondition(), drugPanel));
+        assertEquals(exception5.getMessage(), "Wrong format: `Drug(AA-BB) < min(Drug(AA),Drug(BB))`");
 
         ConfigurationException exception6 = assertThrows(ConfigurationException.class,
-            () -> trainingData.checkConditions(new ArrayList<>(), trainingData.getObservations().get(6).getCondition()));
-        assertEquals(exception6.getMessage(), "In condition: `Drug(AA+BB) < min(Drug(FF),Drug(BB))` drug names don't match");
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(5).getCondition(), drugPanel));
+        assertEquals(exception6.getMessage(), "Wrong format: `Drug(AA+BB) < product(Drug(AA)Drug(BB))`");
 
         ConfigurationException exception7 = assertThrows(ConfigurationException.class,
-            () -> trainingData.checkConditions(new ArrayList<>(), trainingData.getObservations().get(7).getCondition()));
-        assertEquals(exception7.getMessage(), "In condition: `Drug(AA+BB) < product(Drug(AA),Drug(FF))` drug names don't match");
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(6).getCondition(), drugPanel));
+        assertEquals(exception7.getMessage(), "In condition: `Drug(AA+BB) < min(Drug(FF),Drug(BB))` drug names don't match");
+
+        ConfigurationException exception8 = assertThrows(ConfigurationException.class,
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(7).getCondition(), drugPanel));
+        assertEquals(exception8.getMessage(), "In condition: `Drug(AA+BB) < product(Drug(AA),Drug(FF))` drug names don't match");
+
+        ConfigurationException exception9 = assertThrows(ConfigurationException.class,
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(8).getCondition(), drugPanel));
+        assertEquals(exception9.getMessage(), "Drug `PK` is not in the drugpanel");
+
+        ConfigurationException exception10 = assertThrows(ConfigurationException.class,
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(9).getCondition(), drugPanel));
+        assertEquals(exception10.getMessage(), "Drug `PI` is not in the drugpanel");
+
+        ConfigurationException exception11 = assertThrows(ConfigurationException.class,
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(10).getCondition(), drugPanel));
+        assertEquals(exception11.getMessage(), "Drug `PK` is not in the drugpanel");
+
+        ConfigurationException exception12 = assertThrows(ConfigurationException.class,
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(1).getCondition(), null));
+        assertEquals(exception12.getMessage(), "Drugpanel is null so no targets can be found for drug `PK` in condition: `Drug(PK)`");
+
+        ConfigurationException exception13 = assertThrows(ConfigurationException.class,
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(8).getCondition(), null));
+        assertEquals(exception13.getMessage(), "Drugpanel is null so no targets can be found for the drugs in condition: `Drug(AA+PK) < min(Drug(AA),Drug(PK))`");
+
+        ConfigurationException exception14 = assertThrows(ConfigurationException.class,
+            () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                trainingDataWrongFormat.getObservations().get(9).getCondition(), null));
+        assertEquals(exception14.getMessage(), "Drugpanel is null so no targets can be found for the drugs in condition: `Drug(PI+PK) < min(Drug(PI),Drug(PK))`");
+
+        ConfigurationException exception15 = assertThrows(ConfigurationException.class,
+                () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
+                    trainingDataWrongFormat.getObservations().get(10).getCondition(), null));
+        assertEquals(exception15.getMessage(), "Drugpanel is null so no targets can be found for the drugs in condition: `Drug(AA+PK) < product(Drug(AA),Drug(PK))`");
     }
 }

@@ -29,6 +29,7 @@ public class Launcher {
             String filenameTrainingData = arguments.getFilenameTrainingData();
             String filenameModelOutputs = arguments.getFilenameModelOutputs();
             String filenameConfig = arguments.getFilenameConfig();
+            String filenameDrugs = arguments.getFilenameDrugs();
 
             // Inferring the input directory from the config file
             String directoryInput = inferInputDir(filenameConfig);
@@ -50,6 +51,7 @@ public class Launcher {
                     filenameTrainingData,
                     filenameModelOutputs,
                     filenameConfig,
+                    filenameDrugs,
                     directoryOutput,
                     directoryTmp
             ));

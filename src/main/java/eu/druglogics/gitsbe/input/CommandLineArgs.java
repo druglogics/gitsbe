@@ -32,6 +32,9 @@ public class CommandLineArgs {
             description = "Model outputs file", order = 4)
     private String filenameModelOutputs;
 
+    @Parameter(names = { "--drugs", "-dr" }, description = "Drugs/DrugPanel file", order = 5)
+    private String filenameDrugs;
+
     public String getProjectName() {
         return projectName;
     }
@@ -52,4 +55,7 @@ public class CommandLineArgs {
         return filenameModelOutputs;
     }
 
+    public String getFilenameDrugs() {
+        return filenameDrugs;
+    }
 }

@@ -1,5 +1,6 @@
 package eu.druglogics.gitsbe.input;
 
+import eu.druglogics.gitsbe.drug.DrugPanel;
 import eu.druglogics.gitsbe.model.BooleanModel;
 import eu.druglogics.gitsbe.util.Logger;
 import org.apache.commons.lang3.StringUtils;
@@ -98,7 +99,7 @@ public class TrainingData {
 	 *                     inconsistencies in the training data conditions & responses
 	 * @throws ConfigurationException
 	 */
-	public void checkTrainingDataConsistency(BooleanModel booleanModel) throws ConfigurationException {
+	public void checkTrainingDataConsistency(BooleanModel booleanModel, DrugPanel drugPanel) throws ConfigurationException {
 		logger.outputHeader(3, "Checking Training Data");
 
 		ArrayList<String> nodes = booleanModel.getNodeNames();
@@ -107,7 +108,7 @@ public class TrainingData {
 			ArrayList<String> conditions = observation.getCondition();
 			ArrayList<String> responses = observation.getResponse();
 
-			checkConditions(nodes, conditions);
+			checkConditions(nodes, conditions, drugPanel);
 			checkResponses(nodes, responses);
 		}
 	}
@@ -127,7 +128,7 @@ public class TrainingData {
 		}
 	}
 
-	void checkConditions(ArrayList<String> nodes, ArrayList<String> conditions) throws ConfigurationException {
+	void checkConditions(ArrayList<String> nodes, ArrayList<String> conditions, DrugPanel drugPanel) throws ConfigurationException {
 		if (conditions.size() == 1) {
 			String condition = conditions.get(0);
 			if (!condition.equals("-") && !condition.startsWith("Drug") && !condition.contains(":")) {
@@ -142,7 +143,12 @@ public class TrainingData {
 					Matcher singleDrugMatcher = singleDrugPattern.matcher(condition);
 					if (singleDrugMatcher.find() && singleDrugMatcher.groupCount() == 1) {
 						String drug = singleDrugMatcher.group(1);
-						// check drug is in the drugpanel
+						if (drugPanel == null)
+							throw new ConfigurationException("Drugpanel is null so no targets can "
+								+ "be found for drug `" + drug + "` in condition: `" + condition + "`");
+						if (!drugPanel.getDrugNames().contains(drug))
+							throw new ConfigurationException("Drugpanel does not include drug: `"
+								+ drug + "`");
 					} else {
 						throw new ConfigurationException("Wrong format: `" + condition + "`");
 					}
@@ -155,10 +161,24 @@ public class TrainingData {
 							String secondDrugInComb = twoDrugsHSAMatcher.group(2);
 							String firstDrugAlone   = twoDrugsHSAMatcher.group(3);
 							String secondDrugAlone  = twoDrugsHSAMatcher.group(4);
+
 							if(!firstDrugAlone.equals(firstDrugInComb) || !secondDrugAlone.equals(secondDrugInComb))
 								throw new ConfigurationException("In condition: `" + condition
 									+ "` drug names don't match");
-							// check that drugs are in the drugpanel
+
+							if (drugPanel == null)
+								throw new ConfigurationException("Drugpanel is null so no targets can "
+									+ "be found for the drugs in condition: `" + condition + "`");
+
+							if (!drugPanel.getDrugNames().contains(firstDrugAlone)) {
+								throw new ConfigurationException("Drug `" + firstDrugAlone
+									+ "` is not in the drugpanel");
+							}
+
+							if (!drugPanel.getDrugNames().contains(secondDrugAlone)) {
+								throw new ConfigurationException("Drug `" + secondDrugAlone
+									+ "` is not in the drugpanel");
+							}
 						} else {
 							throw new ConfigurationException("Wrong format: `" + condition + "`");
 						}
@@ -173,7 +193,20 @@ public class TrainingData {
 							if(!firstDrugAlone.equals(firstDrugInComb) || !secondDrugAlone.equals(secondDrugInComb))
 								throw new ConfigurationException("In condition: `" + condition
 									+ "` drug names don't match");
-							// check that drugs are in the drugpanel
+
+							if (drugPanel == null)
+								throw new ConfigurationException("Drugpanel is null so no targets can "
+									+ "be found for the drugs in condition: `" + condition + "`");
+
+							if (!drugPanel.getDrugNames().contains(firstDrugAlone)) {
+								throw new ConfigurationException("Drug `" + firstDrugAlone
+									+ "` is not in the drugpanel");
+							}
+
+							if (!drugPanel.getDrugNames().contains(secondDrugAlone)) {
+								throw new ConfigurationException("Drug `" + secondDrugAlone
+									+ "` is not in the drugpanel");
+							}
 						} else {
 							throw new ConfigurationException("Wrong format: `" + condition + "`");
 						}

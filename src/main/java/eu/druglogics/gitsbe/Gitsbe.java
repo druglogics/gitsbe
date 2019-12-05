@@ -1,5 +1,6 @@
 package eu.druglogics.gitsbe;
 
+import eu.druglogics.gitsbe.drug.DrugPanel;
 import eu.druglogics.gitsbe.input.Config;
 import eu.druglogics.gitsbe.input.ModelOutputs;
 import eu.druglogics.gitsbe.input.TrainingData;
@@ -48,6 +49,7 @@ public class Gitsbe implements Runnable {
 	private String filenameTrainingData;
 	private String filenameModelOutputs;
 	private String filenameConfig;
+	private String filenameDrugs;
 	private String directoryOutput;
 	private String directoryTmp;
 
@@ -58,13 +60,14 @@ public class Gitsbe implements Runnable {
 	private ArrayList<String> simulationFileList;
 
 	public Gitsbe(String projectName, String filenameNetwork, String filenameTrainingData,
-				  String filenameModelOutputs, String filenameConfig,
+				  String filenameModelOutputs, String filenameConfig, String filenameDrugs,
 				  String directoryOutput, String directoryTmp) {
 		this.projectName = projectName;
 		this.filenameNetwork = filenameNetwork;
 		this.filenameTrainingData = filenameTrainingData;
 		this.filenameModelOutputs = filenameModelOutputs;
 		this.filenameConfig = filenameConfig;
+		this.filenameDrugs = filenameDrugs;
 		this.directoryOutput = directoryOutput;
 		this.directoryTmp = directoryTmp;
 	}
@@ -101,8 +104,11 @@ public class Gitsbe implements Runnable {
 		// Exports
 		exportModelToDiffFormats(generalBooleanModel);
 
+		// Load drugs
+		DrugPanel drugPanel = loadDrugPanel(generalBooleanModel);
+
 		// Load training data
-		TrainingData trainingData = loadTrainingData(generalBooleanModel);
+		TrainingData trainingData = loadTrainingData(generalBooleanModel, drugPanel);
 
 		// Load output weights
 		ModelOutputs outputs = loadModelOutputs(generalBooleanModel);
@@ -158,7 +164,30 @@ public class Gitsbe implements Runnable {
 		logger.writeLastLoggingMessage(timer);
 	}
 
-    private void loadGitsbeProperties() {
+	private DrugPanel loadDrugPanel(BooleanModel booleanModel) {
+		// return null drugPanel if no drugpanel file is given
+		if (filenameDrugs == null) return null;
+
+		logger.outputHeader(2, "Loading drug panel");
+		DrugPanel drugPanel = null;
+
+		try {
+			drugPanel = new DrugPanel(filenameDrugs, logger);
+		} catch (IOException e) {
+			e.printStackTrace();
+			logger.outputStringMessage(1, "Problem with input drugpanel file: " + filenameDrugs);
+			abort();
+		} catch (ConfigurationException e) {
+			e.printStackTrace();
+			abort();
+		}
+
+		drugPanel.checkDrugTargets(booleanModel);
+
+		return drugPanel;
+	}
+
+	private void loadGitsbeProperties() {
 		final Properties properties = new Properties();
 		try {
 			properties.load(this.getClass().getClassLoader().getResourceAsStream("gitsbe.properties"));
@@ -388,7 +417,7 @@ public class Gitsbe implements Runnable {
 		return outputs;
 	}
 
-	private TrainingData loadTrainingData(BooleanModel generalBooleanModel) {
+	private TrainingData loadTrainingData(BooleanModel generalBooleanModel, DrugPanel drugPanel) {
 		TrainingData data = null;
 		try {
 			data = new TrainingData(filenameTrainingData, logger);
@@ -401,7 +430,7 @@ public class Gitsbe implements Runnable {
 		logger.outputLines(2, data.getTrainingDataVerbose());
 
 		try {
-			data.checkTrainingDataConsistency(generalBooleanModel);
+			data.checkTrainingDataConsistency(generalBooleanModel, drugPanel);
 		} catch (ConfigurationException e) {
 			e.printStackTrace();
 			abort();
