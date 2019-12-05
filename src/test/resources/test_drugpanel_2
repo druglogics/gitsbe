@@ -1,0 +1,5 @@
+#Name	Effect	Targets
+AA	inhibits	A
+FF	inhibits	B	D
+BB	inhibits	B
+CC	inhibits	C

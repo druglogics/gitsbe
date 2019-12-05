@@ -30,6 +30,7 @@ class DrugPanelTest {
 		ArrayList<Drug> drugs = drugPanel.getDrugs();
 
 		assertEquals(drugPanel.getDrugPanelSize(), 3);
+		assertEquals(drugPanel.getDrugNames(), newArrayList("AA", "BB", "CC"));
 
 		Drug drug1 = drugs.get(0);
 		assertEquals(drug1.getName(), "AA");

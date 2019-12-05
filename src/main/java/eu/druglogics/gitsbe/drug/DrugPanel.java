@@ -58,7 +58,16 @@ public class DrugPanel {
 		return drugs;
 	}
 
-	public int getDrugPanelSize() {
+	public ArrayList<String> getDrugNames() {
+		ArrayList<String> drugNameList = new ArrayList<>();
+		for (Drug drug: this.drugs) {
+			drugNameList.add(drug.getName());
+		}
+
+		return drugNameList;
+	}
+
+	int getDrugPanelSize() {
 		return getDrugs().size();
 	}
 
@@ -68,7 +77,7 @@ public class DrugPanel {
 	 *
 	 * @param booleanModel
 	 */
-	void checkDrugTargets(BooleanModel booleanModel) {
+	public void checkDrugTargets(BooleanModel booleanModel) {
 		logger.outputHeader(3, "Checking drug targets");
 
 		ArrayList<String> nodes = booleanModel.getNodeNames();
