@@ -105,10 +105,10 @@ public class Gitsbe implements Runnable {
 		exportModelToDiffFormats(generalBooleanModel);
 
 		// Load drugs
-		DrugPanel drugPanel = loadDrugPanel(generalBooleanModel);
+		loadDrugPanel(generalBooleanModel);
 
 		// Load training data
-		TrainingData trainingData = loadTrainingData(generalBooleanModel, drugPanel);
+		TrainingData trainingData = loadTrainingData(generalBooleanModel);
 
 		// Load output weights
 		ModelOutputs outputs = loadModelOutputs(generalBooleanModel);
@@ -164,27 +164,23 @@ public class Gitsbe implements Runnable {
 		logger.writeLastLoggingMessage(timer);
 	}
 
-	private DrugPanel loadDrugPanel(BooleanModel booleanModel) {
-		// return null drugPanel if no drugpanel file is given
-		if (filenameDrugs == null) return null;
+	private void loadDrugPanel(BooleanModel booleanModel) {
+		if (filenameDrugs != null) {
+			logger.outputHeader(2, "Loading drug panel");
 
-		logger.outputHeader(2, "Loading drug panel");
-		DrugPanel drugPanel = null;
+			try {
+				DrugPanel.init(filenameDrugs, logger);
+			} catch (IOException e) {
+				e.printStackTrace();
+				logger.outputStringMessage(1, "Problem with input drugpanel file: " + filenameDrugs);
+				abort();
+			} catch (Exception e) {
+				e.printStackTrace();
+				abort();
+			}
 
-		try {
-			drugPanel = new DrugPanel(filenameDrugs, logger);
-		} catch (IOException e) {
-			e.printStackTrace();
-			logger.outputStringMessage(1, "Problem with input drugpanel file: " + filenameDrugs);
-			abort();
-		} catch (ConfigurationException e) {
-			e.printStackTrace();
-			abort();
+			DrugPanel.getInstance().checkDrugTargets(booleanModel);
 		}
-
-		drugPanel.checkDrugTargets(booleanModel);
-
-		return drugPanel;
 	}
 
 	private void loadGitsbeProperties() {
@@ -417,7 +413,7 @@ public class Gitsbe implements Runnable {
 		return outputs;
 	}
 
-	private TrainingData loadTrainingData(BooleanModel generalBooleanModel, DrugPanel drugPanel) {
+	private TrainingData loadTrainingData(BooleanModel generalBooleanModel) {
 		TrainingData data = null;
 		try {
 			data = new TrainingData(filenameTrainingData, logger);
@@ -430,7 +426,7 @@ public class Gitsbe implements Runnable {
 		logger.outputLines(2, data.getTrainingDataVerbose());
 
 		try {
-			data.checkTrainingDataConsistency(generalBooleanModel, drugPanel);
+			data.checkTrainingDataConsistency(generalBooleanModel);
 		} catch (ConfigurationException e) {
 			e.printStackTrace();
 			abort();

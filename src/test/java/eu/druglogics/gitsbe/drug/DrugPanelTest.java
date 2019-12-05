@@ -4,11 +4,12 @@ import eu.druglogics.gitsbe.model.BooleanModel;
 import eu.druglogics.gitsbe.model.GeneralModel;
 import eu.druglogics.gitsbe.model.SingleInteraction;
 import eu.druglogics.gitsbe.util.Logger;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import javax.naming.ConfigurationException;
 import java.io.File;
-import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import static org.assertj.core.util.Lists.newArrayList;
@@ -19,13 +20,40 @@ import static org.mockito.Mockito.mock;
 
 class DrugPanelTest {
 
+	@AfterEach
+	void reset_singleton() throws Exception {
+		Field instance = DrugPanel.class.getDeclaredField("drugPanel");
+		instance.setAccessible(true);
+		instance.set(null, null);
+	}
+
 	@Test
-	void test_drugs_and_targets_with_correct_input() throws IOException, ConfigurationException {
+	void test_get_instance_without_first_calling_init() {
+		assertThrows(AssertionError.class, DrugPanel::getInstance);
+	}
+
+	@Test
+	void test_init_twice() throws Exception {
+		Logger mockLogger = mock(Logger.class);
+
+		ClassLoader classLoader = getClass().getClassLoader();
+		String filename = new File(classLoader.getResource("test_drugpanel").getFile()).getPath();
+
+		// initializes DrugPanel Class
+		DrugPanel.init(filename, mockLogger);
+
+		// initialization cannot happen twice!
+		assertThrows(AssertionError.class, () -> DrugPanel.init(filename, mockLogger));
+	}
+
+	@Test
+	void test_drugs_and_targets_with_correct_input() throws Exception {
 		ClassLoader classLoader = getClass().getClassLoader();
 		String drugPanelFile = new File(classLoader.getResource("test_drugpanel").getFile()).getPath();
 		Logger mockLogger = mock(Logger.class);
 
-		DrugPanel drugPanel = new DrugPanel(drugPanelFile, mockLogger);
+		DrugPanel.init(drugPanelFile, mockLogger);
+		DrugPanel drugPanel = DrugPanel.getInstance();
 
 		ArrayList<Drug> drugs = drugPanel.getDrugs();
 
@@ -56,20 +84,22 @@ class DrugPanelTest {
 			String drugPanelFile = new File(classLoader.getResource("test_drugpanel_wrong_format").getFile()).getPath();
 
 			Logger mockLogger = mock(Logger.class);
-			new DrugPanel(drugPanelFile, mockLogger);
+			DrugPanel.init(drugPanelFile, mockLogger);
+			DrugPanel.getInstance();
 		});
 
 		assertEquals(exception.getMessage(), "Drug effect: `perturbs` is neither `activates` or `inhibits`");
 	}
 
 	@Test
-	void test_check_drug_targets() throws IOException, ConfigurationException {
+	void test_check_drug_targets() throws Exception {
 		// DrugPanel
 		ClassLoader classLoader = getClass().getClassLoader();
 		String drugPanelFile = new File(classLoader.getResource("test_drugpanel").getFile()).getPath();
 		Logger mockLogger = mock(Logger.class);
 
-		DrugPanel drugPanel = new DrugPanel(drugPanelFile, mockLogger);
+		DrugPanel.init(drugPanelFile, mockLogger);
+		DrugPanel drugPanel = DrugPanel.getInstance();
 
 		// Boolean Model
 		ArrayList<SingleInteraction> testInteractions = new ArrayList<>();

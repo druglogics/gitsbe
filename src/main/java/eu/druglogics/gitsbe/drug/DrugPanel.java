@@ -13,18 +13,35 @@ import static eu.druglogics.gitsbe.util.Util.readLinesFromFile;
 
 /**
  * @author john
- * Simplified version of Drabme same-name Class
+ * Simplified version of Drabme same-name Class, now written as a Singleton
  */
 public class DrugPanel {
+
+	private static DrugPanel drugPanel = null;
 
 	// Panel of single drugs to be used
 	private ArrayList<Drug> drugs;
 	private Logger logger;
 
-	public DrugPanel(String filename, Logger logger) throws IOException, ConfigurationException {
+	private DrugPanel(String filename, Logger logger) throws IOException, ConfigurationException {
 		this.logger = logger;
 		this.drugs = new ArrayList<>();
 		loadDrugPanelFile(filename);
+	}
+
+	public static DrugPanel getInstance() {
+		// To ensure only one instance is created
+		if (drugPanel == null) {
+			throw new AssertionError("You have to call init first to initialize the DrugPanel Class");
+		}
+		return drugPanel;
+	}
+
+	public synchronized static void init(String filename, Logger logger) throws Exception {
+		if (drugPanel != null) {
+			throw new AssertionError("You already initialized me");
+		}
+		drugPanel = new DrugPanel(filename, logger);
 	}
 
 	private void loadDrugPanelFile(String filename) throws IOException, ConfigurationException {
