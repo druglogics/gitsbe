@@ -131,4 +131,42 @@ class DrugPanelTest {
 		// `E`,`F` and `G` targets are not in the network model
 		drugPanel.checkDrugTargets(booleanModel);
 	}
+
+	@Test
+	void test_get_drug_targets() throws Exception {
+		ClassLoader classLoader = getClass().getClassLoader();
+		String drugPanelFile = new File(classLoader.getResource("test_drugpanel").getFile()).getPath();
+		Logger mockLogger = mock(Logger.class);
+
+		DrugPanel.init(drugPanelFile, mockLogger);
+		DrugPanel drugPanel = DrugPanel.getInstance();
+
+		assertEquals(drugPanel.getDrugTargets("AA"), newArrayList("A"));
+		assertEquals(drugPanel.getDrugTargets("BB"), newArrayList("B","E"));
+		assertEquals(drugPanel.getDrugTargets("CC"), newArrayList("C","F","G"));
+
+		ConfigurationException exception = assertThrows(ConfigurationException.class,
+			() -> drugPanel.getDrugTargets("DD"));
+
+		assertEquals(exception.getMessage(), "There is no drug with name: `DD`");
+	}
+
+	@Test
+	void test_get_drug_effect() throws Exception {
+		ClassLoader classLoader = getClass().getClassLoader();
+		String drugPanelFile = new File(classLoader.getResource("test_drugpanel").getFile()).getPath();
+		Logger mockLogger = mock(Logger.class);
+
+		DrugPanel.init(drugPanelFile, mockLogger);
+		DrugPanel drugPanel = DrugPanel.getInstance();
+
+		assertFalse(drugPanel.getDrugEffect("AA"));
+		assertFalse(drugPanel.getDrugEffect("BB"));
+		assertFalse(drugPanel.getDrugEffect("CC"));
+
+		ConfigurationException exception = assertThrows(ConfigurationException.class,
+			() -> drugPanel.getDrugEffect("DD"));
+
+		assertEquals(exception.getMessage(), "There is no drug with name: `DD`");
+	}
 }

@@ -77,7 +77,7 @@ public class DrugPanel {
 
 	public ArrayList<String> getDrugNames() {
 		ArrayList<String> drugNameList = new ArrayList<>();
-		for (Drug drug: this.drugs) {
+		for (Drug drug : this.drugs) {
 			drugNameList.add(drug.getName());
 		}
 
@@ -108,4 +108,55 @@ public class DrugPanel {
 			}
 		}
 	}
+
+	/**
+	 * Given a drug name string, this function finds the drug with the same name
+	 * and returns it's targets
+	 *
+	 * @param drugName the name of the drug
+	 * @return a list of targets
+	 */
+	public ArrayList<String> getDrugTargets(String drugName) throws ConfigurationException {
+		ArrayList<String> targets = new ArrayList<>();
+		boolean drugDefinedInDrugPanel = false;
+
+		for (Drug drug : this.drugs) {
+			if (drug.getName().equals(drugName)) {
+				targets = drug.getTargets();
+				drugDefinedInDrugPanel = true;
+				break;
+			}
+		}
+
+		if (!drugDefinedInDrugPanel)
+			throw new ConfigurationException("There is no drug with name: `" + drugName + "`");
+
+		return targets;
+	}
+
+	/**
+	 * Given a drug name string, this function returns the effect of the drug on it's
+	 * targets: either true (overexpression/activation) or false (inhibition)
+	 *
+	 * @param drugName the name of the drug
+	 * @return the effect
+	 */
+	public boolean getDrugEffect(String drugName) throws ConfigurationException {
+		boolean effect = false;
+		boolean drugDefinedInDrugPanel = false;
+
+		for (Drug drug : this.drugs) {
+			if (drug.getName().equals(drugName)) {
+				effect = drug.getEffect();
+				drugDefinedInDrugPanel = true;
+				break;
+			}
+		}
+
+		if (!drugDefinedInDrugPanel)
+			throw new ConfigurationException("There is no drug with name: `" + drugName + "`");
+
+		return effect;
+	}
+
 }
