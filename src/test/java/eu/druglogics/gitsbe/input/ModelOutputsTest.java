@@ -4,18 +4,20 @@ import eu.druglogics.gitsbe.model.BooleanModel;
 import eu.druglogics.gitsbe.model.GeneralModel;
 import eu.druglogics.gitsbe.model.SingleInteraction;
 import eu.druglogics.gitsbe.util.Logger;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.sbml.jsbml.Model;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.util.Lists.newArrayList;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 
 class ModelOutputsTest {
@@ -47,14 +49,43 @@ class ModelOutputsTest {
         this.booleanModel = new BooleanModel(generalModel, mockLogger);
     }
 
+    @AfterEach
+    void reset_singleton() throws Exception {
+        Field instance = ModelOutputs.class.getDeclaredField("modeloutputs");
+        instance.setAccessible(true);
+        instance.set(null, null);
+    }
+
     @Test
-    void test_calculate_global_output() throws IOException {
+    void test_get_instance_without_first_calling_init() {
+        assertThrows(AssertionError.class, ModelOutputs::getInstance);
+    }
+
+    @Test
+    void test_init_twice() throws Exception {
+        Logger mockLogger = mock(Logger.class);
 
         ClassLoader classLoader = getClass().getClassLoader();
         String filename = new File(classLoader.getResource("test_modeloutputs").getFile()).getPath();
 
+        // initializes ModelOutputs class
+        ModelOutputs.init(filename, mockLogger);
+
+        // initialization cannot happen twice!
+        assertThrows(AssertionError.class, () -> ModelOutputs.init(filename, mockLogger));
+    }
+
+    @Test
+    void test_calculate_global_output() throws Exception {
+
         Logger mockLogger = mock(Logger.class);
-        ModelOutputs modeloutputs = new ModelOutputs(filename, mockLogger);
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        String filename = new File(classLoader.getResource("test_modeloutputs").getFile()).getPath();
+
+        ModelOutputs.init(filename, mockLogger);
+
+        ModelOutputs modeloutputs = ModelOutputs.getInstance();
 
         // check the node names from the test file and how many they are
         ArrayList<String> expectedNodeNames = newArrayList("F", "U", "K");

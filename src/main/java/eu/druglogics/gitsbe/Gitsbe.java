@@ -111,7 +111,7 @@ public class Gitsbe implements Runnable {
 		TrainingData trainingData = loadTrainingData(generalBooleanModel);
 
 		// Load output weights
-		ModelOutputs outputs = loadModelOutputs(generalBooleanModel);
+		loadModelOutputs(generalBooleanModel);
 
         createTmpDirectory();
 		activateFileDeleter();
@@ -134,14 +134,14 @@ public class Gitsbe implements Runnable {
 			IntStream.range(0, numberOfSimulations).parallel()
 				.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run),
 						 ()  -> runSimulation(run, summary, generalBooleanModel,
-								 trainingData, outputs, directoryModels, directoryLog)));
+								 trainingData, directoryModels, directoryLog)));
 			mergeLogFiles(directoryLog);
 		} else {
 			logger.outputStringMessage(1, "\nRunning simulations serially");
 			IntStream.range(0, numberOfSimulations)
 				.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run),
 						 ()  -> runSimulation(run, summary, generalBooleanModel,
-								 trainingData, outputs, directoryModels, directoryLog)));
+								 trainingData, directoryModels, directoryLog)));
 		}
 
 		summary.generateFitnessesReport();
@@ -268,7 +268,7 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void runSimulation(int run, Summary summary, BooleanModel generalBooleanModel,
-							   TrainingData data, ModelOutputs outputs, String modelDirectory,
+							   TrainingData data, String modelDirectory,
 							   String logDirectory) {
 		int simulation = run + 1;
 		Logger simulationLogger = null;
@@ -293,7 +293,7 @@ public class Gitsbe implements Runnable {
 
 		String baseModelName = removeExtension(generalBooleanModel.getModelName()) + "_run_" + run + "_";
 		Evolution ga = new Evolution(summary, generalBooleanModel, baseModelName,
-				 data, outputs, modelDirectory, directoryTmp, simulationLogger);
+				 data, modelDirectory, directoryTmp, simulationLogger);
 
 		ga.evolve(run);
 		ga.outputBestModels();
@@ -396,21 +396,18 @@ public class Gitsbe implements Runnable {
 		}
 	}
 
-	private ModelOutputs loadModelOutputs(BooleanModel generalBooleanModel) {
-		ModelOutputs outputs = null;
+	private void loadModelOutputs(BooleanModel generalBooleanModel) {
 		try {
-			outputs = new ModelOutputs(filenameModelOutputs, logger);
-		} catch (IOException e) {
+			ModelOutputs.init(filenameModelOutputs, logger);
+		} catch (Exception e) {
 			e.printStackTrace();
 			abort();
 		}
 
 		logger.outputHeader(1, "Model Outputs");
-		logger.outputLines(1, outputs.getModelOutputs());
+		logger.outputLines(1, ModelOutputs.getInstance().getModelOutputs());
 
-		outputs.checkModelOutputNodeNames(generalBooleanModel);
-
-		return outputs;
+		ModelOutputs.getInstance().checkModelOutputNodeNames(generalBooleanModel);
 	}
 
 	private TrainingData loadTrainingData(BooleanModel generalBooleanModel) {

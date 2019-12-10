@@ -14,12 +14,14 @@ import static java.lang.Math.min;
 
 public class ModelOutputs {
 
+	private static ModelOutputs modeloutputs = null;
+
 	private ArrayList<OutputWeight> modelOutputs;
 	private float minOutput;
 	private float maxOutput;
 	private Logger logger;
 
-	public ModelOutputs(String filename, Logger logger) throws IOException {
+	private ModelOutputs(String filename, Logger logger) throws IOException {
 		this.logger = logger;
 		this.modelOutputs = new ArrayList<>();
 
@@ -27,6 +29,21 @@ public class ModelOutputs {
 
 		this.minOutput = getMinOutput();
 		this.maxOutput = getMaxOutput();
+	}
+
+	public static ModelOutputs getInstance() {
+		// To ensure only one instance is created
+		if (modeloutputs == null) {
+			throw new AssertionError("You have to call init first to initialize the ModelOutputs Class");
+		}
+		return modeloutputs;
+	}
+
+	public synchronized static void init(String filename, Logger logger) throws Exception {
+		if (modeloutputs != null) {
+			throw new AssertionError("You already initialized me");
+		}
+		modeloutputs = new ModelOutputs(filename, logger);
 	}
 
 	public int size() {

@@ -1,7 +1,6 @@
 package eu.druglogics.gitsbe.model;
 
 import eu.druglogics.gitsbe.input.Config;
-import eu.druglogics.gitsbe.input.ModelOutputs;
 import eu.druglogics.gitsbe.input.TrainingData;
 import eu.druglogics.gitsbe.output.Summary;
 import eu.druglogics.gitsbe.util.Logger;
@@ -24,11 +23,10 @@ public class Evolution {
 	private Summary summary;
 	private String directoryOutput;
 	private Logger logger;
-	private ModelOutputs modelOutputs;
 	private boolean initialPhase;
 
 	public Evolution(Summary summary, BooleanModel generalBooleanModel, String baseModelName,
-					 TrainingData data, ModelOutputs modelOutputs, String modelDirectory,
+					 TrainingData data, String modelDirectory,
 					 String directoryOutput, Logger logger) {
 
 		// Initialize
@@ -38,7 +36,6 @@ public class Evolution {
 		this.data = data;
 		this.modelDirectory = modelDirectory;
 		this.directoryOutput = directoryOutput;
-		this.modelOutputs = modelOutputs;
 		this.logger = logger;
 	}
 
@@ -82,7 +79,7 @@ public class Evolution {
 				logger.outputStringMessage(2, "\nModel " + generationModels.get(i).getModelName());
 
 				try {
-					generationModels.get(i).calculateFitness(data, modelOutputs, directoryOutput);
+					generationModels.get(i).calculateFitness(data, directoryOutput);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

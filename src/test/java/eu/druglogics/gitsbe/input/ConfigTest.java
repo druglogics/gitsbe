@@ -49,7 +49,7 @@ class ConfigTest {
         ClassLoader classLoader = getClass().getClassLoader();
         String filename = new File(classLoader.getResource("test_config").getFile()).getPath();
 
-        // initializes config class
+        // initializes Config class
         Config.init(filename, mockLogger);
 
         // initialization cannot happen twice!

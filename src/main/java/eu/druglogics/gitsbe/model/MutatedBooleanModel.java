@@ -170,8 +170,7 @@ public class MutatedBooleanModel extends BooleanModel {
 	 *
 	 * @throws Exception
 	 */
-	void calculateFitness(TrainingData data, ModelOutputs modelOutputs, String directoryOutput)
-			throws Exception {
+	void calculateFitness(TrainingData data, String directoryOutput) throws Exception {
 
 		// reset fitness
 		fitness = 0;
@@ -226,7 +225,7 @@ public class MutatedBooleanModel extends BooleanModel {
 					String firstResponse = response.get(0);
 					try {
 						conditionfitness = getConditionFitnessForTwoDrugPerturbation(directoryOutput,
-							firstCondition, firstResponse, modelOutputs);
+							firstCondition, firstResponse);
 					} catch (ConfigurationException e) {
 						continue;
 					}
@@ -271,8 +270,8 @@ public class MutatedBooleanModel extends BooleanModel {
 						// compute a global output of the model by using specified model outputs
 						// scaled output to value <0..1] (exclude 0 since ratios then are difficult)
 						float observedGlobalOutput = Float.parseFloat(response.get(0).split(":")[1]);
-						float predictedGlobalOutput =
-							modelOutputs.calculateGlobalOutput(mutatedBooleanModel.stableStates, this);
+						float predictedGlobalOutput = ModelOutputs.getInstance()
+							.calculateGlobalOutput(mutatedBooleanModel.stableStates, this);
 
 						logger.outputStringMessage(3, "Observed globalOutput: " + observedGlobalOutput);
 						logger.outputStringMessage(3, "Predicted globalOutput: " + predictedGlobalOutput);
@@ -403,7 +402,6 @@ public class MutatedBooleanModel extends BooleanModel {
 	 * @param directoryOutput name of directory to pass to the function that calculates the stable states
 	 * @param condition the two drug specified condition. String format is: `Drug(A+B) < min(Drug(A),Drug(B))` or `Drug(A+B) < product(Drug(A),Drug(B))`
 	 * @param response the relative observed response. String format is: `globaloutput:value` (`value` can be from -1 to 1)
-	 * @param modelOutputs an instance of the modelOutputs class
 	 * @return a fitness score for the given condition scaled from 0 to 1
 	 *
 	 * @throws Exception
@@ -412,7 +410,7 @@ public class MutatedBooleanModel extends BooleanModel {
 	 *
 	 */
 	public float getConditionFitnessForTwoDrugPerturbation(
-		String directoryOutput, String condition, String response, ModelOutputs modelOutputs) throws Exception {
+		String directoryOutput, String condition, String response) throws Exception {
 		float conditionFitness = 0;
 
 		if (condition.contains("< min(Drug")) { // HSA
@@ -480,13 +478,13 @@ public class MutatedBooleanModel extends BooleanModel {
 					float relObsGL = Float.parseFloat(response.split(":")[1]);
 					logger.outputStringMessage(3, "Relative Observed globalOutput: " + relObsGL);
 
-					float firstDrugGL =
-						modelOutputs.calculateGlobalOutput(mutatedBooleanModelFirstDrug.stableStates, this);
+					float firstDrugGL = ModelOutputs.getInstance()
+						.calculateGlobalOutput(mutatedBooleanModelFirstDrug.stableStates, this);
 					logger.outputStringMessage(3, "Predicted globalOutput for the model perturbed with drug `"
 						+ firstDrug + "`: " + firstDrugGL);
 
-					float secondDrugGL =
-						modelOutputs.calculateGlobalOutput(mutatedBooleanModelSecondDrug.stableStates, this);
+					float secondDrugGL = ModelOutputs.getInstance()
+						.calculateGlobalOutput(mutatedBooleanModelSecondDrug.stableStates, this);
 					logger.outputStringMessage(3, "Predicted globalOutput for the model perturbed with drug `"
 						+ secondDrug + "`: " + secondDrugGL);
 
@@ -494,7 +492,8 @@ public class MutatedBooleanModel extends BooleanModel {
 					logger.outputStringMessage(3, "Minimum predicted globalOutput value " +
 						"of the two single-drug perturbed models: " + minGL);
 
-					float bothDrugsGL = modelOutputs.calculateGlobalOutput(mutatedBooleanModelBothDrugs.stableStates, this);
+					float bothDrugsGL = ModelOutputs.getInstance()
+						.calculateGlobalOutput(mutatedBooleanModelBothDrugs.stableStates, this);
 					logger.outputStringMessage(3, "Predicted globalOutput for the model perturbed with both drugs `"
 						+ firstDrug + "` and `" + secondDrug + "`: " + bothDrugsGL);
 
@@ -581,13 +580,13 @@ public class MutatedBooleanModel extends BooleanModel {
 					float relObsGL = Float.parseFloat(response.split(":")[1]);
 					logger.outputStringMessage(3, "Relative Observed globalOutput: " + relObsGL);
 
-					float firstDrugGL =
-						modelOutputs.calculateGlobalOutput(mutatedBooleanModelFirstDrug.stableStates, this);
+					float firstDrugGL = ModelOutputs.getInstance()
+						.calculateGlobalOutput(mutatedBooleanModelFirstDrug.stableStates, this);
 					logger.outputStringMessage(3, "Predicted globalOutput for the model perturbed with drug `"
 						+ firstDrug + "`: " + firstDrugGL);
 
-					float secondDrugGL =
-						modelOutputs.calculateGlobalOutput(mutatedBooleanModelSecondDrug.stableStates, this);
+					float secondDrugGL = ModelOutputs.getInstance()
+						.calculateGlobalOutput(mutatedBooleanModelSecondDrug.stableStates, this);
 					logger.outputStringMessage(3, "Predicted globalOutput for the model perturbed with drug `"
 						+ secondDrug + "`: " + secondDrugGL);
 
@@ -595,7 +594,8 @@ public class MutatedBooleanModel extends BooleanModel {
 					logger.outputStringMessage(3, "Product predicted globalOutput value " +
 						"of the two single-drug perturbed models: " + productGL);
 
-					float bothDrugsGL = modelOutputs.calculateGlobalOutput(mutatedBooleanModelBothDrugs.stableStates, this);
+					float bothDrugsGL = ModelOutputs.getInstance()
+						.calculateGlobalOutput(mutatedBooleanModelBothDrugs.stableStates, this);
 					logger.outputStringMessage(3, "Predicted globalOutput for the model perturbed with both drugs `"
 						+ firstDrug + "` and `" + secondDrug + "`: " + bothDrugsGL);
 
