@@ -170,7 +170,8 @@ public class MutatedBooleanModel extends BooleanModel {
 	 *
 	 * @throws Exception
 	 */
-	void calculateFitness(TrainingData data, String directoryOutput) throws Exception {
+	void calculateFitness(String directoryOutput) throws Exception {
+		TrainingData data = TrainingData.getInstance();
 
 		// reset fitness
 		fitness = 0;

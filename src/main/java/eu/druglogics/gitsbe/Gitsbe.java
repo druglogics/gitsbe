@@ -108,7 +108,7 @@ public class Gitsbe implements Runnable {
 		loadDrugPanel(generalBooleanModel);
 
 		// Load training data
-		TrainingData trainingData = loadTrainingData(generalBooleanModel);
+		loadTrainingData(generalBooleanModel);
 
 		// Load output weights
 		loadModelOutputs(generalBooleanModel);
@@ -131,17 +131,15 @@ public class Gitsbe implements Runnable {
 			// Run evolution simulations in parallel
 			setNumberOfAllowedParallelSimulations();
 			simulationFileList = new ArrayList<>();
-			IntStream.range(0, numberOfSimulations).parallel()
-				.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run),
-						 ()  -> runSimulation(run, summary, generalBooleanModel,
-								 trainingData, directoryModels, directoryLog)));
+			IntStream.range(0, numberOfSimulations).parallel().forEach(run ->
+				RandomManager.withRandom(randomSeedsList.get(run), () ->
+					runSimulation(run, summary, generalBooleanModel, directoryModels, directoryLog)));
 			mergeLogFiles(directoryLog);
 		} else {
 			logger.outputStringMessage(1, "\nRunning simulations serially");
-			IntStream.range(0, numberOfSimulations)
-				.forEach(run -> RandomManager.withRandom(randomSeedsList.get(run),
-						 ()  -> runSimulation(run, summary, generalBooleanModel,
-								 trainingData, directoryModels, directoryLog)));
+			IntStream.range(0, numberOfSimulations).forEach(run ->
+				RandomManager.withRandom(randomSeedsList.get(run), () ->
+					runSimulation(run, summary, generalBooleanModel, directoryModels, directoryLog)));
 		}
 
 		summary.generateFitnessesReport();
@@ -268,8 +266,7 @@ public class Gitsbe implements Runnable {
 	}
 
 	private void runSimulation(int run, Summary summary, BooleanModel generalBooleanModel,
-							   TrainingData data, String modelDirectory,
-							   String logDirectory) {
+							   String modelDirectory, String logDirectory) {
 		int simulation = run + 1;
 		Logger simulationLogger = null;
 		int verbosity = logger.getVerbosity();
@@ -293,7 +290,7 @@ public class Gitsbe implements Runnable {
 
 		String baseModelName = removeExtension(generalBooleanModel.getModelName()) + "_run_" + run + "_";
 		Evolution ga = new Evolution(summary, generalBooleanModel, baseModelName,
-				 data, modelDirectory, directoryTmp, simulationLogger);
+			modelDirectory, directoryTmp, simulationLogger);
 
 		ga.evolve(run);
 		ga.outputBestModels();
@@ -410,26 +407,23 @@ public class Gitsbe implements Runnable {
 		ModelOutputs.getInstance().checkModelOutputNodeNames(generalBooleanModel);
 	}
 
-	private TrainingData loadTrainingData(BooleanModel generalBooleanModel) {
-		TrainingData data = null;
+	private void loadTrainingData(BooleanModel generalBooleanModel) {
 		try {
-			data = new TrainingData(filenameTrainingData, logger);
-		} catch (IOException | ConfigurationException e) {
+			TrainingData.init(filenameTrainingData, logger);
+		} catch (Exception e) {
 			e.printStackTrace();
 			abort();
 		}
 
 		logger.outputHeader(2, "Training Data");
-		logger.outputLines(2, data.getTrainingDataVerbose());
+		logger.outputLines(2, TrainingData.getInstance().getTrainingDataVerbose());
 
 		try {
-			data.checkTrainingDataConsistency(generalBooleanModel);
+			TrainingData.getInstance().checkTrainingDataConsistency(generalBooleanModel);
 		} catch (ConfigurationException e) {
 			e.printStackTrace();
 			abort();
 		}
-
-		return data;
 	}
 
 	private BooleanModel loadGeneralBooleanModel() {

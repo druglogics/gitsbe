@@ -43,17 +43,31 @@ class TrainingDataTest {
 
         ClassLoader classLoader = getClass().getClassLoader();
         String trainingDataFile = new File(classLoader.getResource("test_training").getFile()).getPath();
-        this.trainingData = new TrainingData(trainingDataFile, mockLogger);
+        TrainingData.init(trainingDataFile, mockLogger);
+        this.trainingData = TrainingData.getInstance();
 
         String drugPanelFile = new File(classLoader.getResource("test_drugpanel_2").getFile()).getPath();
         DrugPanel.init(drugPanelFile, mockLogger);
     }
 
     @AfterEach
-    void reset_singleton() throws Exception {
+    void reset_drugpanel_singleton() throws Exception {
         Field instance = DrugPanel.class.getDeclaredField("drugPanel");
         instance.setAccessible(true);
         instance.set(null, null);
+    }
+
+    @AfterEach
+    void reset_training_data_singleton() throws Exception {
+        Field instance = TrainingData.class.getDeclaredField("trainingData");
+        instance.setAccessible(true);
+        instance.set(null, null);
+    }
+
+    @Test
+    void test_get_instance_without_first_calling_init() throws Exception {
+        reset_training_data_singleton();
+        assertThrows(AssertionError.class, TrainingData::getInstance);
     }
 
     @Test
@@ -141,29 +155,34 @@ class TrainingDataTest {
         assertEquals(exception1.getMessage(), "Node `B` defined in condition `B:0` is not in network file.");
 
         ConfigurationException exception2 = assertThrows(ConfigurationException.class, () -> {
+            reset_training_data_singleton();
+
             ClassLoader classLoader = getClass().getClassLoader();
             Logger mockLogger = mock(Logger.class);
             String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_4").getFile()).getPath();
 
-            TrainingData trainingDataWrongFormat = new TrainingData(trainingWrongFormat, mockLogger);
+            //reset_training_data_singleton();
+            TrainingData.init(trainingWrongFormat, mockLogger);
 
-            ArrayList<TrainingDataObservation> obs = trainingDataWrongFormat.getObservations();
+            ArrayList<TrainingDataObservation> obs = TrainingData.getInstance().getObservations();
 
-            trainingDataWrongFormat.checkConditions(new ArrayList<>(), obs.get(0).getCondition());
+            TrainingData.getInstance().checkConditions(new ArrayList<>(), obs.get(0).getCondition());
         });
 
         assertEquals(exception2.getMessage(), "Only one condition defined: `xaxa` that has neither `-`, `:` or starts with `Drug`");
 
 		ConfigurationException exception3 = assertThrows(ConfigurationException.class, () -> {
+		    reset_training_data_singleton();
+
 			ClassLoader classLoader = getClass().getClassLoader();
 			Logger mockLogger = mock(Logger.class);
 			String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_5").getFile()).getPath();
 
-			TrainingData trainingDataWrongFormat = new TrainingData(trainingWrongFormat, mockLogger);
+            TrainingData.init(trainingWrongFormat, mockLogger);
 
-			ArrayList<TrainingDataObservation> obs = trainingDataWrongFormat.getObservations();
+			ArrayList<TrainingDataObservation> obs = TrainingData.getInstance().getObservations();
 
-			trainingDataWrongFormat.checkConditions(new ArrayList<>(), obs.get(0).getCondition());
+            TrainingData.getInstance().checkConditions(new ArrayList<>(), obs.get(0).getCondition());
 		});
 
 		assertEquals(exception3.getMessage(), "Only one condition defined: ` drug ` that has neither `-`, `:` or starts with `Drug`");
@@ -172,19 +191,23 @@ class TrainingDataTest {
     @Test
     void test_globaloutput_out_of_range() {
         ConfigurationException exception = assertThrows(ConfigurationException.class, () -> {
+            reset_training_data_singleton();
+
             ClassLoader classLoader = getClass().getClassLoader();
             String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format").getFile()).getPath();
             Logger mockLogger = mock(Logger.class);
-            new TrainingData(trainingWrongFormat, mockLogger);
+            TrainingData.init(trainingWrongFormat, mockLogger);
         });
 
         assertEquals(exception.getMessage(), "Response has `globaloutput` outside the [-1,1] range: 10.0");
 
         ConfigurationException exception2 = assertThrows(ConfigurationException.class, () -> {
+            reset_training_data_singleton();
+
             ClassLoader classLoader = getClass().getClassLoader();
             String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_2").getFile()).getPath();
             Logger mockLogger = mock(Logger.class);
-            new TrainingData(trainingWrongFormat, mockLogger);
+            TrainingData.init(trainingWrongFormat, mockLogger);
         });
 
         assertEquals(exception2.getMessage(), "Response has `globaloutput` outside the [-1,1] range: -1.3");
@@ -193,10 +216,12 @@ class TrainingDataTest {
     @Test
     void test_response_value_out_of_range() {
         ConfigurationException exception = assertThrows(ConfigurationException.class, () -> {
+            reset_training_data_singleton();
+
             ClassLoader classLoader = getClass().getClassLoader();
             String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_3").getFile()).getPath();
             Logger mockLogger = mock(Logger.class);
-            new TrainingData(trainingWrongFormat, mockLogger);
+            TrainingData.init(trainingWrongFormat, mockLogger);
         });
 
         assertEquals(exception.getMessage(), "Node `C` has value outside the [0,1] range: 1.1");
@@ -205,19 +230,23 @@ class TrainingDataTest {
     @Test
     void test_response_has_non_numeric_value() {
         ConfigurationException exception = assertThrows(ConfigurationException.class, () -> {
+            reset_training_data_singleton();
+
             ClassLoader classLoader = getClass().getClassLoader();
             String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_8").getFile()).getPath();
             Logger mockLogger = mock(Logger.class);
-            new TrainingData(trainingWrongFormat, mockLogger);
+            TrainingData.init(trainingWrongFormat, mockLogger);
         });
 
         assertEquals(exception.getMessage(), "Node `A` has a non-numeric value: noNumber");
 
         ConfigurationException exception2 = assertThrows(ConfigurationException.class, () -> {
+            reset_training_data_singleton();
+
             ClassLoader classLoader = getClass().getClassLoader();
             String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_9").getFile()).getPath();
             Logger mockLogger = mock(Logger.class);
-            new TrainingData(trainingWrongFormat, mockLogger);
+            TrainingData.init(trainingWrongFormat, mockLogger);
         });
 
         assertEquals(exception2.getMessage(), "Response: `globaloutput:noNumber` has a non-numeric value: noNumber");
@@ -226,30 +255,36 @@ class TrainingDataTest {
     @Test
     void test_response_with_no_semicolon() {
         ConfigurationException exception = assertThrows(ConfigurationException.class, () -> {
+            reset_training_data_singleton();
             ClassLoader classLoader = getClass().getClassLoader();
             String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_6").getFile()).getPath();
             Logger mockLogger = mock(Logger.class);
-            new TrainingData(trainingWrongFormat, mockLogger);
+            TrainingData.init(trainingWrongFormat, mockLogger);
         });
 
         assertEquals(exception.getMessage(), "Response: `globaloutput-0.2` does not contain `:`");
 
         ConfigurationException exception2 = assertThrows(ConfigurationException.class, () -> {
+            reset_training_data_singleton();
             ClassLoader classLoader = getClass().getClassLoader();
             String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_7").getFile()).getPath();
             Logger mockLogger = mock(Logger.class);
-            new TrainingData(trainingWrongFormat, mockLogger);
+            TrainingData.init(trainingWrongFormat, mockLogger);
         });
 
         assertEquals(exception2.getMessage(), "Response: `C0` does not contain `:`");
     }
 
     @Test
-    void check_conditions_with_specified_drugs() throws IOException, ConfigurationException {
+    void check_conditions_with_specified_drugs() throws Exception {
+        reset_training_data_singleton();
+
         Logger mockLogger = mock(Logger.class);
         ClassLoader classLoader = getClass().getClassLoader();
         String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_10").getFile()).getPath();
-        TrainingData trainingDataWrongFormat = new TrainingData(trainingWrongFormat, mockLogger);
+        TrainingData.init(trainingWrongFormat, mockLogger);
+
+        TrainingData trainingDataWrongFormat = TrainingData.getInstance();
 
         ConfigurationException exception1 = assertThrows(ConfigurationException.class,
             () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
@@ -309,14 +344,18 @@ class TrainingDataTest {
 
     @Test
     void check_condition_with_specified_drugs_and_null_drugpanel() throws Exception {
+        reset_training_data_singleton();
+
         Logger mockLogger = mock(Logger.class);
         ClassLoader classLoader = getClass().getClassLoader();
         String trainingWrongFormat = new File(classLoader.getResource("training_wrong_format_10").getFile()).getPath();
 
         // Un-initialize DrugPanel Class (drugpanel will become null thus)
-        this.reset_singleton();
+        this.reset_drugpanel_singleton();
 
-        TrainingData trainingDataWrongFormat = new TrainingData(trainingWrongFormat, mockLogger);
+        TrainingData.init(trainingWrongFormat, mockLogger);
+        TrainingData trainingDataWrongFormat = TrainingData.getInstance();
+
         ConfigurationException exception1 = assertThrows(ConfigurationException.class,
             () -> trainingDataWrongFormat.checkConditions(new ArrayList<>(),
                 trainingDataWrongFormat.getObservations().get(1).getCondition()));

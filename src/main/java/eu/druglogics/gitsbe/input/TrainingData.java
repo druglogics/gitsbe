@@ -18,14 +18,31 @@ import static eu.druglogics.gitsbe.util.Util.readLinesFromFile;
 
 public class TrainingData {
 
+	private static TrainingData trainingData = null;
+
 	private ArrayList<TrainingDataObservation> observations;
 	private Logger logger;
 
-	public TrainingData(String filename, Logger logger) throws IOException, ConfigurationException {
+	private TrainingData(String filename, Logger logger) throws IOException, ConfigurationException {
 		this.logger = logger;
 		this.observations = new ArrayList<>();
 
 		loadTrainingDataFile(filename);
+	}
+
+	public static TrainingData getInstance() {
+		// To ensure only one instance is created
+		if (trainingData == null) {
+			throw new AssertionError("You have to call init first to initialize the TrainingData Class");
+		}
+		return trainingData;
+	}
+
+	public synchronized static void init(String filename, Logger logger) throws Exception {
+		if (trainingData != null) {
+			throw new AssertionError("You already initialized me");
+		}
+		trainingData = new TrainingData(filename, logger);
 	}
 
 	/**

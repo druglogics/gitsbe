@@ -18,7 +18,6 @@ public class Evolution {
 	// Input parameters for genetic algorithm
 	private BooleanModel generalBooleanModel;
 	private String baseModelName;
-	private TrainingData data;
 	private String modelDirectory;
 	private Summary summary;
 	private String directoryOutput;
@@ -26,14 +25,12 @@ public class Evolution {
 	private boolean initialPhase;
 
 	public Evolution(Summary summary, BooleanModel generalBooleanModel, String baseModelName,
-					 TrainingData data, String modelDirectory,
-					 String directoryOutput, Logger logger) {
+					 String modelDirectory, String directoryOutput, Logger logger) {
 
 		// Initialize
 		this.summary = summary;
 		this.generalBooleanModel = generalBooleanModel;
 		this.baseModelName = baseModelName; // name base of model, used for generations/individuals
-		this.data = data;
 		this.modelDirectory = modelDirectory;
 		this.directoryOutput = directoryOutput;
 		this.logger = logger;
@@ -79,7 +76,7 @@ public class Evolution {
 				logger.outputStringMessage(2, "\nModel " + generationModels.get(i).getModelName());
 
 				try {
-					generationModels.get(i).calculateFitness(data, directoryOutput);
+					generationModels.get(i).calculateFitness(directoryOutput);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
