@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.util.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -56,9 +56,7 @@ class ModelOutputsTest {
         ModelOutputs modeloutputs = new ModelOutputs(filename, mockLogger);
 
         // check the node names from the test file and how many they are
-        ArrayList<String> expectedNodeNames = new ArrayList<>(
-                Arrays.asList("F", "U", "K")
-        );
+        ArrayList<String> expectedNodeNames = newArrayList("F", "U", "K");
         assertEquals(expectedNodeNames, modeloutputs.getNodeNames());
         assertEquals(3, modeloutputs.size());
 

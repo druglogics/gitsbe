@@ -4,10 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.util.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -146,9 +146,8 @@ class BooleanEquationTest {
     @Test
     void test_convert_to_sif_lines() {
         ArrayList<String> sifLines1 = booleanEquationWithLink.convertToSifLines(" ");
-        ArrayList<String> expectedSifLines1 = new ArrayList<>(
-                Arrays.asList("B -> A", "C -> A", "D -> A", "E -| A", "F -| A", "G -| A")
-        );
+        ArrayList<String> expectedSifLines1 =
+            newArrayList("B -> A", "C -> A", "D -> A", "E -| A", "F -| A", "G -| A");
         assertEquals(expectedSifLines1, sifLines1);
 
         ArrayList<String> sifLines2 = booleanEquationNoLink.convertToSifLines(" ");
@@ -157,9 +156,8 @@ class BooleanEquationTest {
         assertEquals(expectedSifLines2, sifLines2);
 
         ArrayList<String> sifLinesTabSeperated = booleanEquationWithLink.convertToSifLines("\t");
-        ArrayList<String> expectedSifLinesTabSeperated = new ArrayList<>(
-                Arrays.asList("B\t->\tA", "C\t->\tA", "D\t->\tA", "E\t-|\tA", "F\t-|\tA", "G\t-|\tA")
-        );
+        ArrayList<String> expectedSifLinesTabSeperated =
+            newArrayList("B\t->\tA", "C\t->\tA", "D\t->\tA", "E\t-|\tA", "F\t-|\tA", "G\t-|\tA");
         assertEquals(sifLinesTabSeperated, expectedSifLinesTabSeperated);
     }
 

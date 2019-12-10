@@ -15,9 +15,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
+import static org.assertj.core.util.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -69,35 +68,34 @@ class TrainingDataTest {
         // check observations
         ArrayList<TrainingDataObservation> obs = trainingData.getObservations();
 
-        ArrayList<String> expectedCondition1 = new ArrayList<>(Collections.singletonList("-"));
-        ArrayList<String> expectedResponse1  = new ArrayList<>(
-            Arrays.asList("A:0", "B:0", "C:1", "D:1", "Another:1", "Another2:0")
-        );
+        ArrayList<String> expectedCondition1 = newArrayList("-");
+        ArrayList<String> expectedResponse1  = newArrayList("A:0", "B:0", "C:1", "D:1", "Another:1", "Another2:0");
+
         assertEquals(obs.get(0).getCondition(), expectedCondition1);
         assertEquals(obs.get(0).getResponse(), expectedResponse1);
 
-        ArrayList<String> expectedCondition2 = new ArrayList<>(Collections.singletonList("-"));
-        ArrayList<String> expectedResponse2  = new ArrayList<>(Collections.singletonList("globaloutput:1"));
+        ArrayList<String> expectedCondition2 = newArrayList("-");
+        ArrayList<String> expectedResponse2  = newArrayList("globaloutput:1");
         assertEquals(obs.get(1).getCondition(), expectedCondition2);
         assertEquals(obs.get(1).getResponse(), expectedResponse2);
 
-        ArrayList<String> expectedCondition3 = new ArrayList<>(Collections.singletonList("B:0"));
-        ArrayList<String> expectedResponse3  = new ArrayList<>(Collections.singletonList("globaloutput:0"));
+        ArrayList<String> expectedCondition3 = newArrayList("B:0");
+        ArrayList<String> expectedResponse3  = newArrayList("globaloutput:0");
         assertEquals(obs.get(2).getCondition(), expectedCondition3);
         assertEquals(obs.get(2).getResponse(), expectedResponse3);
 
-        ArrayList<String> expectedCondition4 = new ArrayList<>(Collections.singletonList("Drug(AA)"));
-        ArrayList<String> expectedResponse4  = new ArrayList<>(Collections.singletonList("globaloutput:0.3"));
+        ArrayList<String> expectedCondition4 = newArrayList("Drug(AA)");
+        ArrayList<String> expectedResponse4  = newArrayList("globaloutput:0.3");
         assertEquals(obs.get(3).getCondition(), expectedCondition4);
         assertEquals(obs.get(3).getResponse(), expectedResponse4);
 
-        ArrayList<String> expectedCondition5 = new ArrayList<>(Collections.singletonList("Drug(AA+BB) < min(Drug(AA),Drug(BB))"));
-        ArrayList<String> expectedResponse5  = new ArrayList<>(Collections.singletonList("globaloutput:0.1"));
+        ArrayList<String> expectedCondition5 = newArrayList("Drug(AA+BB) < min(Drug(AA),Drug(BB))");
+        ArrayList<String> expectedResponse5  = newArrayList("globaloutput:0.1");
         assertEquals(obs.get(4).getCondition(), expectedCondition5);
         assertEquals(obs.get(4).getResponse(), expectedResponse5);
 
-        ArrayList<String> expectedCondition6 = new ArrayList<>(Collections.singletonList("Drug(CC+BB) < product(Drug(CC),Drug(BB))"));
-        ArrayList<String> expectedResponse6  = new ArrayList<>(Collections.singletonList("globaloutput:-0.2"));
+        ArrayList<String> expectedCondition6 = newArrayList("Drug(CC+BB) < product(Drug(CC),Drug(BB))");
+        ArrayList<String> expectedResponse6  = newArrayList("globaloutput:-0.2");
         assertEquals(obs.get(5).getCondition(), expectedCondition6);
         assertEquals(obs.get(5).getResponse(), expectedResponse6);
     }
@@ -134,7 +132,7 @@ class TrainingDataTest {
     void test_check_conditions() {
         ConfigurationException exception1 = assertThrows(ConfigurationException.class, () -> {
             ArrayList<TrainingDataObservation> obs = trainingData.getObservations();
-            ArrayList<String> nodes_with_no_B = new ArrayList<>(Arrays.asList("A", "C"));
+            ArrayList<String> nodes_with_no_B = newArrayList("A", "C");
 
             // B is not in the set of nodes: {A,C}
             trainingData.checkConditions(nodes_with_no_B, obs.get(2).getCondition());

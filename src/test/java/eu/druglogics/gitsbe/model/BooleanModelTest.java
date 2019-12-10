@@ -1,18 +1,18 @@
 package eu.druglogics.gitsbe.model;
 
 import eu.druglogics.gitsbe.util.Logger;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.assertj.core.util.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 class BooleanModelTest {
 
@@ -76,12 +76,8 @@ class BooleanModelTest {
 
         LinkedHashMap<String, String> map = booleanModel.getNodeNameToVariableMap();
 
-        ArrayList<String> expectedNodes = new ArrayList<>(
-                Arrays.asList("A", "B", "C", "D", "E", "F")
-        );
-        ArrayList<String> expectedVars = new ArrayList<>(
-                Arrays.asList("x1", "x2", "x3", "x4", "x5", "x6")
-        );
+        ArrayList<String> expectedNodes = newArrayList("A", "B", "C", "D", "E", "F");
+        ArrayList<String> expectedVars = newArrayList("x1", "x2", "x3", "x4", "x5", "x6");
 
         assertEquals(6, map.size());
         assertEquals(expectedNodes, new ArrayList<>(map.keySet()));
@@ -110,12 +106,8 @@ class BooleanModelTest {
 
         LinkedHashMap<String, String> map = booleanModel.getNodeNameToVariableMap();
 
-        ArrayList<String> expectedNodes = new ArrayList<>(
-                Arrays.asList("A", "B", "C", "D", "E", "F")
-        );
-        ArrayList<String> expectedVars = new ArrayList<>(
-                Arrays.asList("x1", "x2", "x3", "x4", "x5", "x6")
-        );
+        ArrayList<String> expectedNodes = newArrayList("A", "B", "C", "D", "E", "F");
+        ArrayList<String> expectedVars = newArrayList("x1", "x2", "x3", "x4", "x5", "x6");
 
         assertEquals(6, map.size());
         assertEquals(expectedNodes, new ArrayList<>(map.keySet()));
@@ -144,12 +136,8 @@ class BooleanModelTest {
 
         LinkedHashMap<String, String> map = booleanModel.getNodeNameToVariableMap();
 
-        ArrayList<String> expectedNodes = new ArrayList<>(
-                Arrays.asList("A", "B", "C", "D", "E", "F")
-        );
-        ArrayList<String> expectedVars = new ArrayList<>(
-                Arrays.asList("x1", "x2", "x3", "x4", "x5", "x6")
-        );
+        ArrayList<String> expectedNodes = newArrayList("A", "B", "C", "D", "E", "F");
+        ArrayList<String> expectedVars = newArrayList("x1", "x2", "x3", "x4", "x5", "x6");
 
         assertEquals(6, map.size());
         assertEquals(expectedNodes, new ArrayList<>(map.keySet()));
@@ -226,12 +214,10 @@ class BooleanModelTest {
     void test_get_alternative_names() {
         LinkedHashMap<String, String> map = booleanModel.getNodeNameToVariableMap();
 
-        ArrayList<String> expectedNodes = new ArrayList<>(
-                Arrays.asList("B", "A", "D", "C", "W", "F", "K", "E", "I", "J")
-        );
-        ArrayList<String> expectedVars = new ArrayList<>(
-                Arrays.asList("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10")
-        );
+        ArrayList<String> expectedNodes =
+            newArrayList("B", "A", "D", "C", "W", "F", "K", "E", "I", "J");
+        ArrayList<String> expectedVars =
+            newArrayList("x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10");
 
         assertEquals(10, map.size());
         assertEquals(expectedNodes, new ArrayList<>(map.keySet()));

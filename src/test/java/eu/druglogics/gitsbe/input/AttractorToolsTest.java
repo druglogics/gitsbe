@@ -3,11 +3,9 @@ package eu.druglogics.gitsbe.input;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.util.Lists.newArrayList;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AttractorToolsTest {
 
@@ -25,9 +23,7 @@ class AttractorToolsTest {
 
     @Test
     void test_get_tools() {
-        ArrayList<String> expectedTools = new ArrayList<>(
-                Arrays.asList("bnet_reduction", "bnet_reduction_reduced")
-        );
+        ArrayList<String> expectedTools = newArrayList("bnet_reduction", "bnet_reduction_reduced");
         assertEquals(expectedTools, AttractorTools.getTools());
     }
 }
