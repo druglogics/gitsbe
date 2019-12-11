@@ -288,7 +288,7 @@ public class BooleanModel {
 		}
 	}
 
-	private void exportModelToVelizCubaDataFile(String directoryOutput) throws IOException {
+	void exportModelToVelizCubaDataFile(String directoryOutput) throws IOException {
 		PrintWriter writer = new PrintWriter(
 				new File(directoryOutput, modelName + ".dat").getAbsoluteFile(), "UTF-8"
 		);
