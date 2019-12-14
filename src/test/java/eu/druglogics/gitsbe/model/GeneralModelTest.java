@@ -1,21 +1,32 @@
 package eu.druglogics.gitsbe.model;
 
+import eu.druglogics.gitsbe.input.Config;
 import eu.druglogics.gitsbe.util.Logger;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 class GeneralModelTest {
 
     private GeneralModel generalModel;
     private GeneralModel generalModelSelfContained;
+
+    @AfterAll
+    static void reset_config() throws IllegalAccessException, NoSuchFieldException {
+        Field instance = Config.class.getDeclaredField("config");
+        instance.setAccessible(true);
+        instance.set(null, null);
+    }
 
     @BeforeEach
     void init() {

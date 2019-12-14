@@ -1,10 +1,15 @@
 package eu.druglogics.gitsbe.model;
 
+import eu.druglogics.gitsbe.input.Config;
 import eu.druglogics.gitsbe.util.Logger;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.util.ClassLoaderUtils;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -18,6 +23,23 @@ class BooleanModelTest {
 
     private BooleanModel booleanModel;
     private BooleanModel booleanModelSelfContained;
+
+    @BeforeAll
+    static void init_config() throws Exception {
+        Logger mockLogger = mock(Logger.class);
+
+        ClassLoader classLoader = ClassLoaderUtils.getDefaultClassLoader();
+        String filename = new File(classLoader.getResource("test_config").getFile()).getPath();
+
+        Config.init(filename, mockLogger);
+    }
+
+    @AfterAll
+    static void reset_config() throws IllegalAccessException, NoSuchFieldException {
+        Field instance = Config.class.getDeclaredField("config");
+        instance.setAccessible(true);
+        instance.set(null, null);
+    }
 
     @BeforeEach
     void init() {
