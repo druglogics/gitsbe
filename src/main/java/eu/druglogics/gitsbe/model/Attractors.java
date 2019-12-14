@@ -39,9 +39,9 @@ public class Attractors {
 	}
 
 	/**
-	 * Use this function to calculate the attractors of the boolean model given in the
-	 * constructor of the <i>Attractors</i> Class. The choice of the library/tool that will
-	 * be used is based on the <i>AttractorTool</i> String value of the same class.
+	 * Use this function to calculate the attractors of the {@link Attractors#booleanModel} given in the
+	 * constructor of the {@link Attractors} Class. The choice of the library/tool that will
+	 * be used is based on the value of {@link Attractors#attractorTool}.
 	 *
 	 * @param directoryOutput the name of the directory which will be used to write result
 	 *                        files, the model in .bnet or Veliz-Cuba format, etc.
@@ -56,7 +56,7 @@ public class Attractors {
 
 	/**
 	 * Use this function to find the attractors of the boolean model that was
-	 * defined in the constructor of the <i>Attractors</i> Class using the BioLQM library.
+	 * defined in the constructor of the {@link Attractors} Class using the {@link org.colomoto.biolqm BioLQM} library.
 	 *
 	 * @param directoryOutput the name of the directory where the .bnet file that describes the
 	 *                        boolean model will be generated
@@ -73,11 +73,12 @@ public class Attractors {
 	}
 
 	/**
-	 * This function uses BioLQM's <i>FixpointService</i> and <i>TrapSpaceService</i> Class
+	 * This function uses BioLQM's {@link org.colomoto.biolqm.tool.fixpoints.FixpointService FixpointService}
+	 * and {@link org.colomoto.biolqm.tool.trapspaces.TrapSpaceService TrapSpaceService} Class
 	 * to calculate the attractors (stable states/fixpoints or terminal trapspaces using BDD's -
-	 * binary decision diagrams) of the <i>boolNetModel</i>.
+	 * binary decision diagrams) of the <code>boolNetModel</code>.
 	 *
-	 * @param boolNetModel a logical model, instance of the BioLQM's <i>LogicalModel</i> Class
+	 * @param boolNetModel a logical model, see BioLQM's {@link org.colomoto.biolqm.LogicalModel} Interface
 	 * @throws Exception
 	 */
 	private void getAttractorsFromLogicalModel(LogicalModel boolNetModel) throws Exception {
@@ -123,9 +124,9 @@ public class Attractors {
 	}
 
 	/**
-	 * Use this function to by-pass the booleanModel defined in the <i>Attractors</i> Class
-	 * in order to load a generic boolean model from a .bnet file and compute its attractors
-	 * using the BioLQM library.
+	 * Use this function to by-pass the {@link Attractors#booleanModel}
+	 * in order to load a generic boolean model from a <i>.bnet</i> file and compute its attractors
+	 * using the {@link org.colomoto.biolqm BioLQM} library.
 	 *
 	 * @param boolNetFile The absolute file path of the .bnet file
 	 */
@@ -137,8 +138,8 @@ public class Attractors {
 	}
 
 	/**
-	 * Use Veliz-Cuba BNReduction.sh script to calculate stable states (fixpoints)
-	 * for the boolean model that was defined in the constructor of the <i>Attractors</i> Class
+	 * Use Veliz-Cuba <code>BNReduction.sh</code> script to calculate stable states (fixpoints)
+	 * for the {@link Attractors#booleanModel boolean model} that was defined in the constructor of the {@link Attractors} Class
 	 *
 	 * @param directoryOutput name of directory to write the <i>.dat</i> (model in Veliz-Cuba format)
 	 *                        and <i>.dat.fp</i> (file with the fixpoints)
@@ -237,10 +238,18 @@ public class Attractors {
 		return getStableStates().size() > 0;
 	}
 
+	/**
+	 * Get all the attractors (stable states or trapspaces)
+	 * @return
+	 */
 	ArrayList<String> getAttractors() {
 		return attractors;
 	}
 
+	/**
+	 * Get only the attractors that do not have any dashes (<i>-</i>): the stable states
+	 * @return
+	 */
 	ArrayList<String> getStableStates() {
 		return attractors.stream()
 			.filter(state -> !state.contains("-"))
