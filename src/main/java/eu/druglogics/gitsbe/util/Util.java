@@ -327,6 +327,41 @@ public class Util {
 		return true;
 	}
 
+	/**
+	 * Converts a byte array to a combined String consisting of
+	 * each byte's String representation
+	 *
+	 * @param binaryByteArray
+	 * @return
+	 */
+	public static String byteArrayToString(byte[] binaryByteArray) {
+		StringBuilder str = new StringBuilder();
+		for(byte b: binaryByteArray) {
+			str.append(String.valueOf(b));
+		}
+
+		return String.valueOf(str);
+	}
+
+	/**
+	 * Returns true if the given string is all dashes: '-'
+	 *
+	 * @param str
+	 * @return
+	 */
+	public static boolean isStringAllDashes(String str) {
+		if (str.isEmpty()) return false;
+
+		int countDashes = 0;
+
+		for (Character c : str.toCharArray()) {
+			if (c.equals('-'))
+				countDashes++;
+		}
+
+		return countDashes == str.length();
+	}
+
 	public static void abort() {
 		System.exit(1);
 	}

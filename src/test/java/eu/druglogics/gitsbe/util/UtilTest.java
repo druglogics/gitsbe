@@ -119,4 +119,34 @@ class UtilTest {
         assertFalse(Util.isNumericString("e12"));
         assertFalse(Util.isNumericString("jira"));
     }
+
+    @Test
+    void test_byte_array_to_string() {
+        byte[] arr1 = {0,1,0,0,0,1,1,1,0,1};
+        byte[] arr2 = {};
+        byte[] arr3 = {0};
+        byte[] arr4 = {1};
+        byte[] arr5 = {-1,1,-128,127,100,0,-0};
+
+        assertEquals(Util.byteArrayToString(arr1), "0100011101");
+        assertEquals(Util.byteArrayToString(arr2), "");
+        assertEquals(Util.byteArrayToString(arr3), "0");
+        assertEquals(Util.byteArrayToString(arr4), "1");
+
+        assertEquals(Util.byteArrayToString(arr5), "-11-12812710000");
+    }
+
+    @Test
+    void test_is_string_all_dashes() {
+        assertTrue(Util.isStringAllDashes("-"));
+        assertTrue(Util.isStringAllDashes("--"));
+        assertTrue(Util.isStringAllDashes("------"));
+
+        assertFalse(Util.isStringAllDashes(""));
+        assertFalse(Util.isStringAllDashes(" -"));
+        assertFalse(Util.isStringAllDashes("0"));
+        assertFalse(Util.isStringAllDashes("01-"));
+        assertFalse(Util.isStringAllDashes("----2 "));
+        assertFalse(Util.isStringAllDashes("0001110101"));
+    }
 }
