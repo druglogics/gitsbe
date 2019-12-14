@@ -34,7 +34,10 @@ class ConfigParametersGlobalTest {
         assertThrows(ConfigurationException.class, parameters::checkAttractorTool);
 
         parameters.attractor_tool = "ANonValidAttractorTool";
-        assertThrows(ConfigurationException.class, parameters::checkAttractorTool);
+        ConfigurationException exception =
+            assertThrows(ConfigurationException.class, parameters::checkAttractorTool);
+
+        assertEquals(exception.getMessage(), "The attractor_tool value: `ANonValidAttractorTool` is not in the list of supported tools: [bnet_reduction, bnet_reduction_reduced, biolqm_stable_states, biolqm_trapspaces]");
     }
 
     @Test
