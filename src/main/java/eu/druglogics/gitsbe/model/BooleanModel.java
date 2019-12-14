@@ -73,6 +73,9 @@ public class BooleanModel {
 	 *
 	 * Currently 3 supported filetypes: .gitsbe, .bnet and .booleannet files
 	 *
+	 * Note that the boolean equation format must be:
+	 * Target *= (Activator OR/AND Activator OR/AND ...) AND/OR NOT (Inhibitor OR/AND Inhibitor OR/AND ...)
+	 *
 	 * @param filename
 	 */
 	public BooleanModel(String filename, Logger logger) {
