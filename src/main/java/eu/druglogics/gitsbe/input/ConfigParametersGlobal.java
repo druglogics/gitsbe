@@ -55,8 +55,8 @@ public class ConfigParametersGlobal {
 
     protected void checkAttractorTool() throws Exception {
         if (!AttractorTools.contains(attractor_tool)) {
-            throw new ConfigurationException("The attractor_tool value: " + attractor_tool
-                    + " is not in the list of supported tools: " + AttractorTools.getTools());
+            throw new ConfigurationException("The attractor_tool value: `" + attractor_tool
+                    + "` is not in the list of supported tools: " + AttractorTools.getTools());
         }
         checkBNETHomeVar();
     }
