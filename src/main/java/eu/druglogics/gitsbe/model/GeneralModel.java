@@ -276,6 +276,10 @@ public class GeneralModel {
 		return this.modelName;
 	}
 
+	void setModelName(String modelName) {
+		this.modelName = modelName;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder multipleInteractionsStr = new StringBuilder();
