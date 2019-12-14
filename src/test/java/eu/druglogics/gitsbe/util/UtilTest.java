@@ -1,10 +1,15 @@
 package eu.druglogics.gitsbe.util;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 
 import java.io.IOException;
+import java.io.PrintStream;
 
+import static eu.druglogics.gitsbe.util.Util.createDirectory;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 class UtilTest {
 
@@ -101,11 +106,16 @@ class UtilTest {
 
     @Test
     void test_create_directory() {
-        assertThrows(IOException.class, () -> {
-            String userDir = System.getProperty("user.dir");
-            Util.createDirectory(userDir); // directory exists so it will just return
-            Util.createDirectory("");
-        });
+        // directory where the gitsbe code is (it exists because you are testing the code!)
+        String userDir = System.getProperty("user.dir");
+        PrintStream out = mock(PrintStream.class);
+        System.setOut(out);
+
+        assertDoesNotThrow(() -> Util.createDirectory(userDir));
+        verify(out).println(ArgumentMatchers.contains("already exists - no need to recreate it!"));
+
+        IOException exception = assertThrows(IOException.class, () -> createDirectory(""));
+        assertEquals(exception.getMessage(), "Error in creating directory: , exiting.");
     }
 
     @Test
