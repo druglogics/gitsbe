@@ -19,19 +19,27 @@ public class Timer {
 	}
 	
 	private void calculateDuration() {
-		duration = (endTime - startTime) / 1000000000;
+		duration = endTime - startTime;
+	}
+
+	long getDuration() {
+		return duration;
+	}
+
+	public int getMilliSecondsOfDuration() {
+		return (int) (duration / 1000000);
+	}
+
+	public int getSecondsOfDuration() {
+		return (int) (duration / 1000000000) % 60;
 	}
 	
-	int getSecondsOfDuration() {
-		return (int) (duration) % 60;
+	public int getMinutesOfDuration() {
+		return (int) (((duration / 1000000000) / 60) % 60);
 	}
 	
-	int getMinutesOfDuration() {
-		return (int) ((duration / 60) % 60);
-	}
-	
-	int getHoursOfDuration() {
-		return (int) ((duration / (60 * 60)));
+	public int getHoursOfDuration() {
+		return (int) (((duration / 1000000000) / (60 * 60)));
 	}
 	
 }
