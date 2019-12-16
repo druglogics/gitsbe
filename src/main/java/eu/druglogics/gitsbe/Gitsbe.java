@@ -402,7 +402,7 @@ public class Gitsbe implements Runnable {
 		}
 
 		logger.outputHeader(1, "Model Outputs");
-		logger.outputLines(1, ModelOutputs.getInstance().getModelOutputs());
+		logger.outputLines(1, ModelOutputs.getInstance().getModelOutputsVerbose());
 
 		ModelOutputs.getInstance().checkModelOutputNodeNames(generalBooleanModel);
 	}

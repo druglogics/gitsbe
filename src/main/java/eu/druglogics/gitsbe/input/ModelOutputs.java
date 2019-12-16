@@ -27,8 +27,8 @@ public class ModelOutputs {
 
 		loadModelOutputsFile(filename);
 
-		this.minOutput = getMinOutput();
-		this.maxOutput = getMaxOutput();
+		this.minOutput = calculateMinOutput();
+		this.maxOutput = calculateMaxOutput();
 	}
 
 	public static ModelOutputs getInstance() {
@@ -54,30 +54,11 @@ public class ModelOutputs {
 		return modelOutputs.get(index);
 	}
 
-	public float calculateGlobalOutput(ArrayList<String> stableStates, BooleanModel model) {
-		float globaloutput = 0;
-
-		for (String stableState : stableStates) {
-			for (OutputWeight outputWeight : modelOutputs) {
-				int indexStableState = model.getIndexOfEquation(outputWeight.getNodeName());
-				if (indexStableState >= 0) {
-					int temp = Character.getNumericValue(stableState.charAt(indexStableState));
-					temp *= outputWeight.getWeight();
-					globaloutput += temp;
-				}
-			}
-		}
-
-		globaloutput /= stableStates.size();
-
-		return ((globaloutput - minOutput) / (maxOutput - minOutput));
-	}
-
 	/**
 	 *
 	 * @return the sum of all the positive weights
 	 */
-	float getMaxOutput() {
+	float calculateMaxOutput() {
 		float maxOutput = 0;
 
 		for (OutputWeight outputWeight : modelOutputs) {
@@ -91,7 +72,7 @@ public class ModelOutputs {
 	 *
 	 * @return the sum of all the negative weights
 	 */
-	float getMinOutput() {
+	float calculateMinOutput() {
 		float minOutput = 0;
 
 		for (OutputWeight outputWeight : modelOutputs) {
@@ -136,7 +117,7 @@ public class ModelOutputs {
 	 * A verbose representation of the model outputs used for logging purposes
 	 *
 	 */
-	public String[] getModelOutputs() {
+	public String[] getModelOutputsVerbose() {
 		ArrayList<String> lines = new ArrayList<>();
 
 		for (OutputWeight outputWeight : modelOutputs) {
@@ -146,7 +127,7 @@ public class ModelOutputs {
 		return lines.toArray(new String[0]);
 	}
 
-	ArrayList<String> getNodeNames() {
+	public ArrayList<String> getNodeNames() {
 		ArrayList<String> nodeNames = new ArrayList<>();
 
 		for (OutputWeight outputWeight : this.modelOutputs) {
@@ -154,5 +135,17 @@ public class ModelOutputs {
 		}
 
 		return nodeNames;
+	}
+
+	public ArrayList<OutputWeight> getModelOutputs() {
+		return modelOutputs;
+	}
+
+	public float getMinOutput() {
+		return minOutput;
+	}
+
+	public float getMaxOutput() {
+		return maxOutput;
 	}
 }
