@@ -70,6 +70,8 @@ public class Attractors {
 		LogicalModel boolNetModel = load(boolNetFile.getAbsolutePath(), BNetFormat.ID);
 
 		getAttractorsFromLogicalModel(boolNetModel);
+
+		deleteFilesMatchingPattern(logger, booleanModel.getModelName());
 	}
 
 	/**
@@ -271,5 +273,16 @@ public class Attractors {
 		}
 
 		return result;
+	}
+
+	/**
+	 * This function should be used only for <b>testing purposes</b>. The attractors should always
+	 * be calculated with {@link #calculateAttractors(String)} or
+	 * {@link #calculateAttractorsFromBoolNetFile(String)}.
+	 *
+	 * @param attractors
+	 */
+	void setAttractors(ArrayList<String> attractors) {
+		this.attractors = attractors;
 	}
 }
