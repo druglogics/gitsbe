@@ -5,7 +5,7 @@
     <groupId>eu.druglogics</groupId>
     <artifactId>gitsbe</artifactId>
     <packaging>jar</packaging>
-    <version>1.0.9</version>
+    <version>1.2.0</version>
     <name>Gitsbe: Genetic Interactions To Specific Boolean Equations</name>
 
     <properties>
