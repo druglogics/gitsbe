@@ -1,17 +1,21 @@
 package eu.druglogics.gitsbe.model;
 
+import eu.druglogics.gitsbe.input.Config;
+import eu.druglogics.gitsbe.input.ModelOutputs;
+import eu.druglogics.gitsbe.input.OutputWeight;
 import eu.druglogics.gitsbe.util.Logger;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.io.bnet.BNetFormat;
 import org.colomoto.biolqm.io.ginml.GINMLFormat;
 import org.colomoto.biolqm.io.sbml.SBMLFormat;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static eu.druglogics.gitsbe.util.FileDeleter.deleteFilesMatchingPattern;
 import static eu.druglogics.gitsbe.util.Util.*;
 import static org.colomoto.biolqm.service.LQMServiceManager.load;
 
@@ -24,22 +28,21 @@ public class BooleanModel {
 
 	protected ArrayList<BooleanEquation> booleanEquations;
 	LinkedHashMap<String, String> nodeNameToVariableMap;
-	protected ArrayList<String> stableStates;
+	protected Attractors attractors;
 	protected String modelName;
 	private String filename;
 	Logger logger;
-	private static String directoryBNET = System.getenv("BNET_HOME");
 
 	public BooleanModel(Logger logger) {
 		this.logger = logger;
 	}
 
 	/**
-	 * Constructor for defining Boolean model from a "general model"
-	 * made up of singleInteraction objects
+	 * Constructor for defining a {@link BooleanModel} from a {@link GeneralModel},
+	 * which is made up of {@link SingleInteraction} objects.
+	 * Note that {@link GeneralModel#buildMultipleInteractions()} must be
+	 * called first, before this constructor is used.
 	 *
-	 * Note that generalModel.buildMultipleInteractions() must be
-	 * executed beforehand
  	 */
 	public BooleanModel(GeneralModel generalModel, Logger logger) {
 
@@ -47,7 +50,6 @@ public class BooleanModel {
 		this.modelName = generalModel.getModelName();
 		this.booleanEquations = new ArrayList<>();
 		this.nodeNameToVariableMap = new LinkedHashMap<>();
-		this.stableStates = new ArrayList<>();
 
 		for (int i = 0; i < generalModel.size(); i++) {
 			// Define Boolean equation from multiple interaction
@@ -63,18 +65,16 @@ public class BooleanModel {
 			// nodeNameToVariableMap
 			booleanEquations.add(booleanEquation);
 		}
+
+		this.attractors = new Attractors(this, logger, Config.getInstance().getAttractorTool());
 	}
 
-	// Copy constructor for defining Boolean model from another Boolean model
-
 	/**
-	 * Constructor for defining Boolean model from a file with a set of Boolean
-	 * equations
-	 *
-	 * Currently 3 supported filetypes: .gitsbe, .bnet and .booleannet files
-	 *
+	 * Constructor for defining a Boolean model from a file.
+	 * Currently we support 3 filetypes: <i>.gitsbe</i>, <i>.bnet</i> and <i>.booleannet</i> files.
 	 * Note that the boolean equation format must be:
-	 * Target *= (Activator OR/AND Activator OR/AND ...) AND/OR NOT (Inhibitor OR/AND Inhibitor OR/AND ...)
+	 * <i>Target *= (Activator OR/AND Activator OR/AND ...)
+	 * AND/OR NOT (Inhibitor OR/AND Inhibitor OR/AND ...)</i>
 	 *
 	 * @param filename
 	 */
@@ -152,8 +152,16 @@ public class BooleanModel {
 				logger.error("File extension: " + fileExtension + " for loading Boolean " +
 						"model from file is not supported");
 		}
+
+		this.attractors = new Attractors(this, logger, Config.getInstance().getAttractorTool());
 	}
 
+	/**
+	 * Copy constructor for defining a {@link BooleanModel} from another {@link BooleanModel}!
+	 *
+	 * @param booleanModel
+	 * @param logger
+	 */
 	protected BooleanModel(final BooleanModel booleanModel, Logger logger) {
 		this.logger = logger;
 
@@ -165,8 +173,7 @@ public class BooleanModel {
 		this.nodeNameToVariableMap = new LinkedHashMap<>();
 		this.nodeNameToVariableMap.putAll(booleanModel.nodeNameToVariableMap);
 
-		// Stable states (empty)
-		stableStates = new ArrayList<>();
+		this.attractors = new Attractors(this, logger, Config.getInstance().getAttractorTool());
 
 		// Copy modelName
 		this.modelName = booleanModel.getModelName();
@@ -185,9 +192,12 @@ public class BooleanModel {
 		// Write model name
 		writer.println("modelname: " + modelName);
 
-		// Write stable state(s)
-		for (String stableState : stableStates) {
-			writer.println("stablestate: " + stableState);
+		// Write attractor(s)
+		for (String attractor : this.getAttractors()) {
+			if (attractor.contains("-"))
+				writer.println("trapspace: " + attractor);
+			else
+				writer.println("stablestate: " + attractor);
 		}
 
 		// Write Boolean equations
@@ -359,82 +369,6 @@ public class BooleanModel {
 		return modifiedEquations;
 	}
 
-	public void calculateStableStatesVC(String directoryOutput, String tool) throws IOException {
-		exportModelToVelizCubaDataFile(directoryOutput);
-
-		// Run the BNReduction script
-		String filenameVCFullPath = new File(directoryOutput, modelName + ".dat").getAbsolutePath();
-		runBNReduction(filenameVCFullPath, tool);
-
-		// Read stable states from BNReduction.sh output file
-		String fixedPointsFile = new File(directoryOutput, modelName + ".dat.fp").getAbsolutePath();
-
-		logger.outputStringMessage(2, "Reading steady states: " + fixedPointsFile);
-		ArrayList<String> lines = readLinesFromFile(fixedPointsFile, true);
-
-		stableStates.addAll(lines);
-
-		if (stableStates.size() > 0) {
-			if (stableStates.get(0).length() > 0) {
-
-				logger.outputStringMessage(1, "BNReduction found " + stableStates.size() + " stable states:");
-				for (int i = 0; i < stableStates.size(); i++) {
-					logger.outputStringMessage(2, "Stable state " + (i + 1) + ": " + stableStates.get(i));
-				}
-			}
-		} else {
-			logger.outputStringMessage(1, "BNReduction found no stable states.");
-		}
-
-		deleteFilesMatchingPattern(logger, modelName);
-	}
-
-	private void runBNReduction(String filenameVC, String tool) {
-		String BNReductionScriptFile = new File(directoryBNET, "BNReduction.sh").getAbsolutePath();
-
-		try {
-			ProcessBuilder pb = null;
-			String timeoutSeconds = "30";
-			switch(tool) {
-				case "bnet_reduction":
-					pb = new ProcessBuilder("timeout", timeoutSeconds, BNReductionScriptFile,
-							filenameVC);
-					break;
-				case "bnet_reduction_reduced":
-					pb = new ProcessBuilder("timeout", timeoutSeconds, BNReductionScriptFile,
-							filenameVC, "reduced");
-					break;
-			}
-
-			if (logger.getVerbosity() >= 3) {
-				pb.redirectErrorStream(true);
-				pb.redirectOutput();
-			}
-
-			File parentVCdir = new File(new File(filenameVC).getParent());
-			pb.directory(parentVCdir);
-			logger.outputStringMessage(3, "Running BNReduction.sh in directory " + pb.directory());
-
-			Process p;
-			p = pb.start();
-
-			try {
-				p.waitFor();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-			// Redirecting the output of BNReduction.sh
-			BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			while (r.ready()) {
-				logger.outputStringMessage(3, r.readLine());
-			}
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	/**
 	 * Get index of equation ascribed to specified target
 	 * 
@@ -447,32 +381,6 @@ public class BooleanModel {
 
 	public ArrayList<String> getNodeNames() {
 		return new ArrayList<>(nodeNameToVariableMap.keySet());
-	}
-
-	/**
-	 * Checks if there is one or several stable states for the model
-	 * 
-	 * @return
-	 */
-	boolean hasStableStates() {
-		return (stableStates.size() > 0);
-	}
-
-	/**
-	 * Returns an 2-dimensional Array where the first row has the node names and
-	 * every other row contains the activity state values (0 or 1) of the corresponding
-	 * node (column) in the stable state
-	 */
-	String[][] getStableStates() {
-		String[][] result = new String[stableStates.size() + 1][getNodeNames().size()];
-
-		result[0] = getNodeNames().toArray(new String[0]);
-
-		for (int i = 0; i < stableStates.size(); i++) {
-			result[i + 1] = stableStates.get(i).split("(?!^)");
-		}
-
-		return result;
 	}
 
 	/**
@@ -489,6 +397,89 @@ public class BooleanModel {
 			throw new Exception("Target of equation [" + equation + "] not found");
 		}
 		booleanEquations.set(index, new BooleanEquation(equation));
+	}
+
+	/**
+	 * Wrapper-function for the calculation of the attractors. See:
+	 * {@link Attractors#calculateAttractors(String)}
+	 *
+	 * @param directoryOutput
+	 * @throws Exception
+	 */
+	public void calculateAttractors(String directoryOutput) throws Exception {
+		attractors.calculateAttractors(directoryOutput);
+	}
+
+	/**
+	 * Wrapper-function. See: {@link Attractors#hasAttractors()}
+	 * @return
+	 */
+	public boolean hasAttractors() {
+		return attractors.hasAttractors();
+	}
+
+	/**
+	 * Wrapper-function. See: {@link Attractors#hasStableStates()}
+	 * @return
+	 */
+	public boolean hasStableStates() {
+		return attractors.hasStableStates();
+	}
+
+	/**
+	 * Wrapper-function. See: {@link Attractors#getStableStates()}
+	 * @return
+	 */
+	public ArrayList<String> getStableStates() {
+		return attractors.getStableStates();
+	}
+
+	/**
+	 * Wrapper-function. See: {@link Attractors#getAttractors()}
+	 * @return
+	 */
+	public ArrayList<String> getAttractors() {
+		return attractors.getAttractors();
+	}
+
+	/**
+	 * Wrapper-function. See: {@link Attractors#getAttractorsWithNodes()}
+	 * @return
+	 */
+	public String[][] getAttractorsWithNodes() {
+		return attractors.getAttractorsWithNodes();
+	}
+
+	/**
+	 * Use this function after you have calculated the
+	 * {@link #calculateAttractors(String) attractors} in order to find the normalized
+	 * globaloutput of the model, based on the weights of the nodes defined in the
+	 * {@link ModelOutputs} Class.
+	 *
+	 * @return
+	 */
+	public float calculateGlobalOutput() {
+		ModelOutputs modelOutputs = ModelOutputs.getInstance();
+		float globaloutput = 0;
+
+		for (String attractor : this.getAttractors()) {
+			for (OutputWeight outputWeight : modelOutputs.getModelOutputs()) {
+				int nodeIndexInAttractor = this.getIndexOfEquation(outputWeight.getNodeName());
+				if (nodeIndexInAttractor >= 0) {
+					// can only be '1','0' or '-'
+					char nodeState = attractor.charAt(nodeIndexInAttractor);
+					float stateValue = (nodeState == '-')
+						? (float) 0.5
+						: Character.getNumericValue(attractor.charAt(nodeIndexInAttractor));
+
+					globaloutput += stateValue * outputWeight.getWeight();
+				}
+			}
+		}
+
+		globaloutput /= getAttractors().size();
+
+		return ((globaloutput - modelOutputs.getMinOutput()) / (modelOutputs.getMaxOutput() - modelOutputs.getMinOutput()));
 	}
 
 	public String getModelName() {

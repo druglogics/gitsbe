@@ -1,7 +1,6 @@
 package eu.druglogics.gitsbe.model;
 
 import eu.druglogics.gitsbe.input.Config;
-import eu.druglogics.gitsbe.input.TrainingData;
 import eu.druglogics.gitsbe.output.Summary;
 import eu.druglogics.gitsbe.util.Logger;
 
@@ -288,10 +287,10 @@ public class Evolution {
 
 				// Set filename of model
 				bestModel.setFilename(bestModel.getModelName() + ".gitsbe");
-				logger.outputStringMessage(1, "\tFile: " + modelDirectory + bestModel.getFilename());
+				logger.outputStringMessage(1, "\tFile: " + modelDirectory + "/" + bestModel.getFilename());
 
 				// calculate stable states for saving as part of .gitsbe file
-				bestModel.calculateStableStatesVC(directoryOutput, Config.getInstance().getAttractorTool());
+				bestModel.calculateAttractors(directoryOutput);
 				bestModel.exportModelToGitsbeFile(modelDirectory);
 
 				if (exportToGINML) {

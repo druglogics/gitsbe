@@ -1,6 +1,7 @@
 package eu.druglogics.gitsbe.model;
 
 import eu.druglogics.gitsbe.input.Config;
+import eu.druglogics.gitsbe.input.ModelOutputs;
 import eu.druglogics.gitsbe.util.Logger;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -10,6 +11,7 @@ import org.junit.platform.commons.util.ClassLoaderUtils;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -23,6 +25,7 @@ class BooleanModelTest {
 
     private BooleanModel booleanModel;
     private BooleanModel booleanModelSelfContained;
+    private BooleanModel booleanModel3; // 3 output nodes
 
     @BeforeAll
     static void init_config() throws Exception {
@@ -72,8 +75,27 @@ class BooleanModelTest {
         GeneralModel generalModel = new GeneralModel(testInteractions2, mockLogger);
         generalModel.buildMultipleInteractions();
 
+        // I,J are input nodes, F,U,K are output nodes
+        ArrayList<SingleInteraction> testInteractions3 = new ArrayList<>();
+        testInteractions3.add(new SingleInteraction("A\t->\tB"));
+        testInteractions3.add(new SingleInteraction("C\t-|\tB"));
+        testInteractions3.add(new SingleInteraction("C\t->\tA"));
+        testInteractions3.add(new SingleInteraction("B\t-|\tD"));
+        testInteractions3.add(new SingleInteraction("D\t->\tC"));
+        testInteractions3.add(new SingleInteraction("D\t-|\tW"));
+        testInteractions3.add(new SingleInteraction("W\t->\tF"));
+        testInteractions3.add(new SingleInteraction("W\t->\tU"));
+        testInteractions3.add(new SingleInteraction("W\t->\tK"));
+        testInteractions3.add(new SingleInteraction("I\t->\tW"));
+        testInteractions3.add(new SingleInteraction("E\t->\tC"));
+        testInteractions3.add(new SingleInteraction("J\t->\tE"));
+
+        GeneralModel generalModel3 = new GeneralModel(testInteractions3, mockLogger);
+        generalModel3.buildMultipleInteractions();
+
         this.booleanModel = new BooleanModel(generalModel, mockLogger);
         this.booleanModelSelfContained = new BooleanModel(generalModelSelfContained, mockLogger);
+        this.booleanModel3 = new BooleanModel(generalModel3, mockLogger);
     }
 
     @Test
@@ -173,6 +195,8 @@ class BooleanModelTest {
         assertEquals(1, booleanModelSelfContained.getIndexOfEquation("A"));
         assertEquals(2, booleanModelSelfContained.getIndexOfEquation("D"));
         assertEquals(3, booleanModelSelfContained.getIndexOfEquation("C"));
+
+        // `W` and `F` nodes are not in the self-contained boolean model
         assertEquals(-1, booleanModelSelfContained.getIndexOfEquation("W"));
         assertEquals(-1, booleanModelSelfContained.getIndexOfEquation("F"));
     }
@@ -337,5 +361,90 @@ class BooleanModelTest {
                         "E, ( J )",
                         "I, ( I )",
                         "J, ( 0 )");
+    }
+
+    @Test
+    void test_calculate_global_output() throws Exception {
+        Logger mockLogger = mock(Logger.class);
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        String filename = new File(classLoader.getResource("test_modeloutputs").getFile()).getPath();
+
+        ModelOutputs.init(filename, mockLogger);
+
+        // check the minimum and maximum global output values (weights: F:1, U:-1, K: 1)
+        assertEquals(-1.0, ModelOutputs.getInstance().getMinOutput());
+        assertEquals(2.0, ModelOutputs.getInstance().getMaxOutput());
+
+        // F,U,K indexes are 5,6,7 (zero-indexed)
+        // System.out.println(booleanModel3.getNodeNames());
+
+        DecimalFormat df = new DecimalFormat("#.00000");
+
+        // Single Stable State
+        booleanModel3.attractors.setAttractors(newArrayList("00000" + "010" + "000")); // U is active
+        Double gl0 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
+        assertEquals(gl0, 0.0); // the minimum (normalized) global output: -1
+
+        booleanModel3.attractors.setAttractors(newArrayList("00000" + "000" + "000")); // none is active
+        Double gl1 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
+        assertEquals(gl1, 0.33333);
+
+        booleanModel3.attractors.setAttractors(newArrayList("00000" + "100" + "000")); // F is active
+        Double gl2 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
+        assertEquals(gl2, 0.66667);
+
+        booleanModel3.attractors.setAttractors(newArrayList("00000" + "001" + "000")); // K is active
+        Double gl3 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
+        assertEquals(gl3, 0.66667);
+
+        booleanModel3.attractors.setAttractors(newArrayList("00000" + "011" + "000")); // U and K are active
+        Double gl4 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
+        assertEquals(gl4, 0.33333);
+
+        booleanModel3.attractors.setAttractors(newArrayList("00000" + "101" + "000")); // F and K are active
+        Double gl5 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
+        assertEquals(gl5, 1.0); // the maximum (normalized) global output: 2
+
+        booleanModel3.attractors.setAttractors(newArrayList("00000" + "111" + "000")); // F, U and K (all) are active
+        Double gl6 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
+        assertEquals(gl6, 0.66667);
+
+        // Multiple Stable States
+        booleanModel3.attractors.setAttractors(newArrayList("00000" + "111" + "000", "00000" + "101" + "000"));
+        assertThat(booleanModel3.calculateGlobalOutput()).isBetween((float) 0, (float) 1);
+        assertEquals(Double.valueOf(df.format(booleanModel3.calculateGlobalOutput())), 0.83333);
+
+        booleanModel3.attractors.setAttractors(newArrayList("00000" + "111" + "000",
+            "00000" + "101" + "000", "00000" + "100" + "000"));
+        assertThat(booleanModel3.calculateGlobalOutput()).isBetween((float) 0, (float) 1);
+        assertEquals(Double.valueOf(df.format(booleanModel3.calculateGlobalOutput())), 0.77778);
+
+        // Single Trapspace
+        booleanModel3.attractors.setAttractors(newArrayList("00000" + "---" + "000"));
+        Double gl7 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
+        assertEquals(gl7, 0.5);
+
+        booleanModel3.attractors.setAttractors(newArrayList("00000" + "-1-" + "000"));
+        Double gl8 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
+        assertEquals(gl8, 0.33333);
+
+        booleanModel3.attractors.setAttractors(newArrayList("00-10" + "-11" + "0--"));
+        Double gl9 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
+        assertEquals(gl9, 0.5);
+
+        booleanModel3.attractors.setAttractors(newArrayList("00-10" + "0-0" + "0--"));
+        Double gl10 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
+        assertEquals(gl10, 0.16667); // second lowest value after '010' for single attractors!
+
+        // Multiple attractors (stable state + trapspace)
+        booleanModel3.attractors.setAttractors(newArrayList("00-10" + "0-0" + "0--", "00010" + "010" + "011"));
+        Double gl11 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
+        assertEquals(gl11, 0.08333);
+
+        booleanModel3.attractors.setAttractors(newArrayList("00-10" + "0-0" + "0--",
+            "00010" + "010" + "011", "0---0" + "010" + "--1"));
+        Double gl12 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
+        assertEquals(gl12, 0.05556);
     }
 }

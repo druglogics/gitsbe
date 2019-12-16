@@ -2,7 +2,6 @@ package eu.druglogics.gitsbe.model;
 
 import eu.druglogics.gitsbe.drug.DrugPanel;
 import eu.druglogics.gitsbe.input.Config;
-import eu.druglogics.gitsbe.input.ModelOutputs;
 import eu.druglogics.gitsbe.input.TrainingData;
 import eu.druglogics.gitsbe.util.Logger;
 import org.apache.commons.lang3.StringUtils;
@@ -30,8 +29,16 @@ public class MutatedBooleanModel extends BooleanModel {
 		super(booleanModel, logger);
 	}
 
-	// Constructor for creating a mutated model offspring from two parents, using
-	// crossover
+	/**
+	 * Constructor for creating a {@link MutatedBooleanModel} offspring from two {@link MutatedBooleanModel}
+	 * parents, using <i>crossover</i> : the offspring will get some of the boolean equations from
+	 * the first parent and the rest from the second.
+	 *
+	 * @param parent1
+	 * @param parent2
+	 * @param modelName
+	 * @param logger
+	 */
 	MutatedBooleanModel(MutatedBooleanModel parent1, MutatedBooleanModel parent2, String modelName,
 			Logger logger) {
 
@@ -44,11 +51,10 @@ public class MutatedBooleanModel extends BooleanModel {
 		this.nodeNameToVariableMap = new LinkedHashMap<>();
 		this.nodeNameToVariableMap.putAll(parent1.nodeNameToVariableMap);
 
-		// Define stable states
-		this.stableStates = new ArrayList<>();
-
 		// Assign modelName
 		this.modelName = modelName;
+
+		this.attractors = new Attractors(this, logger, Config.getInstance().getAttractorTool());
 	}
 
 	private void crossoverCopy(MutatedBooleanModel parent1, MutatedBooleanModel parent2, Logger logger) {
@@ -225,8 +231,8 @@ public class MutatedBooleanModel extends BooleanModel {
 				} else if (count == 3) { // Two drug perturbation condition (HSA or Bliss)
 					String firstResponse = response.get(0);
 					try {
-						conditionfitness = getConditionFitnessForTwoDrugPerturbation(directoryOutput,
-							firstCondition, firstResponse);
+						conditionfitness = getConditionFitnessForTwoDrugPerturbation(
+							directoryOutput, firstCondition, firstResponse);
 					} catch (ConfigurationException e) {
 						continue;
 					}
@@ -259,38 +265,36 @@ public class MutatedBooleanModel extends BooleanModel {
 
 			if (!isDoubleDrugPerturbation) {
 				// compute stable state(s) for condition
-				mutatedBooleanModel.calculateStableStatesVC(directoryOutput, Config.getInstance().getAttractorTool());
+				mutatedBooleanModel.calculateAttractors(directoryOutput);
 
 				// check computed stable state(s) with training data observation
-				String[][] stableStates = mutatedBooleanModel.getStableStates();
+				String[][] attractorsWithNodes = mutatedBooleanModel.getAttractorsWithNodes();
 
 				// go through each element (output) of a response
-				if (mutatedBooleanModel.hasStableStates()) {
+				if (mutatedBooleanModel.hasAttractors()) {
 					// check if globaloutput observation
 					if (response.get(0).split(":")[0].equals("globaloutput")) {
-						// compute a global output of the model by using specified model outputs
-						// scaled output to value <0..1] (exclude 0 since ratios then are difficult)
 						float observedGlobalOutput = Float.parseFloat(response.get(0).split(":")[1]);
-						float predictedGlobalOutput = ModelOutputs.getInstance()
-							.calculateGlobalOutput(mutatedBooleanModel.stableStates, this);
+						float predictedGlobalOutput = mutatedBooleanModel.calculateGlobalOutput();
 
 						logger.outputStringMessage(3, "Observed globalOutput: " + observedGlobalOutput);
 						logger.outputStringMessage(3, "Predicted globalOutput: " + predictedGlobalOutput);
 
 						conditionfitness = 1 - abs(predictedGlobalOutput - observedGlobalOutput);
 					} else {
-						// if not globaloutput then go through all specified states in observation and
-						// contrast with stable state(s)
+						// Go through all the specified states in observation
+						// and contrast with attractor(s) (stable states or trapspaces)
 
 						// A model with an existing stable state will get higher fitness than models
-						// without stable states
-						conditionfitness += 1;
+						// without stable states (e.g. models that have only trapspaces as attractors)
+						if (mutatedBooleanModel.hasStableStates())
+							conditionfitness += 1;
 
 						float averageMatch = 0;
 						int foundObservations = 0;
 						ArrayList<Float> matches = new ArrayList<>();
 
-						for (int indexState = 1; indexState < stableStates.length; indexState++) {
+						for (int indexState = 1; indexState < attractorsWithNodes.length; indexState++) {
 							logger.outputStringMessage(2, "Checking stable state no. " + indexState + ":");
 
 							float matchSum = 0;
@@ -304,13 +308,13 @@ public class MutatedBooleanModel extends BooleanModel {
 
 								if (indexNode >= 0) {
 									foundObservations++;
-									float match = 1 - abs(
-										Integer.parseInt(stableStates[indexState][indexNode]) -
-											Float.parseFloat(obs)
-									);
-									logger.outputStringMessage(2, "Match for observation on node "
+									String nodeState = attractorsWithNodes[indexState][indexNode];
+									float stateValue = (nodeState.equals("-"))
+										? (float) 0.5 : Float.parseFloat(nodeState);
+									float match = 1 - abs(stateValue - Float.parseFloat(obs));
+									logger.outputStringMessage(3, "Match for observation on node "
 										+ node + ": " + match + " (1 - |"
-										+ stableStates[indexState][indexNode] + "-" + obs + "|)");
+										+ stateValue + " - " + obs + "|)");
 									matchSum += match;
 								}
 							}
@@ -328,14 +332,13 @@ public class MutatedBooleanModel extends BooleanModel {
 						conditionfitness += averageMatch;
 
 						if (foundObservations > 0) {
-							// +1 to account for the fact there is also a stable state, which gives a
-							// fitness of 1 itself
-							conditionfitness /= (foundObservations + 1);
+							// +1 to account for the fact there is also a
+							// stable state, which gives a fitness of 1 itself
+							if (mutatedBooleanModel.hasStableStates())
+								conditionfitness /= (foundObservations + 1);
+							else
+								conditionfitness /= foundObservations;
 						}
-
-						// further penalize models that have more than one stable states
-						// notice that matches.size() is equal to the number of stable states
-						conditionfitness /= matches.size();
 					}
 				}
 			}
@@ -369,9 +372,12 @@ public class MutatedBooleanModel extends BooleanModel {
 		// Write fitness
 		writer.println("fitness: " + this.fitness);
 
-		// Write stable state(s)
-		for (String stableState : this.stableStates) {
-			writer.println("stablestate: " + stableState);
+		// Write attractor(s)
+		for (String attractor : this.getAttractors()) {
+			if (attractor.contains("-"))
+				writer.println("trapspace: " + attractor);
+			else
+				writer.println("stablestate: " + attractor);
 		}
 
 		// Write Boolean equations
@@ -398,7 +404,7 @@ public class MutatedBooleanModel extends BooleanModel {
 
 	/**
 	 * Use this function to get the fitness value for a specified condition in the form:
-	 * `Drug(A+B) < min(Drug(A),Drug(B))` (HSA) or `Drug(A+B) < product(Drug(A),Drug(B))` (Bliss)
+	 * <i>Drug(A+B) < min(Drug(A),Drug(B))</i> (HSA) or <i>Drug(A+B) < product(Drug(A),Drug(B))</i> (Bliss)
 	 *
 	 * @param directoryOutput name of directory to pass to the function that calculates the stable states
 	 * @param condition the two drug specified condition. String format is: `Drug(A+B) < min(Drug(A),Drug(B))` or `Drug(A+B) < product(Drug(A),Drug(B))`
@@ -451,7 +457,7 @@ public class MutatedBooleanModel extends BooleanModel {
 				mutatedBooleanModelBothDrugs.modifyEquation(equation);
 			}
 
-			mutatedBooleanModelFirstDrug.calculateStableStatesVC(directoryOutput, Config.getInstance().getAttractorTool());
+			mutatedBooleanModelFirstDrug.calculateAttractors(directoryOutput);
 
 			logger.outputStringMessage(3, "Perturbing model with the second drug: `"
 				+ secondDrug + "`");
@@ -466,26 +472,24 @@ public class MutatedBooleanModel extends BooleanModel {
 				mutatedBooleanModelBothDrugs.modifyEquation(equation);
 			}
 
-			mutatedBooleanModelSecondDrug.calculateStableStatesVC(directoryOutput, Config.getInstance().getAttractorTool());
+			mutatedBooleanModelSecondDrug.calculateAttractors(directoryOutput);
 
 			logger.outputStringMessage(3, "Perturbing model with both drugs");
-			mutatedBooleanModelBothDrugs.calculateStableStatesVC(directoryOutput, Config.getInstance().getAttractorTool());
+			mutatedBooleanModelBothDrugs.calculateAttractors(directoryOutput);
 
-			if (mutatedBooleanModelFirstDrug.hasStableStates()
-				&& mutatedBooleanModelSecondDrug.hasStableStates()
-				&& mutatedBooleanModelBothDrugs.hasStableStates()) {
+			if (mutatedBooleanModelFirstDrug.hasAttractors()
+				&& mutatedBooleanModelSecondDrug.hasAttractors()
+				&& mutatedBooleanModelBothDrugs.hasAttractors()) {
 				if (response.split(":")[0].equals("globaloutput")) {
 
 					float relObsGL = Float.parseFloat(response.split(":")[1]);
 					logger.outputStringMessage(3, "Relative Observed globalOutput: " + relObsGL);
 
-					float firstDrugGL = ModelOutputs.getInstance()
-						.calculateGlobalOutput(mutatedBooleanModelFirstDrug.stableStates, this);
+					float firstDrugGL = mutatedBooleanModelFirstDrug.calculateGlobalOutput();
 					logger.outputStringMessage(3, "Predicted globalOutput for the model perturbed with drug `"
 						+ firstDrug + "`: " + firstDrugGL);
 
-					float secondDrugGL = ModelOutputs.getInstance()
-						.calculateGlobalOutput(mutatedBooleanModelSecondDrug.stableStates, this);
+					float secondDrugGL = mutatedBooleanModelSecondDrug.calculateGlobalOutput();
 					logger.outputStringMessage(3, "Predicted globalOutput for the model perturbed with drug `"
 						+ secondDrug + "`: " + secondDrugGL);
 
@@ -493,8 +497,7 @@ public class MutatedBooleanModel extends BooleanModel {
 					logger.outputStringMessage(3, "Minimum predicted globalOutput value " +
 						"of the two single-drug perturbed models: " + minGL);
 
-					float bothDrugsGL = ModelOutputs.getInstance()
-						.calculateGlobalOutput(mutatedBooleanModelBothDrugs.stableStates, this);
+					float bothDrugsGL = mutatedBooleanModelBothDrugs.calculateGlobalOutput();
 					logger.outputStringMessage(3, "Predicted globalOutput for the model perturbed with both drugs `"
 						+ firstDrug + "` and `" + secondDrug + "`: " + bothDrugsGL);
 
@@ -553,7 +556,7 @@ public class MutatedBooleanModel extends BooleanModel {
 				mutatedBooleanModelBothDrugs.modifyEquation(equation);
 			}
 
-			mutatedBooleanModelFirstDrug.calculateStableStatesVC(directoryOutput, Config.getInstance().getAttractorTool());
+			mutatedBooleanModelFirstDrug.calculateAttractors(directoryOutput);
 
 			logger.outputStringMessage(3, "Perturbing model with the second drug: `"
 				+ secondDrug + "`");
@@ -568,26 +571,24 @@ public class MutatedBooleanModel extends BooleanModel {
 				mutatedBooleanModelBothDrugs.modifyEquation(equation);
 			}
 
-			mutatedBooleanModelSecondDrug.calculateStableStatesVC(directoryOutput, Config.getInstance().getAttractorTool());
+			mutatedBooleanModelSecondDrug.calculateAttractors(directoryOutput);
 
 			logger.outputStringMessage(3, "Perturbing model with both drugs");
-			mutatedBooleanModelBothDrugs.calculateStableStatesVC(directoryOutput, Config.getInstance().getAttractorTool());
+			mutatedBooleanModelBothDrugs.calculateAttractors(directoryOutput);
 
-			if (mutatedBooleanModelFirstDrug.hasStableStates()
-				&& mutatedBooleanModelSecondDrug.hasStableStates()
-				&& mutatedBooleanModelBothDrugs.hasStableStates()) {
+			if (mutatedBooleanModelFirstDrug.hasAttractors()
+				&& mutatedBooleanModelSecondDrug.hasAttractors()
+				&& mutatedBooleanModelBothDrugs.hasAttractors()) {
 				if (response.split(":")[0].equals("globaloutput")) {
 
 					float relObsGL = Float.parseFloat(response.split(":")[1]);
 					logger.outputStringMessage(3, "Relative Observed globalOutput: " + relObsGL);
 
-					float firstDrugGL = ModelOutputs.getInstance()
-						.calculateGlobalOutput(mutatedBooleanModelFirstDrug.stableStates, this);
+					float firstDrugGL = mutatedBooleanModelFirstDrug.calculateGlobalOutput();
 					logger.outputStringMessage(3, "Predicted globalOutput for the model perturbed with drug `"
 						+ firstDrug + "`: " + firstDrugGL);
 
-					float secondDrugGL = ModelOutputs.getInstance()
-						.calculateGlobalOutput(mutatedBooleanModelSecondDrug.stableStates, this);
+					float secondDrugGL = mutatedBooleanModelSecondDrug.calculateGlobalOutput();
 					logger.outputStringMessage(3, "Predicted globalOutput for the model perturbed with drug `"
 						+ secondDrug + "`: " + secondDrugGL);
 
@@ -595,8 +596,7 @@ public class MutatedBooleanModel extends BooleanModel {
 					logger.outputStringMessage(3, "Product predicted globalOutput value " +
 						"of the two single-drug perturbed models: " + productGL);
 
-					float bothDrugsGL = ModelOutputs.getInstance()
-						.calculateGlobalOutput(mutatedBooleanModelBothDrugs.stableStates, this);
+					float bothDrugsGL = mutatedBooleanModelBothDrugs.calculateGlobalOutput();
 					logger.outputStringMessage(3, "Predicted globalOutput for the model perturbed with both drugs `"
 						+ firstDrug + "` and `" + secondDrug + "`: " + bothDrugsGL);
 
