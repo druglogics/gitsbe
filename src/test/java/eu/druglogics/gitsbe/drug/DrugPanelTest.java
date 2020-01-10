@@ -133,7 +133,8 @@ class DrugPanelTest {
 		GeneralModel generalModel = new GeneralModel(testInteractions, mockLogger);
 		generalModel.buildMultipleInteractions();
 
-		BooleanModel booleanModel = new BooleanModel(generalModel, mockLogger);
+		BooleanModel booleanModel = new BooleanModel(generalModel,
+			Config.getInstance().getAttractorTool(), mockLogger);
 
 		doAnswer(invocation -> {
 			Integer verbosity = invocation.getArgument(0);

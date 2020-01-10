@@ -58,7 +58,7 @@ class ModelOutputsTest {
         GeneralModel generalModel = new GeneralModel(testInteractions, mockLogger);
         generalModel.buildMultipleInteractions();
 
-        this.booleanModel = new BooleanModel(generalModel, mockLogger);
+        this.booleanModel = new BooleanModel(generalModel, Config.getInstance().getAttractorTool(), mockLogger);
     }
 
     @AfterEach

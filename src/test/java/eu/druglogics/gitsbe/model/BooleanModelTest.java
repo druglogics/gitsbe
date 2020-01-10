@@ -93,9 +93,10 @@ class BooleanModelTest {
         GeneralModel generalModel3 = new GeneralModel(testInteractions3, mockLogger);
         generalModel3.buildMultipleInteractions();
 
-        this.booleanModel = new BooleanModel(generalModel, mockLogger);
-        this.booleanModelSelfContained = new BooleanModel(generalModelSelfContained, mockLogger);
-        this.booleanModel3 = new BooleanModel(generalModel3, mockLogger);
+        this.booleanModel = new BooleanModel(generalModel, Config.getInstance().getAttractorTool(), mockLogger);
+        this.booleanModelSelfContained = new BooleanModel(generalModelSelfContained,
+            Config.getInstance().getAttractorTool(), mockLogger);
+        this.booleanModel3 = new BooleanModel(generalModel3, Config.getInstance().getAttractorTool(), mockLogger);
     }
 
     @Test
@@ -105,7 +106,8 @@ class BooleanModelTest {
         ClassLoader classLoader = getClass().getClassLoader();
         String filename = new File(classLoader.getResource("example.gitsbe").getFile()).getPath();
 
-        BooleanModel booleanModel = new BooleanModel(filename, mockLogger);
+        BooleanModel booleanModel =
+            new BooleanModel(filename, Config.getInstance().getAttractorTool(), mockLogger);
 
         assertEquals("example", booleanModel.getModelName());
         assertThat(booleanModel.getBooleanEquations())
@@ -135,7 +137,8 @@ class BooleanModelTest {
         ClassLoader classLoader = getClass().getClassLoader();
         String filename = new File(classLoader.getResource("example.booleannet").getFile()).getPath();
 
-        BooleanModel booleanModel = new BooleanModel(filename, mockLogger);
+        BooleanModel booleanModel =
+            new BooleanModel(filename, Config.getInstance().getAttractorTool(), mockLogger);
 
         assertEquals("example", booleanModel.getModelName());
         assertThat(booleanModel.getBooleanEquations())
@@ -165,7 +168,8 @@ class BooleanModelTest {
         ClassLoader classLoader = getClass().getClassLoader();
         String filename = new File(classLoader.getResource("example.bnet").getFile()).getPath();
 
-        BooleanModel booleanModel = new BooleanModel(filename, mockLogger);
+        BooleanModel booleanModel =
+            new BooleanModel(filename, Config.getInstance().getAttractorTool(), mockLogger);
 
         assertEquals("example", booleanModel.getModelName());
         assertThat(booleanModel.getBooleanEquations())

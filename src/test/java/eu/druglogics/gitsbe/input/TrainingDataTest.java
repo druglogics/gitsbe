@@ -54,7 +54,7 @@ class TrainingDataTest {
         GeneralModel generalModel = new GeneralModel(testInteractions, mockLogger);
         generalModel.buildMultipleInteractions();
 
-        this.booleanModel = new BooleanModel(generalModel, mockLogger);
+        this.booleanModel = new BooleanModel(generalModel, Config.getInstance().getAttractorTool(), mockLogger);
 
         ClassLoader classLoader = getClass().getClassLoader();
         String trainingDataFile = new File(classLoader.getResource("test_training").getFile()).getPath();

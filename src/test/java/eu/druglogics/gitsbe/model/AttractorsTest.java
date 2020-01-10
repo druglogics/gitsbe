@@ -79,12 +79,13 @@ class AttractorsTest {
 		generalModel.buildMultipleInteractions();
 		generalModel.setModelName("test_model");
 
-		this.booleanModel = new BooleanModel(generalModel, mockLogger);
-		this.booleanModelSelfContained = new BooleanModel(generalModelSelfContained, mockLogger);
+		this.booleanModel = new BooleanModel(generalModel, Config.getInstance().getAttractorTool(), mockLogger);
+		this.booleanModelSelfContained = new BooleanModel(generalModelSelfContained,
+			Config.getInstance().getAttractorTool(), mockLogger);
 
 		ClassLoader classLoader = getClass().getClassLoader();
 		String filename = new File(classLoader.getResource("example.bnet").getFile()).getPath();
-		this.booleanModelFromExampleFile = new BooleanModel(filename, mockLogger);
+		this.booleanModelFromExampleFile = new BooleanModel(filename, Config.getInstance().getAttractorTool(), mockLogger);
 
 		this.boolNetFileCellCycle = new File(classLoader.getResource("cell_cycle.bnet").getFile()).getPath();
 		this.boolNetFileYeast = new File(classLoader.getResource("davidich_yeast.bnet").getFile()).getPath();

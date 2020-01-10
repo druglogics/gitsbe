@@ -26,7 +26,7 @@ public class MutatedBooleanModel extends BooleanModel {
 	private float fitness;
 
 	MutatedBooleanModel(BooleanModel booleanModel, Logger logger) {
-		super(booleanModel, logger);
+		super(booleanModel, Config.getInstance().getAttractorTool(), logger);
 	}
 
 	/**

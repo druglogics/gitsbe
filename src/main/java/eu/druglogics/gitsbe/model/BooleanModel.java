@@ -41,10 +41,11 @@ public class BooleanModel {
 	 * Constructor for defining a {@link BooleanModel} from a {@link GeneralModel},
 	 * which is made up of {@link SingleInteraction} objects.
 	 * Note that {@link GeneralModel#buildMultipleInteractions()} must be
-	 * called first, before this constructor is used.
+	 * called first, before this constructor is used and that an appropriate
+	 * attractor tool must be given.
 	 *
  	 */
-	public BooleanModel(GeneralModel generalModel, Logger logger) {
+	public BooleanModel(GeneralModel generalModel, String attractorTool, Logger logger) {
 
 		this.logger = logger;
 		this.modelName = generalModel.getModelName();
@@ -66,19 +67,23 @@ public class BooleanModel {
 			booleanEquations.add(booleanEquation);
 		}
 
-		this.attractors = new Attractors(this, logger, Config.getInstance().getAttractorTool());
+		this.attractors = new Attractors(this, logger, attractorTool);
 	}
 
 	/**
-	 * Constructor for defining a Boolean model from a file.
+	 * Constructor for defining a Boolean model from a file and setting up the
+	 * <i>attractorTool</i> to be used. <br/><br/>
+	 *
 	 * Currently we support 3 filetypes: <i>.gitsbe</i>, <i>.bnet</i> and <i>.booleannet</i> files.
 	 * Note that the boolean equation format must be:
 	 * <i>Target *= (Activator OR/AND Activator OR/AND ...)
 	 * AND/OR NOT (Inhibitor OR/AND Inhibitor OR/AND ...)</i>
 	 *
 	 * @param filename
+	 * @param attractorTool
+	 * @param logger
 	 */
-	public BooleanModel(String filename, Logger logger) {
+	public BooleanModel(String filename, String attractorTool, Logger logger) {
 		this.logger = logger;
 		ArrayList<String> lines;
 
@@ -153,16 +158,18 @@ public class BooleanModel {
 						"model from file is not supported");
 		}
 
-		this.attractors = new Attractors(this, logger, Config.getInstance().getAttractorTool());
+		this.attractors = new Attractors(this, logger, attractorTool);
 	}
 
 	/**
-	 * Copy constructor for defining a {@link BooleanModel} from another {@link BooleanModel}!
+	 * Copy constructor for defining a {@link BooleanModel} from another {@link BooleanModel}
+	 * with the appropriate attractor tool.
 	 *
 	 * @param booleanModel
+	 * @param attractorTool
 	 * @param logger
 	 */
-	protected BooleanModel(final BooleanModel booleanModel, Logger logger) {
+	protected BooleanModel(final BooleanModel booleanModel, String attractorTool, Logger logger) {
 		this.logger = logger;
 
 		// Copy Boolean equations
@@ -173,7 +180,7 @@ public class BooleanModel {
 		this.nodeNameToVariableMap = new LinkedHashMap<>();
 		this.nodeNameToVariableMap.putAll(booleanModel.nodeNameToVariableMap);
 
-		this.attractors = new Attractors(this, logger, Config.getInstance().getAttractorTool());
+		this.attractors = new Attractors(this, logger, attractorTool);
 
 		// Copy modelName
 		this.modelName = booleanModel.getModelName();

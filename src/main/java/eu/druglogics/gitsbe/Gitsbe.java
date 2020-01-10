@@ -453,10 +453,12 @@ public class Gitsbe implements Runnable {
 			// trimming and complexes
 			generalModel.buildMultipleInteractions();
 
-			generalBooleanModel = new BooleanModel(generalModel, logger);
+			generalBooleanModel =
+				new BooleanModel(generalModel, Config.getInstance().getAttractorTool(), logger);
 		} else {
 			// Load general boolean model from prepared file in supported format
-			generalBooleanModel = new BooleanModel(filenameNetwork, logger);
+			generalBooleanModel =
+				new BooleanModel(filenameNetwork, Config.getInstance().getAttractorTool(), logger);
 		}
 		return generalBooleanModel;
 	}
