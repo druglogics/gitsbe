@@ -8,6 +8,7 @@ import org.rauschig.jarchivelib.CompressionType;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 
 /**
  * A simple class that has static methods useful for the whole project
@@ -360,6 +361,21 @@ public class Util {
 		}
 
 		return countDashes == str.length();
+	}
+
+	/**
+	 * Converts an {@link ArrayList} of {@link Float} values to a <i>float</i> array
+	 *
+	 * @param floats
+	 * @return
+	 */
+	public static float[] convertFloats(ArrayList<Float> floats) {
+		float[] result = new float[floats.size()];
+		Iterator<Float> iterator = floats.iterator();
+		for (int i = 0; i < result.length; i++) {
+			result[i] = iterator.next();
+		}
+		return result;
 	}
 
 	public static void abort() {

@@ -5,6 +5,8 @@ import org.mockito.ArgumentMatchers;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 import static eu.druglogics.gitsbe.util.Util.createDirectory;
 import static org.junit.jupiter.api.Assertions.*;
@@ -158,5 +160,21 @@ class UtilTest {
         assertFalse(Util.isStringAllDashes("01-"));
         assertFalse(Util.isStringAllDashes("----2 "));
         assertFalse(Util.isStringAllDashes("0001110101"));
+    }
+
+    @Test
+    void test_convert_floats() {
+        DecimalFormat df = new DecimalFormat("#.000");
+
+        ArrayList<Float> floatArrayList = new ArrayList<>();
+        floatArrayList.add((float) 0.134);
+        floatArrayList.add((float) -3.4);
+        floatArrayList.add((float) 1000.2);
+
+        float[] floatArray = Util.convertFloats(floatArrayList);
+        assertEquals(floatArray.length, 3);
+        assertEquals(Double.valueOf(df.format(floatArray[0])), 0.134);
+        assertEquals(Double.valueOf(df.format(floatArray[1])), -3.4);
+        assertEquals(Double.valueOf(df.format(floatArray[2])), 1000.2);
     }
 }
