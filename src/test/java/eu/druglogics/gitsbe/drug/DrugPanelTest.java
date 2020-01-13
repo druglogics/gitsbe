@@ -98,8 +98,7 @@ class DrugPanelTest {
 	}
 
 	@Test
-	void test_logger_error_with_incorrect_effect() {
-
+	void test_throw_expection_with_incorrect_effect() {
 		ConfigurationException exception = assertThrows(ConfigurationException.class, () -> {
 			ClassLoader classLoader = getClass().getClassLoader();
 			String drugPanelFile = new File(classLoader.getResource("test_drugpanel_wrong_format").getFile()).getPath();
