@@ -101,30 +101,30 @@ class AttractorsTest {
 		Logger mockLogger = mock(Logger.class);
 		String attractorTool = "biolqm_stable_states";
 
-		Attractors attractors = new Attractors(booleanModel, mockLogger, attractorTool);
+		Attractors attractors = new Attractors(booleanModel, attractorTool, mockLogger);
 		attractors.calculateAttractors(tempDir.getAbsolutePath());
 		assertEquals(attractors.getAttractors(),
 			newArrayList("0111000000", "0111000010", "0111000101", "0111000111"));
 		assertTrue(attractors.hasAttractors());
 
-		Attractors attractors1 = new Attractors(booleanModelSelfContained, mockLogger, attractorTool);
+		Attractors attractors1 = new Attractors(booleanModelSelfContained, attractorTool, mockLogger);
 		attractors1.calculateAttractors(tempDir.getAbsolutePath());
 		assertEquals(attractors1.getAttractors(), newArrayList("0111"));
 		assertTrue(attractors1.hasAttractors());
 
 		// no stable states
-		Attractors attractors2 = new Attractors(booleanModelFromExampleFile, mockLogger, attractorTool);
+		Attractors attractors2 = new Attractors(booleanModelFromExampleFile, attractorTool, mockLogger);
 		attractors2.calculateAttractors(tempDir.getAbsolutePath());
 		assertFalse(attractors2.hasAttractors());
 
 		// Cell cycle logical model has 1 stable state
-		Attractors attractors3 = new Attractors(new BooleanModel(mockLogger), mockLogger, attractorTool);
+		Attractors attractors3 = new Attractors(new BooleanModel(mockLogger), attractorTool, mockLogger);
 		attractors3.calculateAttractorsFromBoolNetFile(boolNetFileCellCycle);
 		assertEquals(attractors3.getAttractors(), newArrayList("0100010100"));
 		assertTrue(attractors3.hasAttractors());
 
 		// Yeast model
-		Attractors attractors4 = new Attractors(new BooleanModel(mockLogger), mockLogger, attractorTool);
+		Attractors attractors4 = new Attractors(new BooleanModel(mockLogger), attractorTool, mockLogger);
 		attractors4.calculateAttractorsFromBoolNetFile(boolNetFileYeast);
 		assertEquals(attractors4.getAttractors().size(), 12);
 		assertTrue(attractors4.hasAttractors());
@@ -132,13 +132,13 @@ class AttractorsTest {
 		assertEquals(attractors4.getAttractors(), attractors4.getStableStates());
 
 		// MAPK Network on Cancer Cell Fate Decision
-		Attractors attractors5 = new Attractors(new BooleanModel(mockLogger), mockLogger, attractorTool);
+		Attractors attractors5 = new Attractors(new BooleanModel(mockLogger), attractorTool, mockLogger);
 		attractors5.calculateAttractorsFromBoolNetFile(boolNetMAPK);
 		assertEquals(attractors5.getAttractors().size(), 12);
 		assertEquals(attractors5.getAttractors(), attractors5.getStableStates());
 
 		// Cascade 1.0 (link operator mutated)
-		Attractors attractors6 = new Attractors(new BooleanModel(mockLogger), mockLogger, attractorTool);
+		Attractors attractors6 = new Attractors(new BooleanModel(mockLogger), attractorTool, mockLogger);
 		attractors6.calculateAttractorsFromBoolNetFile(boolNetCASCADE1);
 		assertEquals(attractors6.getStableStates(), newArrayList("00011110111100011100101000010001101011111101000010011010000111010000111000111"));
 		assertTrue(attractors6.hasStableStates());
@@ -149,7 +149,7 @@ class AttractorsTest {
 		Logger mockLogger = mock(Logger.class);
 		String attractorTool = "biolqm_trapspaces";
 
-		Attractors attractors = new Attractors(booleanModel, mockLogger, attractorTool);
+		Attractors attractors = new Attractors(booleanModel, attractorTool, mockLogger);
 		attractors.calculateAttractors(tempDir.getAbsolutePath());
 		assertThat(attractors.getAttractors())
 			.containsExactlyInAnyOrder("0111000000", "0111000010", "0111000101", "0111000111");
@@ -161,40 +161,40 @@ class AttractorsTest {
 		ArrayList<String> nodes = new ArrayList<>(Arrays.asList(attractors.getAttractorsWithNodes()[0]));
 		assertEquals(nodes, booleanModel.getNodeNames());
 
-		Attractors attractors1 = new Attractors(booleanModelSelfContained, mockLogger, attractorTool);
+		Attractors attractors1 = new Attractors(booleanModelSelfContained, attractorTool, mockLogger);
 		attractors1.calculateAttractors(tempDir.getAbsolutePath());
 		assertEquals(attractors1.getAttractors(), newArrayList("0111"));
 		assertTrue(attractors1.hasAttractors());
 
 		// model has only the full state trapspace (trivial - it's all dashes)
 		// which is excluded (so in the end you get no attractors)
-		Attractors attractors2 = new Attractors(booleanModelFromExampleFile, mockLogger, attractorTool);
+		Attractors attractors2 = new Attractors(booleanModelFromExampleFile, attractorTool, mockLogger);
 		attractors2.calculateAttractors(tempDir.getAbsolutePath());
 		assertFalse(attractors2.hasAttractors());
 		assertEquals(attractors2.getStableStates().size(), 0);
 
 		// Cell Cycle model
-		Attractors attractors3 = new Attractors(new BooleanModel(mockLogger), mockLogger, attractorTool);
+		Attractors attractors3 = new Attractors(new BooleanModel(mockLogger), attractorTool, mockLogger);
 		attractors3.calculateAttractorsFromBoolNetFile(boolNetFileCellCycle);
 		assertThat(attractors3.getAttractors()).containsExactlyInAnyOrder("0100010100", "10---0----");
 		assertTrue(attractors3.hasAttractors());
 		assertThat(attractors3.getStableStates()).containsOnly("0100010100");
 
 		// Yeast model
-		Attractors attractors4 = new Attractors(new BooleanModel(mockLogger), mockLogger, attractorTool);
+		Attractors attractors4 = new Attractors(new BooleanModel(mockLogger), attractorTool, mockLogger);
 		attractors4.calculateAttractorsFromBoolNetFile(boolNetFileYeast);
 		assertEquals(attractors4.getAttractors().size(), 12);
 		assertTrue(attractors4.hasAttractors());
 		assertEquals(attractors4.getAttractors(), attractors4.getStableStates());
 
 		// MAPK Network on Cancer Cell Fate Decision
-		Attractors attractors5 = new Attractors(new BooleanModel(mockLogger), mockLogger, attractorTool);
+		Attractors attractors5 = new Attractors(new BooleanModel(mockLogger), attractorTool, mockLogger);
 		attractors5.calculateAttractorsFromBoolNetFile(boolNetMAPK);
 		assertEquals(attractors5.getAttractors().size(), 18);
 		assertEquals(attractors5.getStableStates().size(), 12);
 
 		// Cascade 1.0 (link operator mutated)
-		Attractors attractors6 = new Attractors(new BooleanModel(mockLogger), mockLogger, attractorTool);
+		Attractors attractors6 = new Attractors(new BooleanModel(mockLogger), attractorTool, mockLogger);
 		attractors6.calculateAttractorsFromBoolNetFile(boolNetCASCADE1);
 		assertEquals(attractors6.getAttractors(), newArrayList("00011110111100011100101000010001101011111101000010011010000111010000111000111"));
 		assertTrue(attractors6.hasAttractors());

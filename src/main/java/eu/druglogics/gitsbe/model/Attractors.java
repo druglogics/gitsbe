@@ -31,7 +31,7 @@ public class Attractors {
 	private static String directoryBNET = System.getenv("BNET_HOME");
 	private ArrayList<String> attractors; // stable states or trapspaces (ss with '-' dashes)
 
-	public Attractors(BooleanModel booleanModel, Logger logger, String attractorTool) {
+	public Attractors(BooleanModel booleanModel, String attractorTool, Logger logger) {
 		this.booleanModel = booleanModel;
 		this.logger = logger;
 		this.attractorTool = attractorTool;

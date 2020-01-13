@@ -54,7 +54,7 @@ public class MutatedBooleanModel extends BooleanModel {
 		// Assign modelName
 		this.modelName = modelName;
 
-		this.attractors = new Attractors(this, logger, Config.getInstance().getAttractorTool());
+		this.attractors = new Attractors(this, Config.getInstance().getAttractorTool(), logger);
 	}
 
 	private void crossoverCopy(MutatedBooleanModel parent1, MutatedBooleanModel parent2, Logger logger) {

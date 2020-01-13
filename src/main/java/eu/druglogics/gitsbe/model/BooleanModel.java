@@ -67,7 +67,7 @@ public class BooleanModel {
 			booleanEquations.add(booleanEquation);
 		}
 
-		this.attractors = new Attractors(this, logger, attractorTool);
+		this.attractors = new Attractors(this, attractorTool, logger);
 	}
 
 	/**
@@ -158,7 +158,7 @@ public class BooleanModel {
 						"model from file is not supported");
 		}
 
-		this.attractors = new Attractors(this, logger, attractorTool);
+		this.attractors = new Attractors(this, attractorTool, logger);
 	}
 
 	/**
@@ -180,7 +180,7 @@ public class BooleanModel {
 		this.nodeNameToVariableMap = new LinkedHashMap<>();
 		this.nodeNameToVariableMap.putAll(booleanModel.nodeNameToVariableMap);
 
-		this.attractors = new Attractors(this, logger, attractorTool);
+		this.attractors = new Attractors(this, attractorTool, logger);
 
 		// Copy modelName
 		this.modelName = booleanModel.getModelName();
