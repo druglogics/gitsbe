@@ -459,7 +459,7 @@ public class BooleanModel {
 
 	/**
 	 * Use this function after you have calculated the
-	 * {@link #calculateAttractors(String) attractors} in order to find the normalized
+	 * {@link #calculateAttractors(String) attractors} in order to find the <b>normalized</b>
 	 * globaloutput of the model, based on the weights of the nodes defined in the
 	 * {@link ModelOutputs} Class.
 	 *
