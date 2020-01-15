@@ -276,7 +276,7 @@ public class GeneralModel {
 		return this.modelName;
 	}
 
-	void setModelName(String modelName) {
+	public void setModelName(String modelName) {
 		this.modelName = modelName;
 	}
 
