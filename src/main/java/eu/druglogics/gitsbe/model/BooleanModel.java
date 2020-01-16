@@ -1,6 +1,5 @@
 package eu.druglogics.gitsbe.model;
 
-import eu.druglogics.gitsbe.input.Config;
 import eu.druglogics.gitsbe.input.ModelOutputs;
 import eu.druglogics.gitsbe.input.OutputWeight;
 import eu.druglogics.gitsbe.util.Logger;
@@ -162,25 +161,23 @@ public class BooleanModel {
 	}
 
 	/**
-	 * Copy constructor for defining a {@link BooleanModel} from another {@link BooleanModel}
-	 * with the appropriate attractor tool.
+	 * Copy constructor for defining a {@link BooleanModel} from another {@link BooleanModel}!
 	 *
 	 * @param booleanModel
-	 * @param attractorTool
 	 * @param logger
 	 */
-	protected BooleanModel(final BooleanModel booleanModel, String attractorTool, Logger logger) {
+	public BooleanModel(final BooleanModel booleanModel, Logger logger) {
 		this.logger = logger;
 
 		// Copy Boolean equations
 		this.booleanEquations = new ArrayList<>();
-		booleanEquations.addAll(booleanModel.booleanEquations);
+		this.booleanEquations.addAll(booleanModel.booleanEquations);
 
 		// Copy nodeNameToVariableMap
 		this.nodeNameToVariableMap = new LinkedHashMap<>();
 		this.nodeNameToVariableMap.putAll(booleanModel.nodeNameToVariableMap);
 
-		this.attractors = new Attractors(this, attractorTool, logger);
+		this.attractors = new Attractors(this, booleanModel.getAttractorTool(), logger);
 
 		// Copy modelName
 		this.modelName = booleanModel.getModelName();
@@ -308,7 +305,7 @@ public class BooleanModel {
 		}
 	}
 
-	void exportModelToVelizCubaDataFile(String directoryOutput) throws IOException {
+	public void exportModelToVelizCubaDataFile(String directoryOutput) throws IOException {
 		PrintWriter writer = new PrintWriter(
 				new File(directoryOutput, modelName + ".dat").getAbsoluteFile(), "UTF-8"
 		);
@@ -326,7 +323,7 @@ public class BooleanModel {
 	/**
 	 * @return an ArrayList of Strings (the model equations in Booleannet format)
 	 */
-	ArrayList<String> getModelBooleanNet() {
+	public ArrayList<String> getModelBooleanNet() {
 		ArrayList<String> equations = new ArrayList<>();
 
 		for (BooleanEquation booleanEquation : booleanEquations) {
@@ -339,7 +336,7 @@ public class BooleanModel {
 	/**
 	 * @return an ArrayList of Strings (the model equations in Veliz-Cuba's format)
 	 */
-	ArrayList<String> getModelVelizCuba() {
+	public ArrayList<String> getModelVelizCuba() {
 
 		ArrayList<String> equations = this.getModelBooleanNet();
 		ArrayList<String> modifiedEquations = new ArrayList<>();
@@ -365,7 +362,7 @@ public class BooleanModel {
 	/**
 	 * @return an ArrayList of Strings (the model equations in BoolNet format)
 	 */
-	ArrayList<String> getModelBoolNet() {
+	public ArrayList<String> getModelBoolNet() {
 		ArrayList<String> equations = this.getModelBooleanNet();
 		ArrayList<String> modifiedEquations = new ArrayList<>();
 
@@ -434,11 +431,11 @@ public class BooleanModel {
 	}
 
 	/**
-	 * Wrapper-function. See: {@link Attractors#getStableStates()}
+	 * Wrapper-function. See: {@link Attractors#getAttractorTool()}
 	 * @return
 	 */
-	public ArrayList<String> getStableStates() {
-		return attractors.getStableStates();
+	public String getAttractorTool() {
+		return attractors.getAttractorTool();
 	}
 
 	/**
@@ -493,7 +490,7 @@ public class BooleanModel {
 		return modelName;
 	}
 
-	ArrayList<BooleanEquation> getBooleanEquations() {
+	public ArrayList<BooleanEquation> getBooleanEquations() {
 		return booleanEquations;
 	}
 

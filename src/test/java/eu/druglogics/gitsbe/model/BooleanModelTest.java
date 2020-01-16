@@ -1,16 +1,11 @@
 package eu.druglogics.gitsbe.model;
 
-import eu.druglogics.gitsbe.input.Config;
 import eu.druglogics.gitsbe.input.ModelOutputs;
 import eu.druglogics.gitsbe.util.Logger;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.platform.commons.util.ClassLoaderUtils;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -26,23 +21,6 @@ class BooleanModelTest {
     private BooleanModel booleanModel;
     private BooleanModel booleanModelSelfContained;
     private BooleanModel booleanModel3; // 3 output nodes
-
-    @BeforeAll
-    static void init_config() throws Exception {
-        Logger mockLogger = mock(Logger.class);
-
-        ClassLoader classLoader = ClassLoaderUtils.getDefaultClassLoader();
-        String filename = new File(classLoader.getResource("test_config").getFile()).getPath();
-
-        Config.init(filename, mockLogger);
-    }
-
-    @AfterAll
-    static void reset_config() throws IllegalAccessException, NoSuchFieldException {
-        Field instance = Config.class.getDeclaredField("config");
-        instance.setAccessible(true);
-        instance.set(null, null);
-    }
 
     @BeforeEach
     void init() {
@@ -93,10 +71,10 @@ class BooleanModelTest {
         GeneralModel generalModel3 = new GeneralModel(testInteractions3, mockLogger);
         generalModel3.buildMultipleInteractions();
 
-        this.booleanModel = new BooleanModel(generalModel, Config.getInstance().getAttractorTool(), mockLogger);
+        this.booleanModel = new BooleanModel(generalModel, "biolqm_stable_states", mockLogger);
         this.booleanModelSelfContained = new BooleanModel(generalModelSelfContained,
-            Config.getInstance().getAttractorTool(), mockLogger);
-        this.booleanModel3 = new BooleanModel(generalModel3, Config.getInstance().getAttractorTool(), mockLogger);
+            "biolqm_stable_states", mockLogger);
+        this.booleanModel3 = new BooleanModel(generalModel3, "biolqm_stable_states", mockLogger);
     }
 
     @Test
@@ -106,19 +84,19 @@ class BooleanModelTest {
         ClassLoader classLoader = getClass().getClassLoader();
         String filename = new File(classLoader.getResource("example.gitsbe").getFile()).getPath();
 
-        BooleanModel booleanModel =
-            new BooleanModel(filename, Config.getInstance().getAttractorTool(), mockLogger);
+        BooleanModel booleanModel = new BooleanModel(filename, "biolqm_stable_states", mockLogger);
 
-        assertEquals("example", booleanModel.getModelName());
+        assertEquals(booleanModel.getModelName(), "example");
+        assertEquals(booleanModel.getAttractorTool(), "biolqm_stable_states");
         assertThat(booleanModel.getBooleanEquations())
-                .hasSize(6)
-                .extracting("target", "activatingRegulators", "inhibitoryRegulators", "link")
-                .contains(tuple("A", newArrayList("B", "C"), newArrayList("D"), "and"))
-                .contains(tuple("B", newArrayList(), newArrayList("A"), ""))
-                .contains(tuple("C", newArrayList("B"), newArrayList(), ""))
-                .contains(tuple("D", newArrayList(), newArrayList("D"), ""))
-                .contains(tuple("E", newArrayList("D"), newArrayList("A", "B", "C"), "and"))
-                .contains(tuple("F", newArrayList("C"), newArrayList("A"), "or"));
+            .hasSize(6)
+            .extracting("target", "activatingRegulators", "inhibitoryRegulators", "link")
+            .contains(tuple("A", newArrayList("B", "C"), newArrayList("D"), "and"))
+            .contains(tuple("B", newArrayList(), newArrayList("A"), ""))
+            .contains(tuple("C", newArrayList("B"), newArrayList(), ""))
+            .contains(tuple("D", newArrayList(), newArrayList("D"), ""))
+            .contains(tuple("E", newArrayList("D"), newArrayList("A", "B", "C"), "and"))
+            .contains(tuple("F", newArrayList("C"), newArrayList("A"), "or"));
 
         LinkedHashMap<String, String> map = booleanModel.getNodeNameToVariableMap();
 
@@ -137,19 +115,19 @@ class BooleanModelTest {
         ClassLoader classLoader = getClass().getClassLoader();
         String filename = new File(classLoader.getResource("example.booleannet").getFile()).getPath();
 
-        BooleanModel booleanModel =
-            new BooleanModel(filename, Config.getInstance().getAttractorTool(), mockLogger);
+        BooleanModel booleanModel = new BooleanModel(filename, "biolqm_stable_states", mockLogger);
 
-        assertEquals("example", booleanModel.getModelName());
+        assertEquals(booleanModel.getModelName(), "example");
+        assertEquals(booleanModel.getAttractorTool(), "biolqm_stable_states");
         assertThat(booleanModel.getBooleanEquations())
-                .hasSize(6)
-                .extracting("target", "activatingRegulators", "inhibitoryRegulators", "link")
-                .contains(tuple("A", newArrayList("B", "C"), newArrayList("D"), "and"))
-                .contains(tuple("B", newArrayList(), newArrayList("A"), ""))
-                .contains(tuple("C", newArrayList("B"), newArrayList(), ""))
-                .contains(tuple("D", newArrayList(), newArrayList("D"), ""))
-                .contains(tuple("E", newArrayList("D"), newArrayList("A", "B", "C"), "and"))
-                .contains(tuple("F", newArrayList("C"), newArrayList("A"), "or"));
+            .hasSize(6)
+            .extracting("target", "activatingRegulators", "inhibitoryRegulators", "link")
+            .contains(tuple("A", newArrayList("B", "C"), newArrayList("D"), "and"))
+            .contains(tuple("B", newArrayList(), newArrayList("A"), ""))
+            .contains(tuple("C", newArrayList("B"), newArrayList(), ""))
+            .contains(tuple("D", newArrayList(), newArrayList("D"), ""))
+            .contains(tuple("E", newArrayList("D"), newArrayList("A", "B", "C"), "and"))
+            .contains(tuple("F", newArrayList("C"), newArrayList("A"), "or"));
 
         LinkedHashMap<String, String> map = booleanModel.getNodeNameToVariableMap();
 
@@ -168,19 +146,20 @@ class BooleanModelTest {
         ClassLoader classLoader = getClass().getClassLoader();
         String filename = new File(classLoader.getResource("example.bnet").getFile()).getPath();
 
-        BooleanModel booleanModel =
-            new BooleanModel(filename, Config.getInstance().getAttractorTool(), mockLogger);
+        BooleanModel booleanModel = new BooleanModel(filename, "biolqm_stable_states", mockLogger);
 
-        assertEquals("example", booleanModel.getModelName());
+        assertEquals(booleanModel.getModelName(), "example");
+        assertEquals(booleanModel.getAttractorTool(), "biolqm_stable_states");
+
         assertThat(booleanModel.getBooleanEquations())
-                .hasSize(6)
-                .extracting("target", "activatingRegulators", "inhibitoryRegulators", "link")
-                .contains(tuple("A", newArrayList("B", "C"), newArrayList("D"), "and"))
-                .contains(tuple("B", newArrayList(), newArrayList("A"), ""))
-                .contains(tuple("C", newArrayList("B"), newArrayList(), ""))
-                .contains(tuple("D", newArrayList(), newArrayList("D"), ""))
-                .contains(tuple("E", newArrayList("D"), newArrayList("A", "B", "C"), "and"))
-                .contains(tuple("F", newArrayList("C"), newArrayList("A"), "or"));
+            .hasSize(6)
+            .extracting("target", "activatingRegulators", "inhibitoryRegulators", "link")
+            .contains(tuple("A", newArrayList("B", "C"), newArrayList("D"), "and"))
+            .contains(tuple("B", newArrayList(), newArrayList("A"), ""))
+            .contains(tuple("C", newArrayList("B"), newArrayList(), ""))
+            .contains(tuple("D", newArrayList(), newArrayList("D"), ""))
+            .contains(tuple("E", newArrayList("D"), newArrayList("A", "B", "C"), "and"))
+            .contains(tuple("F", newArrayList("C"), newArrayList("A"), "or"));
 
         LinkedHashMap<String, String> map = booleanModel.getNodeNameToVariableMap();
 
@@ -208,28 +187,28 @@ class BooleanModelTest {
     @Test
     void test_get_node_names() {
         assertThat(booleanModel.getNodeNames())
-                .hasSize(10)
-                .contains("B", "A", "D", "C", "W", "F", "K", "E", "I", "J");
+            .hasSize(10)
+            .contains("B", "A", "D", "C", "W", "F", "K", "E", "I", "J");
         assertThat(booleanModelSelfContained.getNodeNames())
-                .hasSize(4)
-                .contains("B", "A", "D", "C");
+            .hasSize(4)
+            .contains("B", "A", "D", "C");
     }
 
     @Test
     void test_get_boolean_equations() {
         assertThat(booleanModel.getBooleanEquations())
-                .hasSize(10)
-                .extracting("target", "activatingRegulators", "inhibitoryRegulators", "link")
-                .contains(tuple("B", newArrayList("A"), newArrayList("C"), "and"))
-                .contains(tuple("A", newArrayList("C"), newArrayList(), ""))
-                .contains(tuple("D", newArrayList(), newArrayList("B"), ""))
-                .contains(tuple("C", newArrayList("D", "E"), newArrayList(), ""))
-                .contains(tuple("W", newArrayList("I"), newArrayList("D"), "and"))
-                .contains(tuple("F", newArrayList("W"), newArrayList(), ""))
-                .contains(tuple("K", newArrayList("W"), newArrayList(), ""))
-                .contains(tuple("E", newArrayList("J"), newArrayList(), ""))
-                .contains(tuple("I", newArrayList("I"), newArrayList(), ""))
-                .contains(tuple("J", newArrayList("J"), newArrayList(), ""));
+            .hasSize(10)
+            .extracting("target", "activatingRegulators", "inhibitoryRegulators", "link")
+            .contains(tuple("B", newArrayList("A"), newArrayList("C"), "and"))
+            .contains(tuple("A", newArrayList("C"), newArrayList(), ""))
+            .contains(tuple("D", newArrayList(), newArrayList("B"), ""))
+            .contains(tuple("C", newArrayList("D", "E"), newArrayList(), ""))
+            .contains(tuple("W", newArrayList("I"), newArrayList("D"), "and"))
+            .contains(tuple("F", newArrayList("W"), newArrayList(), ""))
+            .contains(tuple("K", newArrayList("W"), newArrayList(), ""))
+            .contains(tuple("E", newArrayList("J"), newArrayList(), ""))
+            .contains(tuple("I", newArrayList("I"), newArrayList(), ""))
+            .contains(tuple("J", newArrayList("J"), newArrayList(), ""));
     }
 
     @Test
@@ -277,94 +256,94 @@ class BooleanModelTest {
     @Test
     void test_get_model_booleannet() throws Exception {
         assertThat(booleanModel.getModelBooleanNet())
-                .hasSize(10)
-                .contains("B *= ( A ) and not ( C )",
-                        "A *= ( C )",
-                        "D *= not ( B )",
-                        "C *= ( ( D ) or E )",
-                        "W *= ( I ) and not ( D )",
-                        "F *= ( W )",
-                        "K *= ( W )",
-                        "E *= ( J )",
-                        "I *= ( I )",
-                        "J *= ( J )");
+            .hasSize(10)
+            .contains("B *= ( A ) and not ( C )",
+                "A *= ( C )",
+                "D *= not ( B )",
+                "C *= ( ( D ) or E )",
+                "W *= ( I ) and not ( D )",
+                "F *= ( W )",
+                "K *= ( W )",
+                "E *= ( J )",
+                "I *= ( I )",
+                "J *= ( J )");
 
         booleanModel.modifyEquation("A *= true");
         booleanModel.modifyEquation("J *= false");
         assertThat(booleanModel.getModelBooleanNet())
-                .hasSize(10)
-                .contains("B *= ( A ) and not ( C )",
-                        "A *= ( true )",
-                        "D *= not ( B )",
-                        "C *= ( ( D ) or E )",
-                        "W *= ( I ) and not ( D )",
-                        "F *= ( W )",
-                        "K *= ( W )",
-                        "E *= ( J )",
-                        "I *= ( I )",
-                        "J *= ( false )");
+            .hasSize(10)
+            .contains("B *= ( A ) and not ( C )",
+                "A *= ( true )",
+                "D *= not ( B )",
+                "C *= ( ( D ) or E )",
+                "W *= ( I ) and not ( D )",
+                "F *= ( W )",
+                "K *= ( W )",
+                "E *= ( J )",
+                "I *= ( I )",
+                "J *= ( false )");
     }
 
     @Test
     void test_get_model_veliz_cuba() throws Exception {
         assertThat(booleanModel.getModelVelizCuba())
-                .hasSize(10)
-                .contains("( x2 ) & ! ( x4 )",
-                        "( x4 )",
-                        "! ( x1 )",
-                        "( ( x3 ) | x8 )",
-                        "( x9 ) & ! ( x3 )",
-                        "( x5 )",
-                        "( x5 )",
-                        "( x10 )",
-                        "( x9 )",
-                        "( x10 )");
+            .hasSize(10)
+            .contains("( x2 ) & ! ( x4 )",
+                "( x4 )",
+                "! ( x1 )",
+                "( ( x3 ) | x8 )",
+                "( x9 ) & ! ( x3 )",
+                "( x5 )",
+                "( x5 )",
+                "( x10 )",
+                "( x9 )",
+                "( x10 )");
 
         booleanModel.modifyEquation("A *= true");
         booleanModel.modifyEquation("J *= false");
         assertThat(booleanModel.getModelVelizCuba())
-                .hasSize(10)
-                .contains("( x2 ) & ! ( x4 )",
-                        "( 1 )",
-                        "! ( x1 )",
-                        "( ( x3 ) | x8 )",
-                        "( x9 ) & ! ( x3 )",
-                        "( x5 )",
-                        "( x5 )",
-                        "( x10 )",
-                        "( x9 )",
-                        "( 0 )");
+            .hasSize(10)
+            .contains("( x2 ) & ! ( x4 )",
+                "( 1 )",
+                "! ( x1 )",
+                "( ( x3 ) | x8 )",
+                "( x9 ) & ! ( x3 )",
+                "( x5 )",
+                "( x5 )",
+                "( x10 )",
+                "( x9 )",
+                "( 0 )");
     }
 
     @Test
     void test_get_model_boolnet() throws Exception {
         assertThat(booleanModel.getModelBoolNet())
-                .hasSize(10)
-                .contains("B, ( A ) & ! ( C )",
-                        "A, ( C )",
-                        "D, ! ( B )",
-                        "C, ( ( D ) | E )",
-                        "W, ( I ) & ! ( D )",
-                        "F, ( W )",
-                        "K, ( W )",
-                        "E, ( J )",
-                        "I, ( I )",
-                        "J, ( J )");
+            .hasSize(10)
+            .contains("B, ( A ) & ! ( C )",
+                "A, ( C )",
+                "D, ! ( B )",
+                "C, ( ( D ) | E )",
+                "W, ( I ) & ! ( D )",
+                "F, ( W )",
+                "K, ( W )",
+                "E, ( J )",
+                "I, ( I )",
+                "J, ( J )");
 
         booleanModel.modifyEquation("A *= true");
         booleanModel.modifyEquation("J *= false");
         assertThat(booleanModel.getModelBoolNet())
-                .hasSize(10)
-                .contains("B, ( A ) & ! ( C )",
-                        "A, ( 1 )",
-                        "D, ! ( B )",
-                        "C, ( ( D ) | E )",
-                        "W, ( I ) & ! ( D )",
-                        "F, ( W )",
-                        "K, ( W )",
-                        "E, ( J )",
-                        "I, ( I )",
-                        "J, ( 0 )");
+            .hasSize(10)
+            .contains("B, ( A ) & ! ( C )",
+                "A, ( 1 )",
+                "D, ! ( B )",
+                "C, ( ( D ) | E )",
+                "W, ( I ) & ! ( D )",
+                "F, ( W )",
+                "K, ( W )",
+                "E, ( J )",
+                "I, ( I )",
+                "J, ( 0 )");
     }
 
     @Test
