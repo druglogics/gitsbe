@@ -102,6 +102,7 @@ class AttractorsTest {
 		String attractorTool = "biolqm_stable_states";
 
 		Attractors attractors = new Attractors(booleanModel, attractorTool, mockLogger);
+		assertEquals(attractors.getAttractorTool(), "biolqm_stable_states");
 		attractors.calculateAttractors(tempDir.getAbsolutePath());
 		assertEquals(attractors.getAttractors(),
 			newArrayList("0111000000", "0111000010", "0111000101", "0111000111"));
@@ -150,6 +151,8 @@ class AttractorsTest {
 		String attractorTool = "biolqm_trapspaces";
 
 		Attractors attractors = new Attractors(booleanModel, attractorTool, mockLogger);
+		assertEquals(attractors.getAttractorTool(), "biolqm_trapspaces");
+
 		attractors.calculateAttractors(tempDir.getAbsolutePath());
 		assertThat(attractors.getAttractors())
 			.containsExactlyInAnyOrder("0111000000", "0111000010", "0111000101", "0111000111");

@@ -41,7 +41,10 @@ public class Attractors {
 	/**
 	 * Use this function to calculate the attractors of the {@link Attractors#booleanModel} given in the
 	 * constructor of the {@link Attractors} Class. The choice of the library/tool that will
-	 * be used is based on the value of {@link Attractors#attractorTool}.
+	 * be used is based on the value of {@link Attractors#attractorTool}. </br>
+	 * Please use one of these values for the {@link Attractors#attractorTool}:
+	 * <i>bnet_reduction</i>, <i>bnet_reduction_reduced</i>, <i>biolqm_stable_states</i>,
+	 * <i>biolqm_trapspaces</i>.
 	 *
 	 * @param directoryOutput the name of the directory which will be used to write result
 	 *                        files, the model in .bnet or Veliz-Cuba format, etc.
@@ -120,8 +123,8 @@ public class Attractors {
 				logger.outputStringMessage(1, "BioLQM found no trapspaces.");
 			}
 		} else {
-			throw new ConfigurationException("Attractor tool is neither `biolqm_stable_states` nor" +
-				"`biolqm_trapspaces`");
+			throw new ConfigurationException("Attractor tool is neither `biolqm_stable_states` nor "
+				+ "`biolqm_trapspaces`");
 		}
 	}
 
@@ -284,5 +287,9 @@ public class Attractors {
 	 */
 	void setAttractors(ArrayList<String> attractors) {
 		this.attractors = attractors;
+	}
+
+	public String getAttractorTool() {
+		return attractorTool;
 	}
 }
