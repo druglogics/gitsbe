@@ -46,6 +46,10 @@ public class ModelOutputs {
 		modeloutputs = new ModelOutputs(filename, logger);
 	}
 
+	public synchronized static void reset() {
+		modeloutputs = null;
+	}
+
 	public int size() {
 		return modelOutputs.size();
 	}

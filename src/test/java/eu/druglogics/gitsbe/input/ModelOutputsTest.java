@@ -88,6 +88,22 @@ class ModelOutputsTest {
     }
 
     @Test
+    void test_reset() throws Exception {
+        Logger mockLogger = mock(Logger.class);
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        String filename = new File(classLoader.getResource("test_modeloutputs").getFile()).getPath();
+
+        // initializes ModelOutputs class
+        ModelOutputs.init(filename, mockLogger);
+
+        // After resetting, there is no instance and I can re-initialize!
+        ModelOutputs.reset();
+        assertThrows(AssertionError.class, ModelOutputs::getInstance);
+        ModelOutputs.init(filename, mockLogger);
+    }
+
+    @Test
     void test_model_output_data_checks() throws Exception {
         Logger mockLogger = mock(Logger.class);
 
