@@ -2,8 +2,8 @@
 
 This module defines models compliant with observed behavior (steady state or
 perturbation data) using an automated, model parameterization genetic algorithm. 
-For the steady state calculation, the [BNReduction tool](https://github.com/alanavc/BNReduction) 
-is used.
+For the attractor calculation, either the [BNReduction tool](https://github.com/alanavc/BNReduction) 
+or the [BioLQM](https://github.com/colomoto/bioLQM) Java library is used.
 
 ## Input
 
@@ -86,7 +86,10 @@ each case.
 
 ## Install
 
-Install the `BNReduction` script and its dependencies [here](https://bitbucket.org/asmundf/druglogics_dep/src/develop/).
+Install the `BNReduction` script and its dependencies [here](https://bitbucket.org/asmundf/druglogics_dep/src/develop/) 
+if you wish to use that tool for the attractor (stable state) calculation. 
+Otherwise, `BioLQM` offers either stable state calculation or (minimal) trapspaces (the attractor tool option
+has to be configured in the configuration file appropriately). 
 
 ```
 # tested with maven 3.6.0
