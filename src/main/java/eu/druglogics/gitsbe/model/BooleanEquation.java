@@ -181,7 +181,7 @@ public class BooleanEquation {
 	 *
 	 * @return
 	 */
-	String getBooleanEquation() {
+	public String getBooleanEquation() {
 		StringBuilder equation = new StringBuilder(target + " *= ");
 
 		// Add activating regulators
@@ -288,7 +288,7 @@ public class BooleanEquation {
 		}
 	}
 
-	void mutateLinkOperator() {
+	public void mutateLinkOperator() {
 		if (link.trim().equals("and")) {
 			link = "or";
 		} else {
@@ -336,7 +336,7 @@ public class BooleanEquation {
 		return lines;
 	}
 
-	ArrayList<SingleInteraction> getSingleInteractions() {
+	public ArrayList<SingleInteraction> getSingleInteractions() {
 		ArrayList<SingleInteraction> singleInteractions = new ArrayList<>();
 
 		for (String activatingRegulator : activatingRegulators) {
@@ -350,49 +350,49 @@ public class BooleanEquation {
 		return singleInteractions;
 	}
 
-	int getNumWhitelistedRegulators() {
+	public int getNumWhitelistedRegulators() {
 		return (getNumWhitelistedActivatingRegulators()
 				+ getNumWhitelistedInhibitoryRegulators());
 	}
 
-	int getNumBlacklistedRegulators() {
+	public int getNumBlacklistedRegulators() {
 		return (getNumBlacklistedActivatingRegulators()
 				+ getNumBlacklistedInhibitoryRegulators());
 	}
 
-	int getNumWhitelistedActivatingRegulators() {
+	public int getNumWhitelistedActivatingRegulators() {
 		return Collections.frequency(whitelistActivatingRegulators, true);
 	}
 
-	int getNumWhitelistedInhibitoryRegulators() {
+	public int getNumWhitelistedInhibitoryRegulators() {
 		return Collections.frequency(whitelistInhibitoryRegulators, true);
 	}
 
-	private int getNumBlacklistedActivatingRegulators() {
+	public int getNumBlacklistedActivatingRegulators() {
 		return Collections.frequency(whitelistActivatingRegulators, false);
 	}
 
-	private int getNumBlacklistedInhibitoryRegulators() {
+	public int getNumBlacklistedInhibitoryRegulators() {
 		return Collections.frequency(whitelistInhibitoryRegulators, false);
 	}
 
-	int getNumRegulators() {
+	public int getNumRegulators() {
 		return (activatingRegulators.size() + inhibitoryRegulators.size());
 	}
 
-	ArrayList<String> getActivatingRegulators() {
+	public ArrayList<String> getActivatingRegulators() {
 		return activatingRegulators;
 	}
 
-	ArrayList<String> getInhibitoryRegulators() {
+	public ArrayList<String> getInhibitoryRegulators() {
 		return inhibitoryRegulators;
 	}
 
-	String getTarget() {
+	public String getTarget() {
 		return target;
 	}
 
-	String getLink() {
+	public String getLink() {
 		return link;
 	}
 }
