@@ -176,9 +176,8 @@ public class BooleanEquation {
 	}
 
 	/**
-	 * Returns the string of the equation represented in
-	 * the Booleannet format: A *=  (  (  B )  or C ) and not  (  ( E )  or F )
-	 *
+	 * Returns the string of the equation represented in the Booleannet format: <br>
+	 * <i>A *=  (  (  B )  or C or ...) and not  (  ( E )  or F or ...)</i>
 	 * @return
 	 */
 	public String getBooleanEquation() {
