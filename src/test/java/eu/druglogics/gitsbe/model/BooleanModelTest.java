@@ -430,4 +430,31 @@ class BooleanModelTest {
         Double gl12 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
         assertEquals(gl12, 0.05556);
     }
+
+    @Test
+    void test_change_model_name() {
+        assertNull(booleanModel.getModelName());
+        booleanModel.setModelName("random_name");
+
+        assertEquals(booleanModel.getModelName(), "random_name");
+    }
+
+    @Test
+    void test_change_link_operator() throws Exception {
+        assertEquals(booleanModel.getBooleanEquations().get(0).getBooleanEquation(),
+            " B *=  (  A ) and not  ( C ) ");
+
+        booleanModel.changeLinkOperator(0);
+        assertEquals(booleanModel.getBooleanEquations().get(0).getBooleanEquation(),
+            " B *=  (  A ) or not  ( C ) ");
+
+        booleanModel.changeLinkOperator(0);
+        assertEquals(booleanModel.getBooleanEquations().get(0).getBooleanEquation(),
+            " B *=  (  A ) and not  ( C ) ");
+
+        assertThrows(IndexOutOfBoundsException.class, () -> booleanModel.changeLinkOperator(100));
+
+        Exception exception = assertThrows(Exception.class, () -> booleanModel.changeLinkOperator(1));
+        assertEquals(exception.getMessage(), "Link operator of equation:  A *=  (  C ) is neither `and` or `or`");
+    }
 }

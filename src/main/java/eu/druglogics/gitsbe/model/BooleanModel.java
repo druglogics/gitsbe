@@ -403,6 +403,30 @@ public class BooleanModel {
 	}
 
 	/**
+	 * Use this function to change a specific boolean equation's link operator.
+	 * The equation has to have a <b>and</b> or <b>or</b> link operator
+	 *
+	 * @param index Integer indicating which equation to change
+	 * @throws Exception either when the index given is outside the acceptable range or
+	 * the link operator is neither <i>and</i> or <i>or</i>.
+	 */
+	public void changeLinkOperator(int index) throws Exception {
+		BooleanEquation booleanEquation = getBooleanEquations().get(index);
+
+		logger.outputStringMessage(3, "Changing link operator of equation: "
+			+ booleanEquation.getBooleanEquation());
+
+		String link = booleanEquation.getLink();
+		if (link.equals("and") || link.equals("or")) {
+			booleanEquation.mutateLinkOperator();
+			booleanEquations.set(index, booleanEquation);
+		} else {
+			throw new Exception("Link operator of equation: " + booleanEquation.getBooleanEquation()
+				+ "is neither `and` or `or`");
+		}
+	}
+
+	/**
 	 * Wrapper-function for the calculation of the attractors. See:
 	 * {@link Attractors#calculateAttractors(String)}
 	 *
@@ -477,6 +501,10 @@ public class BooleanModel {
 		globaloutput /= getAttractors().size();
 
 		return ((globaloutput - modelOutputs.getMinOutput()) / (modelOutputs.getMaxOutput() - modelOutputs.getMinOutput()));
+	}
+
+	public void setModelName(String modelName) {
+		this.modelName = modelName;
 	}
 
 	public String getModelName() {
