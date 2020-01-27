@@ -131,7 +131,7 @@ public class Attractors {
 	/**
 	 * Use this function to by-pass the {@link Attractors#booleanModel}
 	 * in order to load a generic boolean model from a <i>.bnet</i> file and compute its attractors
-	 * using the {@link org.colomoto.biolqm BioLQM} library.
+	 * using the <b>BioLQM</b> library.
 	 *
 	 * @param boolNetFile The absolute file path of the .bnet file
 	 */
@@ -228,7 +228,6 @@ public class Attractors {
 	/**
 	 * Does the model have at least one attractor? (stable state or trapspace)
 	 *
-	 * @return
 	 */
 	boolean hasAttractors() {
 		return attractors.size() > 0;
@@ -237,7 +236,6 @@ public class Attractors {
 	/**
 	 * Does the model have at least one stable state? (no dashes in the state vector)
 	 *
-	 * @return
 	 */
 	boolean hasStableStates() {
 		return getStableStates().size() > 0;
@@ -245,7 +243,7 @@ public class Attractors {
 
 	/**
 	 * Get all the attractors (stable states or trapspaces)
-	 * @return
+	 *
 	 */
 	ArrayList<String> getAttractors() {
 		return attractors;
@@ -253,7 +251,7 @@ public class Attractors {
 
 	/**
 	 * Get only the attractors that do not have any dashes (<i>-</i>): the stable states
-	 * @return
+	 *
 	 */
 	ArrayList<String> getStableStates() {
 		return attractors.stream()

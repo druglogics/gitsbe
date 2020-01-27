@@ -28,7 +28,6 @@ public class RandomManager {
 	 * 
 	 * @param min
 	 * @param max
-	 * @return
 	 */
     public static int randInt(int min, int max) {
         Random r = RANDOMS.get();

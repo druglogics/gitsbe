@@ -45,7 +45,6 @@ public class Util {
 	 * 
 	 * @param filename
 	 * @param skipEmptyLinesAndComments
-	 * @return
 	 * @throws IOException
 	 */
 	public static ArrayList<String> readLinesFromFile(String filename, boolean skipEmptyLinesAndComments)
@@ -80,7 +79,6 @@ public class Util {
 	 * 
 	 * @param directory
 	 * @param logger
-	 * @return
 	 */
 	public static void createDirectory(String directory, Logger logger) throws IOException {
 		File directoryFile = new File(directory);
@@ -333,7 +331,6 @@ public class Util {
 	 * each byte's String representation
 	 *
 	 * @param binaryByteArray
-	 * @return
 	 */
 	public static String byteArrayToString(byte[] binaryByteArray) {
 		StringBuilder str = new StringBuilder();
@@ -348,7 +345,6 @@ public class Util {
 	 * Returns true if the given string is all dashes: '-'
 	 *
 	 * @param str
-	 * @return
 	 */
 	public static boolean isStringAllDashes(String str) {
 		if (str.isEmpty()) return false;
@@ -367,7 +363,6 @@ public class Util {
 	 * Converts an {@link ArrayList} of {@link Float} values to a <i>float</i> array
 	 *
 	 * @param floats
-	 * @return
 	 */
 	public static float[] convertFloats(ArrayList<Float> floats) {
 		float[] result = new float[floats.size()];

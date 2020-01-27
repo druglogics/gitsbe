@@ -377,7 +377,6 @@ public class BooleanModel {
 	 * Get index of equation ascribed to specified target
 	 * 
 	 * @param target
-	 * @return
 	 */
 	public int getIndexOfEquation(String target) {
 		return new ArrayList<>(nodeNameToVariableMap.keySet()).indexOf(target.trim());
@@ -416,7 +415,6 @@ public class BooleanModel {
 
 	/**
 	 * Wrapper-function. See: {@link Attractors#hasAttractors()}
-	 * @return
 	 */
 	public boolean hasAttractors() {
 		return attractors.hasAttractors();
@@ -424,7 +422,6 @@ public class BooleanModel {
 
 	/**
 	 * Wrapper-function. See: {@link Attractors#hasStableStates()}
-	 * @return
 	 */
 	public boolean hasStableStates() {
 		return attractors.hasStableStates();
@@ -432,7 +429,6 @@ public class BooleanModel {
 
 	/**
 	 * Wrapper-function. See: {@link Attractors#getAttractorTool()}
-	 * @return
 	 */
 	public String getAttractorTool() {
 		return attractors.getAttractorTool();
@@ -440,7 +436,6 @@ public class BooleanModel {
 
 	/**
 	 * Wrapper-function. See: {@link Attractors#getAttractors()}
-	 * @return
 	 */
 	public ArrayList<String> getAttractors() {
 		return attractors.getAttractors();
@@ -448,7 +443,6 @@ public class BooleanModel {
 
 	/**
 	 * Wrapper-function. See: {@link Attractors#getAttractorsWithNodes()}
-	 * @return
 	 */
 	public String[][] getAttractorsWithNodes() {
 		return attractors.getAttractorsWithNodes();
@@ -460,7 +454,6 @@ public class BooleanModel {
 	 * globaloutput of the model, based on the weights of the nodes defined in the
 	 * {@link ModelOutputs} Class.
 	 *
-	 * @return
 	 */
 	public float calculateGlobalOutput() {
 		ModelOutputs modelOutputs = ModelOutputs.getInstance();
