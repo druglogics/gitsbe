@@ -96,9 +96,13 @@ public class MutatedBooleanModel extends BooleanModel {
 					if (currentParent == 1) {
 						this.booleanEquations.add(new BooleanEquation(parent1.booleanEquations.get(i)));
 						logger.debug("i: " + i + " -> Added equation from parent 1");
+						logger.debug("Parent Equation: `" + parent1.booleanEquations.get(i).getBooleanEquation() + "`");
+						logger.debug("Child  Equation: `" + booleanEquations.get(i).getBooleanEquation() + "`");
 					} else {
 						this.booleanEquations.add(new BooleanEquation(parent2.booleanEquations.get(i)));
 						logger.debug("i: " + i + " -> Added equation from parent 2");
+						logger.debug("Parent Equation: `" + parent1.booleanEquations.get(i).getBooleanEquation() + "`");
+						logger.debug("Child  Equation: `" + booleanEquations.get(i).getBooleanEquation() + "`");
 					}
 				}
 				currentIndex = i;
