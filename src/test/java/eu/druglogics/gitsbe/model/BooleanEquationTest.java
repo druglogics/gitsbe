@@ -192,4 +192,24 @@ class BooleanEquationTest {
         booleanEquationWithLink.mutateLinkOperator();
         assertEquals("or", booleanEquationWithLink.getLink());
     }
+
+    @Test
+    void test_copy_constructor() {
+        BooleanEquation copyBooleanEquation = new BooleanEquation(booleanEquationWithLink);
+
+        copyBooleanEquation.mutateLinkOperator();
+        copyBooleanEquation.setTarget("MOU");
+        copyBooleanEquation.blacklistActivatingRegulator(0);
+        copyBooleanEquation.blacklistInhibitoryRegulator(0);
+
+        // original equation did not change
+        assertEquals(booleanEquationWithLink.getLink(), "and");
+        assertEquals(booleanEquationWithLink.getTarget(), "A");
+        assertEquals(booleanEquationWithLink.getNumBlacklistedRegulators(), 0);
+
+        // the copy equation changed though!
+        assertEquals(copyBooleanEquation.getLink(), "or");
+        assertEquals(copyBooleanEquation.getTarget(), "MOU");
+        assertEquals(copyBooleanEquation.getNumBlacklistedRegulators(), 2);
+    }
 }

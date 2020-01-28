@@ -28,7 +28,7 @@ public class BooleanEquation {
 	// String link activators and inhibitors ("and not"/"or not")
 	private String link;
 
-	private BooleanEquation() {
+	public BooleanEquation() {
 
 		// Initialize variables
 
@@ -43,7 +43,7 @@ public class BooleanEquation {
 	}
 
 	/**
-	 * Copy constructor
+	 * Copy constructor: builds a {@link BooleanEquation} object from another!
 	 * 
 	 * @param originalEquation
 	 */
@@ -51,21 +51,19 @@ public class BooleanEquation {
 		this();
 
 		this.operatorsActivatingRegulators.addAll(originalEquation.operatorsActivatingRegulators);
+		this.operatorsInhibitoryRegulators.addAll(originalEquation.operatorsInhibitoryRegulators);
 
 		for (int i = 0; i < originalEquation.inhibitoryRegulators.size(); i++) {
 			this.inhibitoryRegulators.add(originalEquation.inhibitoryRegulators.get(i));
-			whitelistInhibitoryRegulators.add(true);
+			this.whitelistInhibitoryRegulators.add(originalEquation.whitelistInhibitoryRegulators.get(i));
 		}
 
 		for (int i = 0; i < originalEquation.activatingRegulators.size(); i++) {
 			this.activatingRegulators.add((originalEquation.activatingRegulators.get(i)));
-			whitelistActivatingRegulators.add(true);
+			this.whitelistActivatingRegulators.add(originalEquation.whitelistActivatingRegulators.get(i));
 		}
 
-		this.operatorsInhibitoryRegulators.addAll(originalEquation.operatorsInhibitoryRegulators);
-
 		this.link = originalEquation.link;
-
 		this.target = originalEquation.target;
 	}
 
@@ -379,6 +377,14 @@ public class BooleanEquation {
 		return (activatingRegulators.size() + inhibitoryRegulators.size());
 	}
 
+	public void blacklistActivatingRegulator(int index) throws IndexOutOfBoundsException {
+		whitelistActivatingRegulators.set(index, false);
+	}
+
+	public void blacklistInhibitoryRegulator(int index) throws IndexOutOfBoundsException {
+		whitelistInhibitoryRegulators.set(index, false);
+	}
+
 	public ArrayList<String> getActivatingRegulators() {
 		return activatingRegulators;
 	}
@@ -389,6 +395,10 @@ public class BooleanEquation {
 
 	public String getTarget() {
 		return target;
+	}
+
+	public void setTarget(String target) {
+		this.target = target;
 	}
 
 	public String getLink() {
