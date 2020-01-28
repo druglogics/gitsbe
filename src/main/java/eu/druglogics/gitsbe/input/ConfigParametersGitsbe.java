@@ -167,6 +167,13 @@ public class ConfigParametersGitsbe extends ConfigParametersGlobal{
                     + "should be between 0 and 1");
     }
 
+    void checkPopulationVsSelection() throws ConfigurationException {
+        if (population < selection)
+            throw new ConfigurationException("Parameter `population` (number of models per "
+                + "generation) should not be less than `selection` (number of models to be "
+                + "selected for next generation)");
+    }
+
     public String[] getParameters() {
         Field[] fields = ConfigParametersGitsbe.class.getDeclaredFields();
 

@@ -198,6 +198,8 @@ public class Config extends ConfigParametersGitsbe {
 					break;
 			}
 		}
+
+		checkPopulationVsSelection();
 	}
 
 	public String[] getConfig() {

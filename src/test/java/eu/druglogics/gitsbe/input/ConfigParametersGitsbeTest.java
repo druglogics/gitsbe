@@ -57,7 +57,8 @@ class ConfigParametersGitsbeTest {
         assertThat(parameters.getFitnessThreshold()).isEqualTo((float) 0);
 
         parameters.fitness_threshold = (float) 1.2;
-        assertThrows(ConfigurationException.class, parameters::checkFitnessThreshold);
+        Exception exception = assertThrows(ConfigurationException.class, parameters::checkFitnessThreshold);
+        assertEquals(exception.getMessage(), "Parameter `fitness_threshold` should be between 0 and 1");
     }
 
     @Test
@@ -68,6 +69,21 @@ class ConfigParametersGitsbeTest {
         assertThat(parameters.getTargetFitness()).isEqualTo((float) 0);
 
         parameters.target_fitness = (float) 1.2;
-        assertThrows(ConfigurationException.class, parameters::checkTargetFitness);
+        Exception exception = assertThrows(ConfigurationException.class, parameters::checkTargetFitness);
+        assertEquals(exception.getMessage(), "Parameter `target_fitness` should be between 0 and 1");
+    }
+
+    @Test
+    void test_check_population_vs_selection() throws ConfigurationException {
+        ConfigParametersGitsbe parameters = new ConfigParametersGitsbe();
+        
+        parameters.population = 2;
+        parameters.selection = 3;
+
+        Exception exception = assertThrows(ConfigurationException.class, parameters::checkPopulationVsSelection);
+        assertEquals(exception.getMessage(), "Parameter `population` (number of models per generation) should not be less than `selection` (number of models to be selected for next generation)");
+
+        parameters.population = 3;
+        parameters.checkPopulationVsSelection();
     }
 }
