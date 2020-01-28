@@ -169,9 +169,12 @@ public class BooleanModel {
 	public BooleanModel(final BooleanModel booleanModel, Logger logger) {
 		this.logger = logger;
 
-		// Copy Boolean equations
+		// (Deep) copy of the Boolean equations objects
 		this.booleanEquations = new ArrayList<>();
-		this.booleanEquations.addAll(booleanModel.booleanEquations);
+		for (BooleanEquation booleanEquation: booleanModel.getBooleanEquations()) {
+			BooleanEquation booleanEquationCopy = new BooleanEquation(booleanEquation);
+			this.booleanEquations.add(booleanEquationCopy);
+		}
 
 		// Copy nodeNameToVariableMap
 		this.nodeNameToVariableMap = new LinkedHashMap<>();

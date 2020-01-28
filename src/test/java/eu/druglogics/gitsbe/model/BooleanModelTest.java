@@ -457,4 +457,37 @@ class BooleanModelTest {
         Exception exception = assertThrows(Exception.class, () -> booleanModel.changeLinkOperator(1));
         assertEquals(exception.getMessage(), "Link operator of equation:  A *=  (  C ) is neither `and` or `or`");
     }
+
+    @Test
+    void test_copy_constructor() throws Exception {
+        Logger mockLogger = mock(Logger.class);
+        BooleanModel copyModel = new BooleanModel(booleanModel, mockLogger);
+
+        copyModel.changeLinkOperator(0); // B *= ( A ) and not ( C ), 0-indexed
+        String equationToSet = "A *= B or not C"; // A *= ( C ), 1-indexed
+        copyModel.modifyEquation(equationToSet);
+        copyModel.getBooleanEquations().get(1).blacklistActivatingRegulator(0);
+
+        // original model's equations have not changed
+        assertEquals(booleanModel.getBooleanEquations().get(0).getLink(), "and");
+        assertEquals(booleanModel.getBooleanEquations().get(1).getBooleanEquation(), " A *=  (  C ) ");
+        assertEquals(booleanModel.getBooleanEquations().get(1).getNumRegulators(), 1);
+        assertEquals(booleanModel.getBooleanEquations().get(1).getLink(), "");
+        assertEquals(booleanModel.getBooleanEquations().get(1).getNumWhitelistedRegulators(), 1);
+        assertEquals(booleanModel.getBooleanEquations().get(1).getNumWhitelistedActivatingRegulators(), 1);
+        assertEquals(booleanModel.getBooleanEquations().get(1).getNumBlacklistedActivatingRegulators(), 0);
+        assertEquals(booleanModel.getBooleanEquations().get(1).getNumWhitelistedInhibitoryRegulators(), 0);
+        assertEquals(booleanModel.getBooleanEquations().get(1).getNumBlacklistedInhibitoryRegulators(), 0);
+
+        // copy model's equations changed though!
+        assertEquals(copyModel.getBooleanEquations().get(0).getLink(), "or");
+        assertEquals(copyModel.getBooleanEquations().get(1).getBooleanEquation(), " A *=  not  ( C ) ");
+        assertEquals(copyModel.getBooleanEquations().get(1).getNumRegulators(), 2);
+        assertEquals(copyModel.getBooleanEquations().get(1).getLink(), "or"); // link it's still there of course!
+        assertEquals(copyModel.getBooleanEquations().get(1).getNumWhitelistedRegulators(), 1);
+        assertEquals(copyModel.getBooleanEquations().get(1).getNumWhitelistedActivatingRegulators(), 0);
+        assertEquals(copyModel.getBooleanEquations().get(1).getNumBlacklistedActivatingRegulators(), 1);
+        assertEquals(copyModel.getBooleanEquations().get(1).getNumWhitelistedInhibitoryRegulators(), 1);
+        assertEquals(copyModel.getBooleanEquations().get(1).getNumBlacklistedInhibitoryRegulators(), 0);
+    }
 }
