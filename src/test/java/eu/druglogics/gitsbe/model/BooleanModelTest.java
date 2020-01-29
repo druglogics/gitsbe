@@ -4,6 +4,7 @@ import eu.druglogics.gitsbe.input.ModelOutputs;
 import eu.druglogics.gitsbe.util.Logger;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -344,6 +345,19 @@ class BooleanModelTest {
                 "E, ( J )",
                 "I, ( I )",
                 "J, ( 0 )");
+    }
+
+    @TempDir
+    File tempDir;
+
+    @Test
+    void test_calculate_and_reset_attractors() throws Exception {
+        booleanModel.calculateAttractors(tempDir.getAbsolutePath());
+        assertEquals(booleanModel.getAttractors(), newArrayList("0111000000", "0111000010", "0111000101", "0111000111"));
+
+        booleanModel.resetAttractors();
+
+        assertEquals(booleanModel.getAttractors(), newArrayList());
     }
 
     @Test

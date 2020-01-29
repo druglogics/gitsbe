@@ -518,6 +518,14 @@ public class BooleanModel {
 		return booleanEquations;
 	}
 
+	/**
+	 * Simple function that reinitializes the attractors of a {@link BooleanModel}
+	 * to an empty {@link ArrayList}.
+	 */
+	public void resetAttractors() {
+		this.attractors.setAttractors(new ArrayList<>());
+	}
+
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
