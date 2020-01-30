@@ -86,7 +86,7 @@ each case.
 
 ## Install
 
-Install the `BNReduction` script and its dependencies [here](https://bitbucket.org/asmundf/druglogics_dep/src/develop/) 
+Install the `BNReduction` script and its dependencies [here](https://bitbucket.org/asmundf/druglogics_dep/src/master/) 
 if you wish to use that tool for the attractor (stable state) calculation. 
 Otherwise, `BioLQM` offers either stable state calculation or (minimal) trapspaces (the attractor tool option
 has to be configured in the configuration file appropriately). 
