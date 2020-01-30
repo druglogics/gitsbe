@@ -1,0 +1,8 @@
+targets, factors
+# a comment
+A, ( ( B ) | C ) & ! ( D )
+B, ! ( A )
+C, ( B )
+D, ! ( D )
+E, ( D ) & ! ( ( ( A ) | B ) | C )
+F, ( C ) | ! ( A )

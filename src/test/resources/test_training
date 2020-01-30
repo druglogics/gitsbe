@@ -1,0 +1,35 @@
+Condition
+-
+Response
+A:0	B:0	C:1	D:1	Another:1	Another2:0
+Weight:1
+
+Condition
+-
+Response
+globaloutput:1
+Weight:1
+
+Condition
+B:0
+Response
+globaloutput:0
+Weight:0.1
+
+Condition
+Drug(AA)
+Response
+globaloutput:0.3
+Weight:0.2
+
+Condition
+Drug(AA+BB) < min(Drug(AA),Drug(BB))
+Response
+globaloutput:0.1
+Weight:0.2
+
+Condition
+Drug(CC+BB) < product(Drug(CC),Drug(BB))
+Response
+globaloutput:-0.2
+Weight:0.2

@@ -1,0 +1,14 @@
+#Boolean model file in gitsbe format                                            
+modelname: example
+equation:  A *=  (  (  B )  or C ) and not  ( D )
+equation:  B *=  not  ( A )
+equation:  C *=  (  B )
+equation:  D *=  not (  D )
+equation:  E *=  (  D ) and not  (  (  ( A )  or B )  or C )
+equation:  F *=  (  C ) or not  ( A )
+mapping: A = x1
+mapping: B = x2
+mapping: C = x3
+mapping: D = x4
+mapping: E = x5
+mapping: F = x6

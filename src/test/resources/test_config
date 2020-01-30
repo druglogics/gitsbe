@@ -1,0 +1,5 @@
+# comment
+verbosity:	3
+use_parallel_sim:	true
+generations:	10
+crossovers:	5

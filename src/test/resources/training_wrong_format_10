@@ -1,0 +1,76 @@
+# (0): wrong format in Condition
+Condition
+Drug(AA)somethingThatShouldntBeHere
+Response
+globaloutput:1
+Weight:1
+
+# (1): `PK` drug not in drugpanel
+Condition
+Drug(PK)
+Response
+globaloutput:1
+Weight:1
+
+# (2): four `Drug` keywords not supported
+Condition
+Drug(AA+BB+CC) < min(Drug(AA),Drug(BB),Drug(CC))
+Response
+globaloutput:1
+Weight:1
+
+# (3): wrong format (max is not an allowed keyword)
+Condition
+Drug(AA+BB) < max(Drug(AA),Drug(BB))
+Response
+globaloutput:1
+Weight:1
+
+# (4): wrong format HSA
+Condition
+Drug(AA-BB) < min(Drug(AA),Drug(BB))
+Response
+globaloutput:0.333
+Weight:1
+
+# (5): wrong format Bliss
+Condition
+Drug(AA+BB) < product(Drug(AA)Drug(BB))
+Response
+globaloutput:-0.9
+Weight:1
+
+# (6): not correct drug names HSA
+Condition
+Drug(AA+BB) < min(Drug(FF),Drug(BB))
+Response
+globaloutput:0.333
+Weight:1
+
+# (7): not correct drug names Bliss
+Condition
+Drug(AA+BB) < product(Drug(AA),Drug(FF))
+Response
+globaloutput:0.333
+Weight:1
+
+# (8): HSA: Drug not in drugpanel
+Condition
+Drug(AA+PK) < min(Drug(AA),Drug(PK))
+Response
+globaloutput:0.333
+Weight:1
+
+# (9): HSA: Both Drugs not in drugpanel
+Condition
+Drug(PI+PK) < min(Drug(PI),Drug(PK))
+Response
+globaloutput:0.333
+Weight:1
+
+# (10) Bliss: Drug not in drugpanel
+Condition
+Drug(AA+PK) < product(Drug(AA),Drug(PK))
+Response
+globaloutput:0.333
+Weight:1

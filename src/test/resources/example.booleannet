@@ -1,0 +1,7 @@
+#Boolean model file in Booleannet format
+A *=  (  (  B )  or C ) and not  ( D )
+B *=  not  ( A )
+C *=  (  B )
+D *=  not (  D )
+E *=  (  D ) and not  (  (  ( A )  or B )  or C )
+F *=  (  C ) or not  ( A )

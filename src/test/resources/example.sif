@@ -1,0 +1,11 @@
+A	->	B
+C	-|	B
+C	->	A
+B	-|	D
+D	->	C
+D	-|	W
+W	->	F
+W	->	K
+I	->	W
+E	->	C
+J	->	E
