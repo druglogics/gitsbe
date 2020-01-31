@@ -10,7 +10,7 @@ public class FileDeleter {
 	
 	public FileDeleter(String directory) {
 		FileDeleter.directory = directory;
-		setState(false);
+		disable();
 	}
 
 	public void activate() {
