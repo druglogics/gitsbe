@@ -31,6 +31,7 @@
                     <!--Test-related bug: Error: Could not find or load
                     main class org.apache.maven.surefire.booter.ForkedBooter-->
                     <useSystemClassLoader>false</useSystemClassLoader>
+                    <runOrder>alphabetical</runOrder>
                 </configuration>
             </plugin>
             <plugin>

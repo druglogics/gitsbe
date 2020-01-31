@@ -443,6 +443,8 @@ class BooleanModelTest {
             "00010" + "010" + "011", "0---0" + "010" + "--1"));
         Double gl12 = Double.valueOf(df.format(booleanModel3.calculateGlobalOutput()));
         assertEquals(gl12, 0.05556);
+
+        ModelOutputs.reset();
     }
 
     @Test
