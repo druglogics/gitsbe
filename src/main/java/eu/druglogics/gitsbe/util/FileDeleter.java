@@ -17,11 +17,15 @@ public class FileDeleter {
 		setState(true);
 	}
 
+	public void disable() {
+		setState(false);
+	}
+
 	public void setState(boolean state) {
 		FileDeleter.state = state;
 	}
 
-	private static boolean isActive() {
+	public static boolean isActive() {
 		return state;
 	}
 
