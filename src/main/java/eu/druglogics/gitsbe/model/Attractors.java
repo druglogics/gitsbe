@@ -1,6 +1,7 @@
 package eu.druglogics.gitsbe.model;
 
 import eu.druglogics.gitsbe.util.Logger;
+import org.apache.commons.lang3.StringUtils;
 import org.colomoto.biolqm.LogicalModel;
 import org.colomoto.biolqm.io.bnet.BNetFormat;
 import org.colomoto.biolqm.service.LQMServiceManager;
@@ -29,6 +30,7 @@ public class Attractors {
 	private Logger logger;
 	private String attractorTool;
 	private static String directoryBNET = System.getenv("BNET_HOME");
+	private static String directoryMPBN = System.getenv("MPBN_HOME");
 	private ArrayList<String> attractors; // stable states or trapspaces (ss with '-' dashes)
 
 	public Attractors(BooleanModel booleanModel, String attractorTool, Logger logger) {
@@ -44,7 +46,7 @@ public class Attractors {
 	 * be used is based on the value of {@link Attractors#attractorTool}. </br>
 	 * Please use one of these values for the {@link Attractors#attractorTool}:
 	 * <i>bnet_reduction</i>, <i>bnet_reduction_reduced</i>, <i>biolqm_stable_states</i>,
-	 * <i>biolqm_trapspaces</i>.
+	 * <i>biolqm_trapspaces</i>, <i>mpbn_trapspaces</i>.
 	 *
 	 * @param directoryOutput the name of the directory which will be used to write result
 	 *                        files, the model in .bnet or Veliz-Cuba format, etc.
@@ -53,8 +55,10 @@ public class Attractors {
 	public void calculateAttractors(String directoryOutput) throws Exception {
 		if (attractorTool.startsWith("bnet_"))
 			calculateStableStatesVC(directoryOutput);
-		else
+		else if (attractorTool.startsWith("biolqm_"))
 			calculateAttractorsBioLQM(directoryOutput);
+		else
+			calculateAttractorsMPBN(directoryOutput);
 	}
 
 	/**
@@ -75,6 +79,66 @@ public class Attractors {
 		getAttractorsFromLogicalModel(boolNetModel);
 
 		deleteFilesMatchingPattern(logger, booleanModel.getModelName());
+	}
+
+	/**
+	 * Use the <code>mpbn-attrators.py</code> script to calculate the terminal trapspaces for the
+	 * {@link Attractors#booleanModel boolean model} that was defined in the constructor of the
+	 * {@link Attractors} Class.
+	 *
+	 * @param directoryOutput the name of the directory where the .bnet file that describes the
+	 *                        boolean model will be generated
+	 * @throws Exception
+	 */
+	private void calculateAttractorsMPBN(String directoryOutput) throws Exception {
+		booleanModel.exportModelToBoolNetFile(directoryOutput);
+		File boolNetFile = new File(directoryOutput, booleanModel.getModelName() + ".bnet");
+		String boolNetFilename = boolNetFile.getAbsolutePath();
+
+		String MPBNScriptFile = new File(directoryMPBN, "mpbn-attractors.py").getAbsolutePath();
+
+		// Run the mpbn script
+		try {
+			ProcessBuilder pb = new ProcessBuilder("python", MPBNScriptFile, boolNetFilename);
+
+			if (logger.getVerbosity() >= 3) {
+				pb.redirectErrorStream(true);
+			}
+
+			pb.directory(new File(boolNetFile.getParent()));
+			logger.outputStringMessage(3, "Running mpbn-attractors.py in directory " + boolNetFile.getParent());
+
+			Process p;
+			p = pb.start();
+
+			// Redirecting the output (attractors) of mpbn-attractors.py
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+				String line;
+
+				while ((line = reader.readLine()) != null) {
+					line = StringUtils.replace(line, "*", "-");
+					attractors.add(line);
+				}
+			}
+
+			if (attractors.size() > 0) {
+				logger.outputStringMessage(1, "MPBN found " + attractors.size() + " trapspaces:");
+				int count = 0;
+				for (String trapSpace: attractors) {
+					if (isStringAllDashes(trapSpace)) {
+						logger.outputStringMessage(2, "Found trivial trapspace (all dashes) which will be ignored");
+					} else {
+						logger.outputStringMessage(2, "Trapspace " + (++count) + ": " + attractors.get(count-1));
+					}
+				}
+			} else {
+				logger.outputStringMessage(1, "MPBN found no trapspaces.");
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
