@@ -59,6 +59,7 @@ public class ConfigParametersGlobal {
                     + "` is not in the list of supported tools: " + AttractorTools.getTools());
         }
         checkBNETHomeVar();
+        checkMPBNHomeVar();
     }
 
     /**
@@ -73,9 +74,24 @@ public class ConfigParametersGlobal {
         }
     }
 
+    /**
+     * Checks if the MPBN_HOME environment variable is set
+     * @throws Exception
+     */
+    private void checkMPBNHomeVar() throws Exception {
+        if (useMPBNScript() && System.getenv("MPBN_HOME") == null) {
+            throw new Exception("Set environment variable MPBN_HOME to point to location of " +
+                "mpbn-attrators.py (see druglogics_dep installation guidelines)");
+        }
+    }
+
     boolean useBNReductionScript() {
         return attractor_tool.equals(AttractorTools.BNREDUCTION_FULL.getTool())
                 || attractor_tool.equals(AttractorTools.BNREDUCTION_REDUCED.getTool());
+    }
+
+    boolean useMPBNScript() {
+        return attractor_tool.equals(AttractorTools.MPBN_TRAPSPACES.getTool());
     }
 
     public String[] getParameters() {

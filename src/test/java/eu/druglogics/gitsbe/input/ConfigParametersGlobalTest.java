@@ -37,7 +37,7 @@ class ConfigParametersGlobalTest {
         ConfigurationException exception =
             assertThrows(ConfigurationException.class, parameters::checkAttractorTool);
 
-        assertEquals(exception.getMessage(), "The attractor_tool value: `ANonValidAttractorTool` is not in the list of supported tools: [bnet_reduction, bnet_reduction_reduced, biolqm_stable_states, biolqm_trapspaces]");
+        assertEquals(exception.getMessage(), "The attractor_tool value: `ANonValidAttractorTool` is not in the list of supported tools: [bnet_reduction, bnet_reduction_reduced, biolqm_stable_states, biolqm_trapspaces, mpbn_trapspaces]");
     }
 
     @Test
@@ -52,6 +52,18 @@ class ConfigParametersGlobalTest {
 
         parameters.attractor_tool = "otherTool";
         assertFalse(parameters.useBNReductionScript());
+    }
+
+    @Test
+    void test_use_mpbn_script() {
+        ConfigParametersGlobal parameters = new ConfigParametersGlobal();
+
+        parameters.attractor_tool = AttractorTools.MPBN_TRAPSPACES.getTool();
+        assertTrue(parameters.useMPBNScript());
+
+        parameters.attractor_tool = "otherTool";
+        assertFalse(parameters.useMPBNScript());
+
     }
 
     @Test

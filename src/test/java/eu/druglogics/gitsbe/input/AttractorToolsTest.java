@@ -18,17 +18,19 @@ class AttractorToolsTest {
         assertTrue(AttractorTools.contains("bnet_reduction_reduced"));
         assertTrue(AttractorTools.contains("biolqm_stable_states"));
         assertTrue(AttractorTools.contains("biolqm_trapspaces"));
+        assertTrue(AttractorTools.contains("mpbn_trapspaces"));
 
         assertEquals("bnet_reduction", AttractorTools.BNREDUCTION_FULL.getTool());
         assertEquals("bnet_reduction_reduced", AttractorTools.BNREDUCTION_REDUCED.getTool());
         assertEquals("biolqm_stable_states", AttractorTools.BIOLQM_STABLE_STATES.getTool());
         assertEquals("biolqm_trapspaces", AttractorTools.BIOLQM_TRAPSPACES.getTool());
+        assertEquals("mpbn_trapspaces", AttractorTools.MPBN_TRAPSPACES.getTool());
     }
 
     @Test
     void test_get_tools() {
         ArrayList<String> expectedTools = newArrayList("bnet_reduction", "bnet_reduction_reduced",
-            "biolqm_stable_states", "biolqm_trapspaces");
+            "biolqm_stable_states", "biolqm_trapspaces", "mpbn_trapspaces");
         assertEquals(expectedTools, AttractorTools.getTools());
     }
 }

@@ -7,7 +7,8 @@ public enum AttractorTools {
     BNREDUCTION_FULL("bnet_reduction"),
     BNREDUCTION_REDUCED("bnet_reduction_reduced"),
     BIOLQM_STABLE_STATES("biolqm_stable_states"),
-    BIOLQM_TRAPSPACES("biolqm_trapspaces");
+    BIOLQM_TRAPSPACES("biolqm_trapspaces"),
+    MPBN_TRAPSPACES("mpbn_trapspaces");
 
     private String tool;
 
