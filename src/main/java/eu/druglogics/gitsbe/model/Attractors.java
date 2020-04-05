@@ -112,25 +112,23 @@ public class Attractors {
 			p = pb.start();
 
 			// Redirecting the output (attractors) of mpbn-attractors.py
+			int count = 0;
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
 				String line;
 
 				while ((line = reader.readLine()) != null) {
-					line = StringUtils.replace(line, "*", "-");
-					attractors.add(line);
+					String trapSpace = StringUtils.replace(line, "*", "-");
+					if (isStringAllDashes(trapSpace)) {
+						logger.outputStringMessage(2, "Found trivial trapspace (all dashes) which will be ignored");
+					} else {
+						attractors.add(trapSpace);
+						logger.outputStringMessage(2, "Trapspace " + (++count) + ": " + attractors.get(count-1));
+					}
 				}
 			}
 
 			if (attractors.size() > 0) {
-				logger.outputStringMessage(1, "MPBN found " + attractors.size() + " trapspaces:");
-				int count = 0;
-				for (String trapSpace: attractors) {
-					if (isStringAllDashes(trapSpace)) {
-						logger.outputStringMessage(2, "Found trivial trapspace (all dashes) which will be ignored");
-					} else {
-						logger.outputStringMessage(2, "Trapspace " + (++count) + ": " + attractors.get(count-1));
-					}
-				}
+				logger.outputStringMessage(1, "MPBN found " + attractors.size() + " trapspaces.");
 			} else {
 				logger.outputStringMessage(1, "MPBN found no trapspaces.");
 			}
