@@ -137,6 +137,7 @@ public class Attractors {
 			e.printStackTrace();
 		}
 
+		deleteFilesMatchingPattern(logger, booleanModel.getModelName());
 	}
 
 	/**
