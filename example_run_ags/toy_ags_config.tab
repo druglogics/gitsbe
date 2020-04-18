@@ -93,9 +93,3 @@ best_models_export_to_boolnet:	true
 # Threshold for saving models
 fitness_threshold:	0.1
 
-### Drabme section
-
-# Creates all combinations of drugs from the drugpanel file up to and including
-# this size (only used when there is no perturbations file)
-max_drug_comb_size:	2
-
