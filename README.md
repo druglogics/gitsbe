@@ -15,6 +15,7 @@ For a full documentation of this package check [here](https://druglogics.github.
 ```
 # tested with maven 3.6.0
 git clone https://github.com/druglogics/gitsbe.git
+cd gitsbe
 mvn clean install
 ```
 
