@@ -1,6 +1,7 @@
 # gitsbe
 
 <!-- badges: start -->
+[![Java CI with Maven](https://github.com/druglogics/gitsbe/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/druglogics/gitsbe/actions)
 [![License](https://img.shields.io/github/license/druglogics/gitsbe)](https://github.com/druglogics/gitsbe/blob/master/LICENSE)
 <!-- badges: end -->
 
