@@ -1,5 +1,9 @@
 # gitsbe
 
+<!-- badges: start -->
+[![License](https://img.shields.io/github/license/druglogics/gitsbe)](https://github.com/druglogics/gitsbe/blob/master/LICENSE)
+<!-- badges: end -->
+
 Gitsbe is an acronym for *Genetic Interactions To Specific Boolean Equations*. 
 This module defines boolean models compliant with observed behavior (e.g. steady state or perturbation data) using an automated, model parameterization genetic algorithm.
 
