@@ -9,7 +9,7 @@ For a full documentation of this package check [here](https://druglogics.github.
 
 ```
 # tested with maven 3.6.0
-git clone https://bitbucket.org/asmundf/gitsbe.git
+git clone https://github.com/druglogics/gitsbe.git
 mvn clean install
 ```
 
