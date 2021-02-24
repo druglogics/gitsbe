@@ -6,7 +6,7 @@
     <artifactId>gitsbe</artifactId>
     <packaging>jar</packaging>
     <version>1.3.0</version>
-    <name>Gitsbe: Genetic Interactions To Specific Boolean Equations</name>
+    <name>Gitsbe: Generic Interactions To Specific Boolean Equations</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
