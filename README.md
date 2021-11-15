@@ -24,7 +24,7 @@ Alternatively, you could just use directly one of the [released packages](https:
 
 ## Run example
 
-The recommended way to run Gitsbe is to use it’s `Launcher`. 
+The recommended way to run Gitsbe is to use its `Launcher`.
 From the root directory of the repo run: (remember to change the `{version}` to the 
 appropriate one, e.g. `1.3.0`):
 
